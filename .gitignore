@@ -1,0 +1,7 @@
+bin/
+build/
+cov/
+doc/
+out/
+obj/
+tmp/
