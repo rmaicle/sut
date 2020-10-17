@@ -85,12 +85,22 @@ import core.exception: assertHandler, AssertError;
 
 
 
+shared static this () {
+    assertHandler(&csAssertHandler);
+    Runtime.extendedModuleUnitTester = &customModuleUnitTester;
+    //includeUnitTest();
+}
+
+
+
 /++ Color definitions. +/
 private
 enum Color: string {
     Reset   = "\033[0;;m",
     Red     = "\033[0;31m",
+    IRed    = "\033[38;5;160m",
     Green   = "\033[0;32m",
+    IGreen  = "\033[38;5;34m",
     Yellow  = "\033[0;93m",
     White   = "\033[0;97m"
 }
@@ -106,45 +116,40 @@ alias Container = DList!string;
  + Execution list.
  +
  + A collection of module names that will be allowed to execute its
- + corresponding module unit tests.
+ + corresponding unit tests.
  +/
  private
  __gshared
 Container executionList;
 
-
-
-/++ Aborted unit test block runtime counter. +/
+/++ Passed unit test block counter for a module. +/
 private
-size_t unitTestBlockAbortCounter;
+size_t modulePassCounter;
 
-
-
-/++ Executed unit test block runtime counter. +/
+/++ Aborted unit test block counter for a module. +/
 private
-size_t unitTestBlockExecuteCounter;
+size_t moduleAbortCounter;
 
-
-
-shared static this () {
-    assertHandler(&csAssertHandler);
-    Runtime.extendedModuleUnitTester = &customModuleUnitTester;
-    includeUnitTest();
-}
+/++ Executed unit test block counter for a module. +/
+private
+size_t moduleExecuteCounter;
 
 
 
 /++
- + Custom module unit tester runner.
+ + Custom module unit test runner.
  +
  + Code snippet from runtime.d.runModuleUnitTests
  + Ref: druntime/src/core/runtime.d
  +/
 UnitTestResult
-customModuleUnitTester () {
+customModuleUnitTester ()
+{
     import std.algorithm: startsWith;
     import std.string: tr;
     import std.array: split;
+
+    import std.stdio: writeln;
 
     import core.stdc.stdio: printf, fflush, stdout;
     import core.exception: AssertError;
@@ -154,8 +159,9 @@ customModuleUnitTester () {
     UnitTestResult result;
     result.passed = 0;
     result.executed = 0;
-    size_t totalAbortedUnitTestBlock;
-    size_t totalExecutedUnitTestBlock;
+    size_t totalPassed;
+    size_t totalAborted;
+    size_t totalExecuted;
     foreach (m; ModuleInfo) {
         if (!m) {
             continue;
@@ -164,6 +170,7 @@ customModuleUnitTester () {
             continue;
         }
         if (!isIncludedUnitTest(m.name)) {
+            version (verbose_unit_test)
             printf("[unittest] Module: %s not tested.\n", m.name.ptr);
             continue;
         }
@@ -174,8 +181,9 @@ customModuleUnitTester () {
         if (m.name) {
             printf("[unittest] Module: %s\n", m.name.ptr);
         }
-        unitTestBlockAbortCounter = 0;
-        unitTestBlockExecuteCounter = 0;
+        modulePassCounter = 0;
+        moduleAbortCounter = 0;
+        moduleExecuteCounter = 0;
         bool assertionOccurred = false;
         immutable t0 = MonoTime.currTime;
         try {
@@ -206,6 +214,7 @@ customModuleUnitTester () {
             //
             // See std.exception.assertThrown definition.
             if (e.message.length > 0) {
+                modulePassCounter--;
                 assertionOccurred = true;
                 // Display stack trace; indent for alignment only
                 foreach (i, item; e.info) {
@@ -217,14 +226,16 @@ customModuleUnitTester () {
             }
         } // catch
 
-        printf("[unittest]   Time: %.3fs\n",
+        printf("             Time: %.3fs\n",
             (MonoTime.currTime - t0).total!"msecs" / 1000.0);
-        printf("[unittest]   Blocks: %d aborted, %d executed.\n",
-            unitTestBlockAbortCounter,
-            unitTestBlockExecuteCounter);
-        totalAbortedUnitTestBlock += unitTestBlockAbortCounter;
-        totalExecutedUnitTestBlock += unitTestBlockExecuteCounter;
-        if (unitTestBlockExecuteCounter > 0) {
+        printf("             Blocks: %ld aborted, %ld executed.\n",
+            moduleAbortCounter,
+            moduleExecuteCounter);
+
+        totalPassed += modulePassCounter;
+        totalAborted += moduleAbortCounter;
+        totalExecuted += moduleExecuteCounter;
+        if (moduleExecuteCounter > 0) {
             result.executed++;
             if (!assertionOccurred) {
                 result.passed++;
@@ -232,36 +243,18 @@ customModuleUnitTester () {
         }
     }
 
-    if (result.passed == result.executed) {
-        if (result.passed == 0) {
-            printf("\n[unittest] Summary: %sNo unittests executed%s.\n",
-                Color.Yellow.ptr,
-                Color.Reset.ptr);
-        } else {
-            printf("\n[unittest] Summary: %d %s %spassed%s.\n",
-                result.passed,
-                result.passed == 1 ? "unittest".ptr : "unittests".ptr,
-                Color.Green.ptr,
-                Color.Reset.ptr);
-        }
-    } else {
-        printf("\n[unittest] Summary: %d of %d %s %sFAILED%s.\n",
-            result.executed - result.passed,
-            result.executed,
-            result.executed == 1 ? "unittest".ptr : "unittests".ptr,
-            Color.Red.ptr,
-            Color.Reset.ptr);
-    }
-    if (result.executed > 0) {
-        printf("[unittest]          %s%d aborted%s out of %s%d%s unit test %s.\n",
-            Color.Yellow.ptr,
-            totalAbortedUnitTestBlock,
-            Color.Reset.ptr,
-            Color.White.ptr,
-            totalAbortedUnitTestBlock + totalExecutedUnitTestBlock,
-            Color.Reset.ptr,
-            totalExecutedUnitTestBlock == 1 ? "block".ptr : "blocks".ptr);
-    }
+    const totalFailed = totalExecuted - totalPassed;
+
+    string passColor = totalPassed == 0 ? Color.IRed : Color.IGreen ;
+    string failColor = totalFailed == 0 ? Color.IGreen : Color.IRed ;
+    string abortColor = totalAborted == 0 ? Color.IGreen : Color.Yellow ;
+    string execColor = totalExecuted == 0 ? Color.IRed : Color.Reset ;
+
+    printf("\n[unittest] Summary: %s%zd passed%s, %s%zd failed%s, %s%zd aborted%s, %s%zd executed%s\n\n",
+        passColor.ptr, totalPassed, Color.Reset.ptr,
+        failColor.ptr, totalFailed, Color.Reset.ptr,
+        abortColor.ptr, totalAborted, Color.Reset.ptr,
+        execColor.ptr, totalExecuted, Color.Reset.ptr);
 
     // NOTE:
     // DMD 2.090.0 changed -unittest behaviour and now defaults to
@@ -282,10 +275,12 @@ customModuleUnitTester () {
 /++ Custom assert handler. +/
 void
 csAssertHandler (
-    const string file,
-    const size_t line,
-    const string msg
-) nothrow {
+    string file,
+    ulong line,
+    string msg
+)
+nothrow
+{
     import core.stdc.stdio: printf, fflush, stdout;
     import core.exception: AssertError;
 
@@ -298,17 +293,17 @@ csAssertHandler (
     if (msg.length > 0) {
         printf("---------- Trace start\n");
         printf("[unittest] %sAssertion Failed%s: %.*s (%llu): %.*s\n",
-            Color.Red.ptr,
+            Color.IRed.ptr,
             Color.Reset.ptr,
             cast(int) file.length,
             file.ptr,
-            cast(ulong) line,
+            line,
             cast(int) msg.length,
             msg.ptr);
         fflush(stdout);
     }
     version (D_BetterC) {
-        asm nothrow { htl; }
+        asm nothrow { hlt; }
     } else {
         throw new AssertError(msg);
     }
@@ -350,7 +345,8 @@ includeUnitTest (
  + Returns `true` if the module name exists in the execution list.
  +/
 bool
-isIncludedUnitTest (const string mod) {
+isIncludedUnitTest (const string mod)
+{
     import std.algorithm: canFind;
     version (execute_all_unit_tests) {
         return true;
@@ -358,7 +354,6 @@ isIncludedUnitTest (const string mod) {
         return executionList[].canFind(mod);
     }
 }
-
 unittest {
     if (abortUnitTestBlock(false)) return;
     bool included = isIncludedUnitTest(__MODULE__);
@@ -378,7 +373,8 @@ unittest {
  +/
 private
 bool
-isInternalModule (const string mod) {
+isInternalModule (const string mod)
+{
     import std.algorithm: startsWith;
     return mod.startsWith("__main")
         || mod.startsWith("core")
@@ -388,7 +384,6 @@ isInternalModule (const string mod) {
         || mod.startsWith("rt")
         || mod.startsWith("std");
 }
-
 unittest {
     if (abortUnitTestBlock(false)) return;
     assert(isInternalModule("__main"));
@@ -421,27 +416,35 @@ abortUnitTestBlock (
     const string mod = __MODULE__,
     const string func = __FUNCTION__,
     const size_t line = __LINE__
-)(const bool abort = true) {
+) (
+    const bool abort = true
+) {
     import core.stdc.stdio: printf, fflush, stdout;
     debug (verbose) import std.stdio: writeln;
-    //line = line - 1;
     version (execute_all_unit_tests) {
         debug (verbose) writeln("Execute all unit tests.");
-        unitTestBlockExecuteCounter++;
+        // Assume it passed first
+        // If an assertion occurs, then we subtract by 1
+        modulePassCounter++;
+        moduleExecuteCounter++;
         return false;
     } else {
         bool retval = false;
         if (abort) {
-            unitTestBlockAbortCounter++;
-            printf("   [block]   @ %d %saborted%s.\n",
-                line,
+            moduleAbortCounter++;
+            version (verbose_unit_test)
+            printf("   [block]   @ %ld %saborted%s.\n",
+                line - 1,
                 Color.Yellow.ptr,
                 Color.Reset.ptr);
             retval = true;
         } else {
-            unitTestBlockExecuteCounter++;
-            printf("   [block]   @ %d %sexecuted%s.\n",
-                line,
+            // Assume it passed first
+            // If an assertion occurs, then we subtract by 1
+            modulePassCounter++;
+            moduleExecuteCounter++;
+            printf("   [block]   @ %ld %sexecuted%s.\n",
+                line - 1,
                 Color.Green.ptr,
                 Color.Reset.ptr);
             retval = false;
@@ -450,7 +453,6 @@ abortUnitTestBlock (
         return retval;
     }
 }
-
 unittest {
     import std.exception: assertThrown;
     version (execute_all_unit_tests) {
