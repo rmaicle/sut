@@ -64,7 +64,7 @@ directories where to find import expressions.
 
 ~~~~~~~~~~
 dmd -J=<directory> ...
-ldc -J=<directory>
+ldc -J=<directory> ...
 ~~~~~~~~~~
 
 
