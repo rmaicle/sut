@@ -1,7 +1,7 @@
 # Custom Unit Test Execution
 
 Unit test helper that allows selective unit test execution of modules and
-unit test blocks whose "names" are found in the file, `unittest.conf`.
+unit test blocks whose "names" are found in a configuration file.
 
 
 
