@@ -81,3 +81,7 @@ ldc --unittest -J=<directory> ...
 The detailed log of changes can be seen on [CHANGELOG.md](CHANGELOG.md) file.
 
 
+
+## License
+
+See the [LICENSE](LICENSE.md) file for license rights and limitations (MIT).
