@@ -60,7 +60,7 @@ names and module names that will be executed.
 Each unit test block name and module name is declared on one line.
 Unit test block names are prefixed with `utb:` and module names with `mod:`.
 
-~~~d
+~~~
 utb:<unit test block name>
 utb:...
 utm:<module name>
@@ -71,7 +71,7 @@ The directory where the unit test configuration file is in needs to be specified
 to the compiler using the `-J` option.
 The option tells the compiler the directories where to find import expressions.
 
-~~~d
+~~~
 dmd -unittest -J=<directory> ...
 ldc --unittest -J=<directory> ...
 ~~~
