@@ -76,7 +76,8 @@ ldc --unittest -J=<directory> ...
 
 
 
-# Change Log
+## Change Log
 
-The detailed log of changes can be seen on [CHANGELOG.md](CHANGELOG.md)
-file.
+The detailed log of changes can be seen on [CHANGELOG.md](CHANGELOG.md) file.
+
+
