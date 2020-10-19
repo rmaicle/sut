@@ -14,14 +14,18 @@ Selectively executing unit tests is not supported.
 Development, maintenance, and enhancement of fine-grained details and components
 require testing to be performed at that level in isolation.
 In the context of testing an enhancement involving a single function, running
-all unit tests of the module it belongs to and all imported user-created modules
-is kind of an overkill.
-Also, running other unit tests in those modules will incur extra time that is
-not of concern at that point.
+the default unit test runner will:
 
-This module aims to provide the capability to selectively execute unit tests
-although it requires extra code to be inserted in module scope and unit test
-test blocks.
+  * run unit tests for the modified function
+  * run unit tests in the same module
+  * run unit tests of other referenced user-defined modules
+
+In this bottom-up scenario, the immediate concern is the first operation.
+The other two operations, which incur extra runtime, can be performed after.
+
+Using this module provides the capability to selectively execute unit tests
+in a bottom-up approach although it would require inserting extra code in
+module scope and unit test blocks.
 
 
 
