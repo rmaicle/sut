@@ -1,7 +1,7 @@
 # Selective Unit Testing
 
-Selective unit testing allows execution of modules and unit test blocks whose
-"names" appear in a configuration file.
+A D programming language custom unit test runner that allows selective unit
+test execution.
 
 
 
