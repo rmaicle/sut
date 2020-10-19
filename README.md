@@ -62,7 +62,9 @@ Unit test block names are prefixed with `utb:` and module names with `mod:`.
 
 ~~~d
 utb:<unit test block name>
+utb:...
 utm:<module name>
+utm:...
 ~~~
 
 The directory where the unit test configuration file is in needs to be specified
