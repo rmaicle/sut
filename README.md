@@ -1,7 +1,7 @@
-# Custom Unit Test Execution
+# Selective Unit Testing
 
-Unit test helper that allows selective unit test execution of modules and
-unit test blocks whose "names" are found in a configuration file.
+Selective unit testing allows execution of modules and unit test blocks whose
+"names" appear in a configuration file.
 
 
 
