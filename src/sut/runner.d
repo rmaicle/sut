@@ -38,7 +38,7 @@ customUnitTestRunner ()
 
     debug (verbose) printf("Compiler: %s\n", compilerName.toStringz);
 
-    getExecutionList!(UNITTEST_CONFIG_FILE)();
+    getExecutionList!(import(UNITTEST_CONFIG_FILE))();
     printUnitTestMode();
 
     foreach (m; ModuleInfo) {

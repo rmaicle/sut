@@ -214,9 +214,9 @@ isInUnitTestExecList (const string arg)
  * Returns: `string[]`
  */
 string[]
-getExecutionList (const string FILE)()
+getExecutionList (const string INPUT)()
 {
-    auto arr = import(FILE).toArray();
+    enum arr = INPUT.toArray();
     unitTestExecList = arr.getUnitTestBlocks();
     moduleExecList = arr.getModules();
     return arr;
