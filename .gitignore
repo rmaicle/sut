@@ -2,6 +2,7 @@ bin/
 build/
 cov/
 doc/
-out/
+extern/
 obj/
+out/
 tmp/
