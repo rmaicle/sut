@@ -89,9 +89,9 @@ unittest {
 
 
 /**
- * Filter the array of string argument containing the prefix string 'mod:'.
+ * Filter the array of string argument containing the prefix string 'utm:'.
  *
- * Returns: `string[]` without the prefix string 'mod:'.
+ * Returns: `string[]` without the prefix string 'utm:'.
  */
 string[]
 getModules (const string[] arg)
