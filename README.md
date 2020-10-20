@@ -55,15 +55,21 @@ unittest {
 
 ## Unit Test Configuration File
 
-The unit test configuration file, _unittest.conf_, contains the unit test block
-names and module names that will be executed.
-Each unit test block name and module name is declared on one line.
-Unit test block names are prefixed with `utb:` and module names with `mod:`.
+The unit test configuration file, _unittest.conf_, contains all unit test block
+and module names that will be executed.
+
+Formatting guide:
+
+* one name per line
+* unit test block names are prefixed with `utb:`
+* module names are prefixed with `utm:`
+* names cannot have whitespace
+* empty lines and duplicates are ignored
 
 ~~~
-utb:<unit test block name>
+utb:<unit_test_block_name>
 utb:...
-utm:<module name>
+utm:<module_name>
 utm:...
 ~~~
 
