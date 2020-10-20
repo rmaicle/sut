@@ -21,7 +21,7 @@ enum MODULE_PREFIX = "utm:";
 string[]
 toArray (const string arg)
 {
-    import std.algorithm: map, sort, uniq;
+    import std.algorithm: map, remove, sort, uniq;
     import std.array: array;
     import std.string: strip, splitLines;
     import std.uni: toLower;
@@ -32,12 +32,19 @@ toArray (const string arg)
     return arg.splitLines()
         .map!(a => a.strip()).array()
         .sort!("toLower(a) < toLower(b)").release()
-        .uniq().array();
+        .uniq().array()
+        .remove!("a.length == 0").array();
 }
 @("toArray: empty array")
 unittest {
     mixin (unitTestBlockPrologue());
     assert ("".toArray() == []);
+}
+@("toArray: with empty array element")
+unittest {
+    mixin (unitTestBlockPrologue());
+    const arr = " one\n \n two ";
+    assert (arr.toArray() == ["one", "two"]);
 }
 @("toArray")
 unittest {
@@ -71,6 +78,7 @@ unittest {
     mixin (unitTestBlockPrologue());
     string[] arr = [
         "utb:one",
+        "",
         "utb:two",
         "three",
         "four"
@@ -105,6 +113,7 @@ unittest {
         "utb:one",
         "utb:two",
         "utm:three",
+        "",
         "utm:four"
     ];
     assert (arr.getModules == ["three", "four"]);
