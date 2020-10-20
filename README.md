@@ -73,9 +73,13 @@ utm:<module_name>
 utm:...
 ~~~
 
-The directory where the unit test configuration file is in needs to be specified
-to the compiler using the `-J` option.
-The option tells the compiler the directories where to find import expressions.
+
+
+## Compiler Option
+
+The configuration file directory must be specified to the compiler using the
+`-J` option. This commandline option tells the compiler where to look for string
+imports.
 
 ~~~
 dmd -unittest -J=<directory> ...
