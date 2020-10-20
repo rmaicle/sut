@@ -221,6 +221,24 @@ getExecutionList (const string INPUT)()
     moduleExecList = arr.getModules();
     return arr;
 }
+@("getExecutionList: empty string")
+unittest {
+    mixin (unitTestBlockPrologue());
+    enum input="";
+    assert (getExecutionList!input == (string[]).init);
+}
+@("getExecutionList: spaces and new lines only")
+unittest {
+    mixin (unitTestBlockPrologue());
+    enum input=" \n \n \n";
+    assert (getExecutionList!input == (string[]).init);
+}
+@("getExecutionList")
+unittest {
+    mixin (unitTestBlockPrologue());
+    enum input="aaa\nbbb\nccc";
+    assert (getExecutionList!input == ["aaa", "bbb", "ccc"]);
+}
 
 
 
