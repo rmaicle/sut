@@ -1,8 +1,8 @@
 /**
  * Custom Unit Test Execution
  *
- * Unit test helper that allows selective unit test execution of modules and
- * unit test blocks whose "names" are found in a text file.
+ * A D programming language custom unit test runner that allows selective unit
+ * test execution.
  *
  *
  *
@@ -14,13 +14,18 @@
  * Development, maintenance, and enhancement of fine-grained details and
  * components require testing to be performed at that level in isolation.
  * In the context of testing an enhancement involving a single function,
- * running all unit tests of the module it belongs to and all imported user-
- * created modules is kind of an overkill. Also, running other unit tests in
- * those modules will incur extra time that is not of concern at that point.
+ * running the default unit test runner will:
  *
- * This module aims to provide the capability to selectively execute unit tests
- * although it requires extra code to be inserted in module scope and unit test
- * test blocks.
+ *   * run unit tests for the modified function
+ *   * run unit tests in the same module
+ *   * run unit tests of other referenced user-defined modules
+ *
+ * In this bottom-up scenario, the immediate concern is the first operation.
+ * The other two operations, which incur extra runtime, can be performed after.
+ *
+ * Using this module provides the capability to selectively execute unit tests
+ * in a bottom-up approach although it would require inserting extra code in
+ * module scope and unit test blocks.
  *
  *
  *
@@ -32,43 +37,53 @@
  * block. This last statement is neessary since it controls whether to continue
  * the execution of the rest of the block or abort (early return).
  *
- * ~~~~~~~~~~
- * version (unittest) static import exp.sut;        // 1 - insert module
- *
+ * ~~~d
+ * version (unittest) static import sut;           // 1 - import module
  * bool isEmpty (const string arg) {
  *   return arg.length == 0;
  * }
- * @("isEmpty")                                     // 2 - UDA
+ * @("isEmpty")                                    // 2 - UDA
  * unittest {
- *   mixin (exp.sut.unitTestBlockPrologue());       // 3 - insert prologue
+ *   mixin (sut.unitTestBlockPrologue());          // 3 - insert prologue
  *   assert (isEmpty(""));
  *   assert (!isEmpty("hello"));
  * }
- * ~~~~~~~~~~
+ * ~~~
  *
  *
  *
- * Unit Test Config File
+ * ## Unit Test Configuration File
  *
- * The unit test config file, 'unittest.conf' contains the unit test block names
- * and module names that will be executed.
+ * The unit test configuration file, _unittest.conf_, contains all unit test
+ * block and module names that will be executed.
  *
- * Each unit test block name and module name is declared on one line. Unit test
- * block names are prefixed with `utb:` and module names with `mod:`.
+ * Formatting guide:
  *
- * ~~~~~~~~~~
- * utb:<unit test block name>
- * utm:<module name>
- * ~~~~~~~~~~
+ * * one name per line
+ * * unit test block names are prefixed with `utb:`
+ * * module names are prefixed with `utm:`
+ * * names cannot have whitespace
+ * * empty lines and duplicates are ignored
  *
- * The directory where the unit test config file is in needs to be specified to
- * the compiler using the `-J` option. The option tells the compiler the
- * directories where to find import expressions.
+ * ~~~
+ * utb:<unit_test_block_name>
+ * utb:...
+ * utm:<module_name>
+ * utm:...
+ * ~~~
  *
- * ~~~~~~~~~~
- * dmd -J=<directory> ...
- * ldc -J=<directory>
- * ~~~~~~~~~~
+ *
+ *
+ * ## Compiler Option
+ *
+ * The configuration file directory must be specified to the compiler using the
+ * `-J` option. This commandline option tells the compiler where to look for
+ * string imports.
+ *
+ * ~~~
+ * dmd -unittest -J=<directory> ...
+ * ldc --unittest -J=<directory> ...
+ * ~~~
  */
 module sut;
 
