@@ -277,7 +277,8 @@ isLanguageModule (const string mod)
         || mod.startsWith("gc")
         || mod.startsWith("object")
         || mod.startsWith("rt")
-        || mod.startsWith("std");
+        || mod.startsWith("std")
+        || mod.startsWith("ldc");
 }
 @("isLanguageModule")
 unittest {
