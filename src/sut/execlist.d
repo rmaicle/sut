@@ -239,20 +239,47 @@ getExecutionList (const string INPUT)()
 @("getExecutionList: empty string")
 unittest {
     mixin (unitTestBlockPrologue());
+
+    auto unitTestExecListCopy = unitTestExecList;
+    auto moduleExecListCopy = moduleExecList;
+    auto isExecListEmptyCopy = isExecListEmpty;
+
     enum input="";
     assert (getExecutionList!input == (string[]).init);
+
+    unitTestExecList = unitTestExecListCopy;
+    moduleExecList = moduleExecListCopy;
+    isExecListEmpty = isExecListEmptyCopy;
 }
 @("getExecutionList: spaces and new lines only")
 unittest {
     mixin (unitTestBlockPrologue());
+
+    auto unitTestExecListCopy = unitTestExecList;
+    auto moduleExecListCopy = moduleExecList;
+    auto isExecListEmptyCopy = isExecListEmpty;
+
     enum input=" \n \n \n";
     assert (getExecutionList!input == (string[]).init);
+
+    unitTestExecList = unitTestExecListCopy;
+    moduleExecList = moduleExecListCopy;
+    isExecListEmpty = isExecListEmptyCopy;
 }
 @("getExecutionList")
 unittest {
     mixin (unitTestBlockPrologue());
+
+    auto unitTestExecListCopy = unitTestExecList;
+    auto moduleExecListCopy = moduleExecList;
+    auto isExecListEmptyCopy = isExecListEmpty;
+
     enum input="aaa\nbbb\nccc";
     assert (getExecutionList!input == ["aaa", "bbb", "ccc"]);
+
+    unitTestExecList = unitTestExecListCopy;
+    moduleExecList = moduleExecListCopy;
+    isExecListEmpty = isExecListEmptyCopy;
 }
 
 
