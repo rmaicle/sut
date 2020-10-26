@@ -20,13 +20,13 @@ UnitTestCounter moduleCounter;
  */
 struct UnitTestCounter
 {
-    /** Unit test blocks that were successfully executed. */
+    /** Number of Unit test blocks that were successfully executed. */
     size_t pass = 0;
 
-    /** Unit test blocks that were skipped. */
+    /** Number of Unit test blocks that were skipped. */
     size_t skip = 0;
 
-    /** Unit test blocks that were skipped. */
+    /** Number of Unit test blocks that were found. */
     size_t found = 0;
 
 
