@@ -48,9 +48,9 @@ unitTestBlockPrologue (size_t LN = __LINE__)(const bool skipFlag = true) {
     return `static import sut;
 import std.traits: moduleName;
 struct unit_test_dummy_anchor { }` ~
-format!("enum %s = sut.getUTNameFunc!unit_test_dummy_anchor;\n")(UnitTestName) ~
-format!("enum %s = moduleName!unit_test_dummy_anchor;\n")(ModuleName) ~
-format!("if (!sut.executeUnitTestBlock!(%s, %s, %d)(%s)) { return; }")(
+format!("\nenum %s = sut.getUTNameFunc!unit_test_dummy_anchor;")(UnitTestName) ~
+format!("\nenum %s = moduleName!unit_test_dummy_anchor;")(ModuleName) ~
+format!("\nif (!sut.executeUnitTestBlock!(%s, %s, %d)(%s)) { return; }")(
     ModuleName,
     UnitTestName,
     UTLineNumber,
