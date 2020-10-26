@@ -34,7 +34,9 @@ customUnitTestRunner ()
 
     UnitTestCounter totalCounter;
     size_t moduleCount = 0;
+    string[] withUnitTestModules;
     string[] skippedModules;
+    string[] noUnitTestModules;
 
     debug (verbose) printf("Compiler: %s\n", compilerName.toStringz);
 
@@ -53,12 +55,13 @@ customUnitTestRunner ()
                 continue;
             }
         }
+        moduleCount++;
         auto fp = m.unitTest();
         if (!fp) {
+            noUnitTestModules ~= m.name;
             continue;
         }
         moduleCounter.reset();
-        moduleCount++;
         bool assertionOccurred = false;
         immutable t0 = MonoTime.currTime;
         try {
@@ -84,18 +87,25 @@ customUnitTestRunner ()
             }
         }
 
+        if (moduleCounter.pass) {
+            withUnitTestModules ~= m.name;
+        }
         printModuleSummary (m.name, moduleCounter, t0, MonoTime.currTime);
 
         totalCounter.pass += moduleCounter.pass;
         totalCounter.skip += moduleCounter.skip;
         totalCounter.found += moduleCounter.found;
 
-        if (isModuleSkipped(moduleCounter)) {
+        if (isModuleSkipped(moduleCounter) || doesModuleHaveSkip(moduleCounter)) {
             skippedModules ~= m.name;
         }
     } // foreach
 
-    printSummary(totalCounter, moduleCount, skippedModules);
+    printSummary(totalCounter,
+        moduleCount,
+        withUnitTestModules,
+        skippedModules,
+        noUnitTestModules);
 
     // NOTE:
     // DMD 2.090.0 changed -unittest behavior and now defaults to

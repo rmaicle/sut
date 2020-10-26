@@ -102,3 +102,16 @@ unittest {
     utc = UnitTestCounter(0, 5, 5);
     assert (utc.isModuleSkipped());
 }
+
+
+
+/**
+ * Determine whether a module have skipped at least one unit test block.
+ *
+ * Returns: `true` when at least there is one unit test block that was skipped.
+ */
+bool
+doesModuleHaveSkip (const UnitTestCounter arg)
+{
+    return arg.found > 0 && arg.skip > 1;
+}

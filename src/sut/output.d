@@ -19,8 +19,12 @@ enum Label: string {
     Block               = "[unittest]      @: ",
     ModuleSummary       = "[unittest] Modules:",
     BlockSummary        = "[unittest] Blocks: ",
-    SkippedUnitTestInit = "[unittest] Skipped:",
+    WithUnitTestInit    = "[unittest]          Modules With Unit Test:",
+    WithUnitTestNext    = "[unittest]         ",
+    SkippedUnitTestInit = "[unittest]          Modules With Skipped Unit Test:",
     SkippedUnitTestNext = "[unittest]         ",
+    NoUnitTestInit      = "[unittest]          Modules Without Unit Test:",
+    NoUnitTestNext      = "[unittest]         ",
     AssertionFailed     = "[unittest] Assertion Failed:",
     AssertionDetail     = "           ",
     Trace               = "   [trace]"
@@ -36,7 +40,11 @@ printUnitTestMode ()
         All = "All",
         Selection = "Selection"
     }
-    Mode mode = isExecListEmpty ? Mode.All : Mode.Selection;
+    version (sut) {
+        Mode mode = isExecListEmpty ? Mode.All : Mode.Selection;
+    } else {
+        Mode mode = Mode.All;
+    }
     printf("%s %s\n", Label.Mode.toStringz, mode.toStringz);
     version (sut) {
         foreach (entry; moduleExecList) {
@@ -79,7 +87,9 @@ void
 printSummary (
     const UnitTestCounter counter,
     const size_t moduleCount,
-    string[] skippedModules
+    string[] withUnitTestModules,
+    string[] skippedModules,
+    string[] noUnitTestModules
 ) {
     import std.algorithm: sort;
 
@@ -92,16 +102,31 @@ printSummary (
         skipColor.toStringz, counter.skip, Color.Reset.toStringz,
         counter.found);
 
-    if (counter.skip == 0) {
-        printf("%s %zd (total)\n", Label.ModuleSummary.toStringz, moduleCount);
-    } else {
-        printf("%s %zd (total), %zd skipped\n",
-            Label.ModuleSummary.toStringz,
-            moduleCount,
-            counter.skip);
+    printf("%s %zd With, %zd with skipped, %zd without\n",
+        Label.ModuleSummary.toStringz,
+        moduleCount,
+        skippedModules.length,
+        noUnitTestModules.length);
+
+    if (withUnitTestModules.length > 0) {
+        withUnitTestModules.sort;
+        printf("%s %zd\n", Label.WithUnitTestInit.toStringz, withUnitTestModules.length);
+        foreach (e; withUnitTestModules) {
+            printf("%s   %s\n", Label.WithUnitTestNext.toStringz, e.toStringz);
+        }
+    }
+    if (skippedModules.length > 0) {
         skippedModules.sort;
+        printf("%s %zd\n", Label.SkippedUnitTestInit.toStringz, skippedModules.length);
         foreach (e; skippedModules) {
             printf("%s   %s\n", Label.SkippedUnitTestNext.toStringz, e.toStringz);
+        }
+    }
+    if (noUnitTestModules.length > 0) {
+        noUnitTestModules.sort;
+        printf("%s %zd\n", Label.NoUnitTestInit.toStringz, noUnitTestModules.length);
+        foreach (e; noUnitTestModules) {
+            printf("%s   %s\n", Label.NoUnitTestNext.toStringz, e.toStringz);
         }
     }
 }
