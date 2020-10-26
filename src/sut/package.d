@@ -1,15 +1,16 @@
 /**
- * Custom Unit Test Execution
+ * # Selective Unit Testing
  *
  * A D programming language custom unit test runner that allows selective unit
  * test execution.
  *
  *
  *
- * Rationale
+ * ## Rationale
  *
  * Currently, the execution of unit tests in the D runtime module is an all or
- * nothing approach. Selectively executing unit tests is not supported.
+ * nothing approach.
+ * Selectively executing unit tests is not supported.
  *
  * Development, maintenance, and enhancement of fine-grained details and
  * components require testing to be performed at that level in isolation.
@@ -29,22 +30,43 @@
  *
  *
  *
- * Necessary Code
+ * ## Necessary Extra Code
  *
- * To use, it is necessary to insert some code. First, the module must be
- * statically imported, define user-defined attribute (UDA) for the unit test
- * block, and insert code before the execution of the rest of the unit test
- * block. This last statement is neessary since it controls whether to continue
- * the execution of the rest of the block or abort (early return).
+ * Create a module that encapsulates some compile-time logic to avoid bloating
+ * the using modules with duplicate codes.
  *
  * ~~~d
- * version (unittest) static import sut;           // 1 - import module
+ * module internal.sut;
+ *
+ * version (unittest):
+ *
+ * // Compile-time test whether the `sut` module can be found and imported
+ * static if (__traits(compiles, { import sut; })) {
+ *     public static import sut;
+ * }
+ *
+ * enum prologue=`
+ *     // Compile-time test whether the `sut` module can be found and imported
+ *     static if (__traits(compiles, { import sut; })) {
+ *         // Note the fully qualified call
+ *         mixin (internal.sut.unitTestBlockPrologue());
+ *     }`;
+ * ~~~
+ *
+ * A note on the mixin line, `mixin (internal.sut.unitTestBlockPrologue())`.
+ * The name of the encapsulating module must be used here.
+ *
+ * The modules that uses the selective unit test module can be written without
+ * the compile-time checks.
+ *
+ * ~~~d
+ * version (unittest) static import internal.sut;  // 1 - import module
  * bool isEmpty (const string arg) {
  *   return arg.length == 0;
  * }
  * @("isEmpty")                                    // 2 - UDA
  * unittest {
- *   mixin (sut.unitTestBlockPrologue());          // 3 - insert prologue
+ *   mixin (internal.sut.prologue);                // 3 - insert prologue
  *   assert (isEmpty(""));
  *   assert (!isEmpty("hello"));
  * }
@@ -77,7 +99,8 @@
  * ## Compiler Option
  *
  * The configuration file directory must be specified to the compiler using the
- * `-J` option. This commandline option tells the compiler where to look for
+ * `-J` option.
+ * This commandline option tells the compiler where to look for
  * string imports.
  *
  * ~~~
