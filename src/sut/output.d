@@ -2,7 +2,7 @@ module sut.output;
 
 import sut.counter;
 import sut.color;
-import sut.execlist;
+import sut.execlist: isExecListEmpty, moduleExecList, unitTestExecList;
 
 import std.string: toStringz;
 
@@ -32,11 +32,11 @@ enum Label: string {
 void
 printUnitTestMode ()
 {
-    version (sut) {
-        enum mode = "Selection";
-    } else {
-        enum mode = "All";
+    enum Mode: string {
+        All = "All",
+        Selection = "Selection"
     }
+    Mode mode = isExecListEmpty ? Mode.All : Mode.Selection;
     printf("%s %s\n", Label.Mode.toStringz, mode.toStringz);
     version (sut) {
         foreach (entry; moduleExecList) {

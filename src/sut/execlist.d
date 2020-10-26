@@ -29,6 +29,16 @@ string[] unitTestExecList;
 
 
 
+/**
+ * Only used to cache the result whether both `moduleExecList` and
+ * `unitTestExecList` are empty.
+ */
+__gshared
+static
+bool isExecListEmpty;
+
+
+
 version (sut_override) {
     version (sut) version = selective_unit_test;
 } else {
@@ -219,6 +229,7 @@ getExecutionList (const string INPUT)()
     enum arr = INPUT.toArray();
     unitTestExecList = arr.getUnitTestBlocks();
     moduleExecList = arr.getModules();
+    isExecListEmpty = unitTestExecList.length == 0 && moduleExecList.length == 0;
     return arr;
 }
 @("getExecutionList: empty string")
