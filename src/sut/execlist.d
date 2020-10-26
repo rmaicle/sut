@@ -151,9 +151,9 @@ isFound (
 @("isFound: empty")
 unittest {
     mixin (unitTestBlockPrologue());
-    const string[] arr = ["aaa", "bbb", "ccc"];
+    const string[] arr;
     version (sut) {
-        assert (arr.isFound("aaa"));
+        assert (!arr.isFound("aaa"));
     } else {
         assert (arr.isFound("aaa"));
     }
