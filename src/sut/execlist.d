@@ -47,6 +47,10 @@ version (sut_override) {
 
 
 
+/**
+ * Determine whether the `needle` is found in the `haystack` using the
+ * specified predicate, `pred`, on how to find the `needle`.
+ */
 bool
 isIn (alias pred)(
     const string[] haystack,
