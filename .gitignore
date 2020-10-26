@@ -6,3 +6,4 @@ extern/
 obj/
 out/
 tmp/
+unittest/
