@@ -33,7 +33,8 @@ debug import std.stdio;
  * ~~~~~~~~~~
  */
 string
-unitTestBlockPrologue (size_t LN = __LINE__)(const bool skipFlag = true) {
+unitTestBlockPrologue (size_t LN = __LINE__)(const bool skipFlag = true)
+{
     import std.conv: to;
     import std.format: format;
 
@@ -63,7 +64,8 @@ format!("\nif (!sut.executeUnitTestBlock!(%s, %s, %d)(%s)) { return; }")(
  * Determine whether the template argument is some string.
  */
 template
-isStringUDA (alias T) {
+isStringUDA (alias T)
+{
     import std.traits: isSomeString;
     static if (__traits(compiles, isSomeString!(typeof(T))))
         enum isStringUDA = isSomeString!(typeof(T));
@@ -92,7 +94,8 @@ unittest {
  * if one is present. Otherwise, an empty string.
  */
 template
-firstStringUDA (alias testFunction) {
+firstStringUDA (alias testFunction)
+{
     import std.traits: hasUDA, getUDAs;
     import std.meta: Filter;
     enum attributes = Filter!(isStringUDA, __traits(getAttributes, testFunction));
@@ -135,7 +138,8 @@ unittest {
  * Returns: string
  */
 string
-getUTNameFunc (alias T)() pure nothrow {
+getUTNameFunc (alias T)() pure nothrow
+{
     enum udaName = firstStringUDA!(__traits(parent, T));
     static if (udaName == string.init) {
         return __traits(identifier, __traits(parent, T));
