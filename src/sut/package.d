@@ -123,10 +123,14 @@ import sut.runner;
 
 import core.runtime: Runtime;
 
+version (sut) {
+    version (D_ModuleInfo) {
+        version = sut_with_module_info;
+    }
+}
 
+version (sut_with_module_info):
 
 shared static this () {
-    version (D_ModuleInfo) {
-        Runtime.extendedModuleUnitTester = &customUnitTestRunner;
-    }
+    Runtime.extendedModuleUnitTester = &customUnitTestRunner;
 }
