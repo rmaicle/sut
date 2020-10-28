@@ -96,7 +96,7 @@ customUnitTestRunner ()
         totalCounter.skip += moduleCounter.skip;
         totalCounter.found += moduleCounter.found;
 
-        if (isModuleSkipped(moduleCounter) || doesModuleHaveSkip(moduleCounter)) {
+        if (moduleCounter.allSkipped || moduleCounter.someSkipped) {
             skippedModules ~= m.name;
         }
     } // foreach

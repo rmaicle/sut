@@ -42,6 +42,56 @@ struct UnitTestCounter
 
 
 
+    /**
+     * Determine whether `skip` equals `found` but not zero.
+     *
+     * Returns: `true` when `skip` equals `found` but not zero.
+     */
+    bool
+    allSkipped ()
+    {
+        return found > 0 && skip == found;
+    }
+    @("allSkipped")
+    unittest {
+        mixin (unitTestBlockPrologue());
+        UnitTestCounter utc;
+
+        assert (!utc.allSkipped());
+        utc = UnitTestCounter(2, 3, 5);
+        assert (!utc.allSkipped());
+        utc = UnitTestCounter(0, 5, 5);
+        assert (utc.allSkipped());
+    }
+
+
+
+    /**
+     * Determine whether `skip` is less than `found` but not zero.
+     *
+     * Returns: `true` when at `skip` is less than `found` but not zero.
+     */
+    bool
+    someSkipped ()
+    {
+        return found > 0 && skip > 0 && skip < found;
+    }
+    @("someSkipped")
+    unittest {
+        mixin (unitTestBlockPrologue());
+        UnitTestCounter utc;
+
+        assert (!utc.someSkipped());
+        utc = UnitTestCounter(0, 5, 5);
+        assert (!utc.someSkipped());
+        utc = UnitTestCounter(2, 0, 5);
+        assert (!utc.someSkipped());
+        utc = UnitTestCounter(2, 3, 5);
+        assert (utc.someSkipped());
+    }
+
+
+
     /** Unit test helper functions */
     version (unittest) {
 
@@ -68,6 +118,7 @@ struct UnitTestCounter
         }
     }
 }
+@("UnitTestCounter")
 unittest {
     mixin (unitTestBlockPrologue());
     UnitTestCounter utc;
@@ -77,41 +128,4 @@ unittest {
     assert (!utc.isUnset());
     utc.reset();
     assert (utc.isUnset());
-}
-
-
-
-/**
- * Determine whether a module have unit test blocks and they are all skipped.
- *
- * Returns: `true` when `UnitTestCounter.found` is greater than zero and that
- *          `UnitTestCounter.skipped` equals to `UnitTestCounter.found`.
- */
-bool
-isModuleSkipped (const UnitTestCounter arg)
-{
-    return arg.found > 0 && arg.skip == arg.found;
-}
-unittest {
-    mixin (unitTestBlockPrologue());
-    UnitTestCounter utc;
-
-    assert (!utc.isModuleSkipped());
-    utc = UnitTestCounter(2, 3, 5);
-    assert (!utc.isModuleSkipped());
-    utc = UnitTestCounter(0, 5, 5);
-    assert (utc.isModuleSkipped());
-}
-
-
-
-/**
- * Determine whether a module have skipped at least one unit test block.
- *
- * Returns: `true` when at least there is one unit test block that was skipped.
- */
-bool
-doesModuleHaveSkip (const UnitTestCounter arg)
-{
-    return arg.found > 0 && arg.skip > 1;
 }
