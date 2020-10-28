@@ -50,7 +50,7 @@ customUnitTestRunner ()
         if (isLanguageModule(m.name)) {
             continue;
         }
-        version (sut_override) { } else {
+        version (sut) { } else {
             if (isInternalModule(m.name)) {
                 continue;
             }

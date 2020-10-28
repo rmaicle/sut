@@ -150,14 +150,6 @@ getUTNameFunc (alias T)() pure nothrow
 
 
 
-version (sut_override) {
-    version (sut) version = selective_unit_test;
-} else {
-    version (sut) version = selective_unit_test;
-}
-
-
-
 /**
  * Execute unit test block.
  *
@@ -196,7 +188,8 @@ executeUnitTestBlock (
     }
 
     moduleCounter.found++;
-    version (selective_unit_test) {
+    //version (selective_unit_test) {
+    version (sut) {
         // Filter if a selection is present. Otherwise, execute all.
         if (!isExecListEmpty) {
             if (isInModuleExecList(ModuleName)) {
@@ -212,6 +205,7 @@ executeUnitTestBlock (
             return proceedToExecute(true);
         }
     } else {
-        return proceedToExecute(true);
+        //return proceedToExecute(true);
+        return true;
     }
 }

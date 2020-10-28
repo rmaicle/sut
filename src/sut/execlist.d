@@ -56,7 +56,7 @@ isIn (alias pred)(
     const string[] haystack,
     const string needle
 ) {
-    version (selective_unit_test) {
+    //version (selective_unit_test) {
         import std.algorithm: canFind;
         import std.uni: toLower;
         if (haystack.length == 0) {
@@ -66,14 +66,14 @@ isIn (alias pred)(
             return false;
         }
         return canFind!(pred)(haystack, needle);
-    } else {
-        // This check is unlikely to happen except when the routine that
-        // fetches unit test block names get it wrong.
-        if (needle.length == 0) {
-            return false;
-        }
-        return true;
-    }
+    //} else {
+    //    // This check is unlikely to happen except when the routine that
+    //    // fetches unit test block names get it wrong.
+    //    if (needle.length == 0) {
+    //        return false;
+    //    }
+    //    return true;
+    //}
 }
 
 
@@ -93,29 +93,32 @@ beginsWith (
 unittest {
     mixin (unitTestBlockPrologue());
     const string[] arr;
-    version (sut) {
-        assert (!arr.beginsWith(__FUNCTION__));
-    } else {
-        assert (arr.beginsWith(__FUNCTION__));
-    }
+    //version (sut) {
+    //    assert (!arr.beginsWith(__MODULE__));
+    //} else {
+    //    assert (arr.beginsWith(__MODULE__));
+    //}
+    assert (!arr.beginsWith(__MODULE__));
 }
 @("beginsWith: exact")
 unittest {
     mixin (unitTestBlockPrologue());
     const string[] arr = ["aaa", "bbb", "ccc"];
     assert (arr.beginsWith("aaa"));
-    version (sut) {
-        assert (!arr.beginsWith(""));
-        assert (!arr.beginsWith("any"));
-    } else {
-        version (sut_override) {
-            assert (!arr.beginsWith(""));
-            assert (arr.beginsWith("any"));
-        } else {
-            assert (arr.beginsWith(""));
-            assert (arr.beginsWith("any"));
-        }
-    }
+    //version (sut) {
+    //    assert (!arr.beginsWith(""));
+    //    assert (!arr.beginsWith("any"));
+    //} else {
+    //    version (sut_override) {
+    //        assert (!arr.beginsWith(""));
+    //        assert (arr.beginsWith("any"));
+    //    } else {
+    //        assert (!arr.beginsWith(""));
+    //        assert (arr.beginsWith("any"));
+    //    }
+    //}
+    assert (!arr.beginsWith(""));
+    assert (!arr.beginsWith("any"));
 }
 @("beginsWith: begins with")
 unittest {
@@ -124,15 +127,16 @@ unittest {
     assert (arr.beginsWith("aaa111"));
     assert (arr.beginsWith("bbb222"));
     assert (arr.beginsWith("ccc333"));
-    version (sut) {
-        assert (!arr.beginsWith("111aaa"));
-    } else {
-        version (sut_override) {
-            assert (arr.beginsWith("111aaa"));
-        } else {
-            assert (arr.beginsWith("111aaa"));
-        }
-    }
+    //version (sut) {
+    //    assert (!arr.beginsWith("111aaa"));
+    //} else {
+    //    version (sut_override) {
+    //        assert (arr.beginsWith("111aaa"));
+    //    } else {
+    //        assert (arr.beginsWith("111aaa"));
+    //    }
+    //}
+    assert (!arr.beginsWith("111aaa"));
 }
 
 
@@ -152,44 +156,50 @@ isFound (
 unittest {
     mixin (unitTestBlockPrologue());
     const string[] arr;
-    version (sut) {
-        assert (!arr.isFound("aaa"));
-    } else {
-        assert (arr.isFound("aaa"));
-    }
+    //version (sut) {
+    //    assert (!arr.isFound("aaa"));
+    //} else {
+    //    assert (arr.isFound("aaa"));
+    //}
+    assert (!arr.isFound("aaa"));
 }
 @("isFound: exact")
 unittest {
     mixin (unitTestBlockPrologue());
     const string[] arr = ["aaa", "bbb", "ccc"];
     assert (arr.isFound("aaa"));
-    version (sut) {
-        assert (!arr.isFound(""));
-        assert (!arr.isFound("ddd"));
-    } else {
-        assert (!arr.isFound(""));
-        assert (arr.isFound("ddd"));
-    }
+    //version (sut) {
+    //    assert (!arr.isFound(""));
+    //    assert (!arr.isFound("ddd"));
+    //} else {
+    //    assert (!arr.isFound(""));
+    //    assert (arr.isFound("ddd"));
+    //}
+    assert (!arr.isFound(""));
+    assert (!arr.isFound("ddd"));
 }
 @("isFound: substring")
 unittest {
     mixin (unitTestBlockPrologue());
     const string[] arr = ["aaa", "bbb", "ccc"];
-    version (sut) {
-        assert (arr.isFound("aaa111"));
-        assert (!arr.isFound(""));
-        assert (!arr.isFound("ddd"));
-    } else {
-        version (sut_override) {
-            assert (arr.isFound("aaa111"));
-            assert (!arr.isFound(""));
-            assert (arr.isFound("ddd"));
-        } else {
-            assert (arr.isFound("aaa111"));
-            assert (arr.isFound(""));
-            assert (arr.isFound("ddd"));
-        }
-    }
+    //version (sut) {
+    //    assert (arr.isFound("aaa111"));
+    //    assert (!arr.isFound(""));
+    //    assert (!arr.isFound("ddd"));
+    //} else {
+    //    version (sut_override) {
+    //        assert (arr.isFound("aaa111"));
+    //        assert (!arr.isFound(""));
+    //        assert (arr.isFound("ddd"));
+    //    } else {
+    //        assert (arr.isFound("aaa111"));
+    //        assert (!arr.isFound(""));
+    //        assert (arr.isFound("ddd"));
+    //    }
+    //}
+    assert (arr.isFound("aaa111"));
+    assert (!arr.isFound(""));
+    assert (!arr.isFound("ddd"));
 }
 
 
@@ -330,26 +340,28 @@ unittest {
 bool
 isInternalModule (const string mod)
 {
-    version (sut_override) {
-        return false;
-    } else {
+    //version (sut_override) {
+    //    return false;
+    //} else {
         import std.algorithm: canFind, startsWith;
         const bool match = mod.startsWith("sut.") || mod.canFind(".sut");
         return match;
-    }
+    //}
 }
 @("isInternalModule")
 unittest {
     mixin (unitTestBlockPrologue());
-    version (sut_override) {
-        assert (!isInternalModule(__MODULE__));
-    } else {
-        version (sut) {
-            assert (!isInternalModule(__MODULE__));
-        } else {
-            assert (isInternalModule(__MODULE__));
-        }
-    }
+    //version (sut_override) {
+    //    assert (!isInternalModule(__MODULE__));
+    //} else {
+    //    version (sut) {
+    //        assert (!isInternalModule(__MODULE__));
+    //    } else {
+    //        assert (isInternalModule(__MODULE__));
+    //    }
+    //}
+    assert (isInternalModule(__MODULE__));
+
     assert (!isInternalModule("__main"));
     assert (!isInternalModule("core.submodule"));
     assert (!isInternalModule("etc.submodule"));
