@@ -108,23 +108,23 @@ printSummary (
         skippedModules.length,
         noUnitTestModules.length);
 
+    printf("%s %zd\n", Label.WithUnitTestInit.toStringz, withUnitTestModules.length);
     if (withUnitTestModules.length > 0) {
         withUnitTestModules.sort;
-        printf("%s %zd\n", Label.WithUnitTestInit.toStringz, withUnitTestModules.length);
         foreach (e; withUnitTestModules) {
             printf("%s   %s\n", Label.WithUnitTestNext.toStringz, e.toStringz);
         }
     }
+    printf("%s %zd\n", Label.SkippedUnitTestInit.toStringz, skippedModules.length);
     if (skippedModules.length > 0) {
         skippedModules.sort;
-        printf("%s %zd\n", Label.SkippedUnitTestInit.toStringz, skippedModules.length);
         foreach (e; skippedModules) {
             printf("%s   %s\n", Label.SkippedUnitTestNext.toStringz, e.toStringz);
         }
     }
+    printf("%s %zd\n", Label.NoUnitTestInit.toStringz, noUnitTestModules.length);
     if (noUnitTestModules.length > 0) {
         noUnitTestModules.sort;
-        printf("%s %zd\n", Label.NoUnitTestInit.toStringz, noUnitTestModules.length);
         foreach (e; noUnitTestModules) {
             printf("%s   %s\n", Label.NoUnitTestNext.toStringz, e.toStringz);
         }
