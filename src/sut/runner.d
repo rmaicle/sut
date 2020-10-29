@@ -1,7 +1,7 @@
 module sut.runner;
 
 import sut.config: UNITTEST_CONFIG_FILE;
-import sut.counter;
+import sut.counter: moduleCounter, UnitTestCounter;
 import sut.execlist: getExecutionList, isInternalModule, isLanguageModule;
 import sut.output;
 
