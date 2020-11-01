@@ -176,8 +176,8 @@ executeUnitTestBlock (
         // If an assertion occurs, subtract 1 in the exception handler code
         moduleCounter.pass++;
 
-        printf("%s %s:%zd:%s%s%s\n",
-            Label.Block.toStringz,
+        printf("%s %s %zd:%s%s%s\n",
+            Label.NoGroupLabel.toStringz,
             ModuleName.toStringz,
             LineNo,
             Color.Green.toStringz,

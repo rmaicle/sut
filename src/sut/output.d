@@ -16,7 +16,6 @@ enum Label: string {
     Mode                = "[unittest] Mode:   ",
     ModeSelective       = "[unittest]         ",
     Module              = "[unittest] Module: ",
-    Block               = "[unittest]      @: ",
     ModuleSummary       = "[unittest] Modules:",
     BlockSummary        = "[unittest] Blocks: ",
     NoGroupLabel        = "[unittest]         ",
