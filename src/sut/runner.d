@@ -50,11 +50,9 @@ customUnitTestRunner ()
         if (isLanguageModule(m.name)) {
             continue;
         }
-        //version (sut) { } else {
-            if (isInternalModule(m.name)) {
-                continue;
-            }
-        //}
+        if (isInternalModule(m.name)) {
+            continue;
+        }
         moduleCount++;
         auto fp = m.unitTest();
         if (!fp) {
