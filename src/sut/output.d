@@ -19,12 +19,7 @@ enum Label: string {
     Block               = "[unittest]      @: ",
     ModuleSummary       = "[unittest] Modules:",
     BlockSummary        = "[unittest] Blocks: ",
-    WithUnitTestInit    = "[unittest]          Modules With Unit Test:",
-    WithUnitTestNext    = "[unittest]         ",
-    SkippedUnitTestInit = "[unittest]          Modules With Skipped Unit Test:",
-    SkippedUnitTestNext = "[unittest]         ",
-    NoUnitTestInit      = "[unittest]          Modules Without Unit Test:",
-    NoUnitTestNext      = "[unittest]         ",
+    NoGroupLabel        = "[unittest]         ",
     AssertionFailed     = "[unittest] Assertion Failed:",
     AssertionDetail     = "           ",
     Trace               = "   [trace]"
@@ -108,27 +103,35 @@ printSummary (
         skippedModules.length,
         noUnitTestModules.length);
 
-    printf("%s %zd\n", Label.WithUnitTestInit.toStringz, withUnitTestModules.length);
-    if (withUnitTestModules.length > 0) {
-        withUnitTestModules.sort;
-        foreach (e; withUnitTestModules) {
-            printf("%s   %s\n", Label.WithUnitTestNext.toStringz, e.toStringz);
+    void
+    perModule (
+        string[] list,
+        const string label,
+        const string goodColor,
+        const string badColor)
+    {
+        const color = list.length == 0 ? badColor : goodColor;
+        printf("%s %s%s %zd%s\n",
+            Label.NoGroupLabel.toStringz,
+            color.toStringz,
+            label.toStringz,
+            list.length,
+            Color.Reset.toStringz);
+        if (list.length > 0) {
+            list.sort;
+            foreach (e; list) {
+                printf("%s   %s%s%s\n",
+                    Label.NoGroupLabel.toStringz,
+                    color.toStringz,
+                    e.toStringz,
+                    Color.Reset.toStringz);
+            }
         }
     }
-    printf("%s %zd\n", Label.SkippedUnitTestInit.toStringz, skippedModules.length);
-    if (skippedModules.length > 0) {
-        skippedModules.sort;
-        foreach (e; skippedModules) {
-            printf("%s   %s\n", Label.SkippedUnitTestNext.toStringz, e.toStringz);
-        }
-    }
-    printf("%s %zd\n", Label.NoUnitTestInit.toStringz, noUnitTestModules.length);
-    if (noUnitTestModules.length > 0) {
-        noUnitTestModules.sort;
-        foreach (e; noUnitTestModules) {
-            printf("%s   %s\n", Label.NoUnitTestNext.toStringz, e.toStringz);
-        }
-    }
+
+    perModule(withUnitTestModules, "Modules With Unit Test:", Color.IGreen, Color.IRed);
+    perModule(skippedModules, "Modules With Skipped Unit Test:", Color.IRed, Color.IGreen);
+    perModule(noUnitTestModules, "Modules Without Unit Test:", Color.IRed, Color.IGreen);
 }
 
 
