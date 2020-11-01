@@ -63,6 +63,7 @@ customUnitTestRunner ()
         }
         moduleCounter.reset();
         bool assertionOccurred = false;
+        printModuleStart (m.name);
         immutable t0 = MonoTime.currTime;
         try {
             fp();

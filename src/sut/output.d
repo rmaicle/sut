@@ -54,6 +54,14 @@ printUnitTestMode ()
 
 
 void
+printModuleStart (const string arg)
+{
+    printf("%s %s\n", Label.Module.toStringz, arg.toStringz);
+}
+
+
+
+void
 printModuleSummary (
     const string moduleName,
     const UnitTestCounter counter,
@@ -64,7 +72,7 @@ printModuleSummary (
     const skipColor = counter.skip == 0 ? Color.IGreen : Color.Yellow;
 
     printf("%s %s - %s%zd passed%s, %s%zd skipped%s, %zd found - %.3fs\n",
-        Label.Module.toStringz,
+        Label.NoGroupLabel.toStringz,
         moduleName.toStringz,
         passedColor.toStringz,
         counter.pass,
