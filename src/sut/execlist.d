@@ -333,35 +333,31 @@ unittest {
 
 
 /**
- * Determines whether the string argument is equivalent to this module's name.
+ * Determines whether the string argument is equivalent to the package module's
+ * name `sut` This check is only performed when unit testing is enabled and the
+ * version identifier `sut` is not defined.
  *
  * Returns: `true` if the string argument is equivalent to this module's name.
  */
 bool
 isInternalModule (const string mod)
 {
-    //version (sut_override) {
-    //    return false;
-    //} else {
+    version (sut) {
+        return false;
+    } else {
         import std.algorithm: canFind, startsWith;
         const bool match = mod.startsWith("sut.") || mod.canFind(".sut");
         return match;
-    //}
+    }
 }
 @("isInternalModule")
 unittest {
     mixin (unitTestBlockPrologue());
-    //version (sut_override) {
-    //    assert (!isInternalModule(__MODULE__));
-    //} else {
-    //    version (sut) {
-    //        assert (!isInternalModule(__MODULE__));
-    //    } else {
-    //        assert (isInternalModule(__MODULE__));
-    //    }
-    //}
-    assert (isInternalModule(__MODULE__));
-
+    version (sut) {
+        assert (!isInternalModule(__MODULE__));
+    } else {
+        assert (isInternalModule(__MODULE__));
+    }
     assert (!isInternalModule("__main"));
     assert (!isInternalModule("core.submodule"));
     assert (!isInternalModule("etc.submodule"));
