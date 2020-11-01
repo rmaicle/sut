@@ -188,7 +188,6 @@ executeUnitTestBlock (
     }
 
     moduleCounter.found++;
-    //version (selective_unit_test) {
     version (sut) {
         // Filter if a selection is present. Otherwise, execute all.
         if (!isExecListEmpty) {
