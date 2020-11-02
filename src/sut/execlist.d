@@ -280,21 +280,40 @@ unittest {
 bool
 isInternalModule (const string mod)
 {
-    version (sut) {
-        return false;
-    } else {
+    version (exclude_sut) {
         import std.algorithm: canFind, startsWith;
-        const bool match = mod.startsWith("sut.") || mod.canFind(".sut");
-        return match;
+        if (mod.canFind(".")) {
+            const bool match = mod.startsWith("sut.") || mod.canFind(".sut");
+            return match;
+        } else {
+            const bool match = mod.startsWith("sut") || mod.canFind("sut");
+            return match;
+        }
+    } else {
+        version (sut) {
+            return false;
+        } else {
+            if (mod.canFind(".")) {
+                const bool match = mod.startsWith("sut.") || mod.canFind(".sut");
+                return match;
+            } else {
+                const bool match = mod.startsWith("sut") || mod.canFind("sut");
+                return match;
+            }
+        }
     }
 }
 @("isInternalModule")
 unittest {
     mixin (unitTestBlockPrologue());
-    version (sut) {
-        assert (!isInternalModule(__MODULE__));
-    } else {
+    version (exclude_sut) {
         assert (isInternalModule(__MODULE__));
+    } else {
+        version (sut) {
+            assert (!isInternalModule(__MODULE__));
+        } else {
+            assert (isInternalModule(__MODULE__));
+        }
     }
     assert (!isInternalModule("__main"));
     assert (!isInternalModule("core.submodule"));
