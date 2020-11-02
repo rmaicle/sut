@@ -39,14 +39,6 @@ bool isExecListEmpty;
 
 
 
-version (sut_override) {
-    version (sut) version = selective_unit_test;
-} else {
-    version (sut) version = selective_unit_test;
-}
-
-
-
 /**
  * Determine whether the `needle` is found in the `haystack` using the
  * specified predicate, `pred`, on how to find the `needle`.
