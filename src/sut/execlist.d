@@ -2,6 +2,7 @@ module sut.execlist;
 
 import sut.prologue;
 import sut.config;
+
 debug import std.stdio;
 
 
@@ -36,6 +37,15 @@ string[] unitTestExecList;
 __gshared
 static
 bool isExecListEmpty;
+
+
+
+/**
+ * Only used to determine whether a unit test block has been executed.
+ */
+__gshared
+static
+bool isUnitTestBlockExecuted;
 
 
 

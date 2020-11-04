@@ -2,7 +2,11 @@ module sut.runner;
 
 import sut.config: UNITTEST_CONFIG_FILE;
 import sut.counter: moduleCounter, UnitTestCounter;
-import sut.execlist: getExecutionList, isInternalModule, isLanguageModule;
+import sut.execlist:
+    getExecutionList,
+    isInternalModule,
+    isLanguageModule,
+    isUnitTestBlockExecuted;
 import sut.output;
 
 import core.exception: AssertError;
@@ -61,7 +65,8 @@ customUnitTestRunner ()
         }
         moduleCounter.reset();
         bool assertionOccurred = false;
-        printModuleStart (m.name);
+        isUnitTestBlockExecuted = false;
+        // printModuleStart(m.name);
         immutable t0 = MonoTime.currTime;
         try {
             fp();
@@ -89,7 +94,9 @@ customUnitTestRunner ()
         if (moduleCounter.pass) {
             withUnitTestModules ~= m.name;
         }
-        printModuleSummary (m.name, moduleCounter, t0, MonoTime.currTime);
+        if (isUnitTestBlockExecuted) {
+            printModuleSummary (m.name, moduleCounter, t0, MonoTime.currTime);
+        }
 
         totalCounter.pass += moduleCounter.pass;
         totalCounter.skip += moduleCounter.skip;

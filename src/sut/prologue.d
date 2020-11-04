@@ -3,7 +3,11 @@ module sut.prologue;
 import sut.color;
 import sut.counter;
 import sut.output;
-import sut.execlist: isExecListEmpty, isInModuleExecList, isInUnitTestExecList;
+import sut.execlist:
+    isExecListEmpty,
+    isInModuleExecList,
+    isInUnitTestExecList,
+    isUnitTestBlockExecuted;
 
 debug import std.stdio;
 
@@ -192,15 +196,24 @@ executeUnitTestBlock (
         // Filter if a selection is present. Otherwise, execute all.
         if (!isExecListEmpty) {
             if (isInModuleExecList(ModuleName)) {
+                if (!isUnitTestBlockExecuted) {
+                    isUnitTestBlockExecuted = true;
+                    printModuleStart(ModuleName);
+                }
                 return proceedToExecute(skipFlag);
             } else {
                 if (isInUnitTestExecList(FunctionName)) {
+                    if (!isUnitTestBlockExecuted) {
+                        isUnitTestBlockExecuted = true;
+                        printModuleStart(ModuleName);
+                    }
                     return proceedToExecute(skipFlag);
                 }
             }
             moduleCounter.skip++;
             return true;
         } else {
+            isUnitTestBlockExecuted = true;
             return proceedToExecute(true);
         }
     } else {
