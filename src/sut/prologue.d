@@ -71,10 +71,11 @@ template
 isStringUDA (alias T)
 {
     import std.traits: isSomeString;
-    static if (__traits(compiles, isSomeString!(typeof(T))))
+    static if (__traits(compiles, isSomeString!(typeof(T)))) {
         enum isStringUDA = isSomeString!(typeof(T));
-    else
+    } else {
         enum isStringUDA = false;
+    }
 }
 @("isStringUDA: string")
 unittest {
