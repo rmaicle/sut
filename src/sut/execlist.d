@@ -272,8 +272,8 @@ unittest {
 bool
 isInternalModule (const string mod)
 {
+    import std.algorithm: canFind, startsWith;
     version (exclude_sut) {
-        import std.algorithm: canFind, startsWith;
         if (mod.canFind(".")) {
             const bool match = mod.startsWith("sut.") || mod.canFind(".sut");
             return match;
