@@ -73,6 +73,21 @@ unittest {
 
 
 
+## Version Identifiers
+
+To use the module, the version identifier `sut` must be passed to the
+compiler.
+
+The version identifier, `exclude_sut`, must also be passed to the compiler
+to exclude those unit tests inside the module itself.
+
+~~~
+dmd -version=sut -version=exclude_sut ...
+ldc --d-version=sut --d-version=exclude_sut ...
+~~~
+
+
+
 ## Unit Test Configuration File
 
 The unit test configuration file, _unittest.conf_, contains all unit test
