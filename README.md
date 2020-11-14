@@ -29,6 +29,13 @@ module scope and unit test blocks.
 
 
 
+## Compatibility
+
+This module is not compatible with D source code that does not use `ModuleInfo`
+and source codes being compiled with the `-betterC` flag.
+
+
+
 ## Necessary Extra Code
 
 Create a module that encapsulates some compile-time logic to avoid bloating
