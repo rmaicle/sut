@@ -30,6 +30,13 @@
  *
  *
  *
+ * ## Compatibility
+ *
+ * This module is not compatible with D source code that does not use `ModuleInfo`
+ * and source codes being compiled with the `-betterC` flag.
+ *
+ *
+ *
  * ## Necessary Extra Code
  *
  * Create a module that encapsulates some compile-time logic to avoid bloating
@@ -74,6 +81,21 @@
  *
  *
  *
+ * ## Version Identifiers
+ *
+ * To use the module, the version identifier `sut` must be passed to the
+ * compiler.
+ *
+ * The version identifier, `exclude_sut`, must also be passed to the compiler
+ * to exclude those unit tests inside the module itself.
+ *
+ * ~~~
+ * dmd -version=sut -version=exclude_sut ...
+ * ldc --d-version=sut --d-version=exclude_sut ...
+ * ~~~
+ *
+ *
+ *
  * ## Unit Test Configuration File
  *
  * The unit test configuration file, _unittest.conf_, contains all unit test
@@ -94,19 +116,15 @@
  * utm:...
  * ~~~
  *
- *
- *
- * ## Compiler Option
- *
  * The configuration file directory must be specified to the compiler using the
  * `-J` option.
- * This commandline option tells the compiler where to look for
- * string imports.
+ * This commandline option tells the compiler where to look for string imports.
  *
  * ~~~
  * dmd -unittest -J=<directory> ...
  * ldc --unittest -J=<directory> ...
  * ~~~
+ *
  */
 module sut;
 
