@@ -186,50 +186,59 @@ getExecutionList (const string INPUT)()
     isExecListEmpty = unitTestExecList.length == 0 && moduleExecList.length == 0;
     return arr;
 }
+@("getExecutionList: setup and teardown helper")
+version (unittest) {
+
+    struct ExecList
+    {
+        string[] modules;
+        string[] unittests;
+        bool emptyFlag;
+
+        static
+        ExecList
+        save ()
+        {
+            ExecList e;
+            e.modules = moduleExecList;
+            e.unittests = unitTestExecList;
+            e.emptyFlag = isExecListEmpty;
+            return e;
+        }
+
+        static
+        void
+        restore (const ExecList arg)
+        {
+            moduleExecList = arg.modules.dup;
+            unitTestExecList = arg.unittests.dup;
+            isExecListEmpty = arg.emptyFlag;
+        }
+    }
+}
 @("getExecutionList: empty string")
 unittest {
     mixin (unitTestBlockPrologue());
-
-    auto unitTestExecListCopy = unitTestExecList;
-    auto moduleExecListCopy = moduleExecList;
-    auto isExecListEmptyCopy = isExecListEmpty;
-
-    enum input="";
+    auto e = ExecList.save();
+    enum input = "";
     assert (getExecutionList!input == (string[]).init);
-
-    unitTestExecList = unitTestExecListCopy;
-    moduleExecList = moduleExecListCopy;
-    isExecListEmpty = isExecListEmptyCopy;
+    ExecList.restore(e);
 }
 @("getExecutionList: spaces and new lines only")
 unittest {
     mixin (unitTestBlockPrologue());
-
-    auto unitTestExecListCopy = unitTestExecList;
-    auto moduleExecListCopy = moduleExecList;
-    auto isExecListEmptyCopy = isExecListEmpty;
-
+    auto e = ExecList.save();
     enum input=" \n \n \n";
     assert (getExecutionList!input == (string[]).init);
-
-    unitTestExecList = unitTestExecListCopy;
-    moduleExecList = moduleExecListCopy;
-    isExecListEmpty = isExecListEmptyCopy;
+    ExecList.restore(e);
 }
 @("getExecutionList")
 unittest {
     mixin (unitTestBlockPrologue());
-
-    auto unitTestExecListCopy = unitTestExecList;
-    auto moduleExecListCopy = moduleExecList;
-    auto isExecListEmptyCopy = isExecListEmpty;
-
+    auto e = ExecList.save();
     enum input="aaa\nbbb\nccc";
     assert (getExecutionList!input == ["aaa", "bbb", "ccc"]);
-
-    unitTestExecList = unitTestExecListCopy;
-    moduleExecList = moduleExecListCopy;
-    isExecListEmpty = isExecListEmptyCopy;
+    ExecList.restore(e);
 }
 
 
