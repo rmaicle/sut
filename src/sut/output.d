@@ -142,7 +142,8 @@ printSummary (
 
     perModule(withUnitTestModules, "Modules With Unit Test:", Color.IGreen, Color.IRed);
     perModule(skippedModules, "Modules With Skipped Unit Test:", Color.IRed, Color.IGreen);
-    perModule(noUnitTestModules, "Modules Without Unit Test:", Color.IRed, Color.IGreen);
+    // Note the reversed color arguments
+    perModule(noUnitTestModules, "Modules Without Unit Test:", Color.Yellow, Color.IGreen);
 }
 
 
