@@ -158,7 +158,7 @@ printAssertion (
     import std.algorithm: startsWith;
 
     // Display assertion information
-    printf("%s%s%s\n%s%s\n%s%s (%zd)\n%s%s (%zd)\n",
+    printf("%s%s%s\n%s%s\n%sModule: %s (%zd)\n%sFile: %s (%zd)\n",
         Color.IRed.toStringz,
         Label.AssertionFailed.toStringz,
         Color.Reset.toStringz,
