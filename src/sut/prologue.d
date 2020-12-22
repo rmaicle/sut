@@ -44,7 +44,15 @@ unitTestBlockPrologue (size_t LN = __LINE__)(const bool skipFlag = true)
 
     // Because this function is intended to be called from the first line
     // of the unit test block, we hard code the line number.
-    enum UTLineNumber = LN - 1;
+    //
+    // NOTE:
+    // The mixin is assumed to be defined as:
+    //   enum prologue=`
+    //       static if (__traits(compiles, { import sut; })) {
+    //           mixin (internal.sut.unitTestBlockPrologue());
+    //       }
+    //   `;
+    enum UTLineNumber = LN - 3;
     // Create possible non-conflicting identifiers for module name and unit
     // test name which are used only within the calling unit test block.
     enum ModuleName = format!("module_name_L%d__")(UTLineNumber);
