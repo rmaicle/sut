@@ -85,6 +85,7 @@ customUnitTestRunner ()
             // See std.exception.assertThrown definition.
             if (e.message.length > 0) {
                 moduleCounter.pass--;
+                moduleCounter.fail++;
                 assertionOccurred = true;
                 printAssertion (m.name, e);
                 fflush(stdout);
@@ -99,6 +100,7 @@ customUnitTestRunner ()
         }
 
         totalCounter.pass += moduleCounter.pass;
+        totalCounter.fail += moduleCounter.fail;
         totalCounter.skip += moduleCounter.skip;
         totalCounter.found += moduleCounter.found;
 

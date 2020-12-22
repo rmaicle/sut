@@ -23,6 +23,9 @@ struct UnitTestCounter
     /** Number of Unit test blocks that were successfully executed. */
     size_t pass = 0;
 
+    /** Number of Unit test blocks that threw an assertion. */
+    size_t fail = 0;
+
     /** Number of Unit test blocks that were skipped. */
     size_t skip = 0;
 
@@ -36,6 +39,7 @@ struct UnitTestCounter
     reset ()
     {
         pass = 0;
+        fail = 0;
         skip = 0;
         found = 0;
     }
@@ -114,7 +118,7 @@ struct UnitTestCounter
         bool
         isUnset () const
         {
-            return pass == 0 && skip == 0 && found == 0;
+            return pass == 0 && fail == 0 && skip == 0 && found == 0;
         }
     }
 }

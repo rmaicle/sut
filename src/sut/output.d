@@ -96,11 +96,13 @@ printSummary (
     import std.algorithm: sort;
 
     const passColor = counter.pass == counter.found ? Color.IGreen : Color.Yellow ;
+    const failColor = counter.fail > 0 ? Color.IRed : Color.IGreen ;
     const skipColor = counter.skip == 0 ? Color.IGreen : Color.Yellow ;
 
-    printf("\n%s %s%zd passed%s, %s%zd skipped%s, %zd found\n",
+    printf("\n%s %s%zd passed%s, %s%zd failed%s, %s%zd skipped%s, %zd found\n",
         Label.BlockSummary.toStringz,
         passColor.toStringz, counter.pass, Color.Reset.toStringz,
+        failColor.toStringz, counter.fail, Color.Reset.toStringz,
         skipColor.toStringz, counter.skip, Color.Reset.toStringz,
         counter.found);
 
