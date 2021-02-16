@@ -70,7 +70,7 @@ customUnitTestRunner ()
         immutable t0 = MonoTime.currTime;
         try {
             fp();
-        } catch (Throwable e) {
+        } catch (Exception e) {
             // If assertion is from this module, do not print the stack trace.
             if (typeid(e) == typeid(AssertError)) {
                 if (isInternalAssertion(m.name, e.file)) {
