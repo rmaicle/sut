@@ -178,7 +178,7 @@ isInUnitTestExecList (const string arg)
  * Returns: `string[]`
  */
 string[]
-getExecutionList (const string INPUT)()
+getExecutionList (const string INPUT = string.init)()
 {
     enum arr = INPUT.toArray();
     unitTestExecList = arr.getUnitTestBlocks();

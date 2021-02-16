@@ -26,6 +26,7 @@ UnitTestResult
 customUnitTestRunner ()
 {
     import std.compiler: compilerName = name;
+    import std.file: exists;
     import std.string: toStringz;
 
     import core.runtime;
@@ -44,7 +45,11 @@ customUnitTestRunner ()
 
     debug (verbose) printf("Compiler: %s\n", compilerName.toStringz);
 
-    getExecutionList!(import(UNITTEST_CONFIG_FILE))();
+    if (exists(UNITTEST_CONFIG_FILE)) {
+        getExecutionList!(import(UNITTEST_CONFIG_FILE))();
+    } else {
+        getExecutionList!()();
+    }
     printUnitTestMode();
 
     foreach (m; ModuleInfo) {
