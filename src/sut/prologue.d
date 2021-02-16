@@ -203,28 +203,27 @@ executeUnitTestBlock (
     moduleCounter.found++;
     version (sut) {
         // Filter if a selection is present. Otherwise, execute all.
-        if (!isExecListEmpty) {
-            if (isInModuleExecList(ModuleName)) {
+        if (isExecListEmpty) {
+            isUnitTestBlockExecuted = true;
+            return proceedToExecute(true);
+        }
+        if (isInModuleExecList(ModuleName)) {
+            if (!isUnitTestBlockExecuted) {
+                isUnitTestBlockExecuted = true;
+                printModuleStart(ModuleName);
+            }
+            return proceedToExecute(skipFlag);
+        } else {
+            if (isInUnitTestExecList(FunctionName)) {
                 if (!isUnitTestBlockExecuted) {
                     isUnitTestBlockExecuted = true;
                     printModuleStart(ModuleName);
                 }
                 return proceedToExecute(skipFlag);
-            } else {
-                if (isInUnitTestExecList(FunctionName)) {
-                    if (!isUnitTestBlockExecuted) {
-                        isUnitTestBlockExecuted = true;
-                        printModuleStart(ModuleName);
-                    }
-                    return proceedToExecute(skipFlag);
-                }
             }
-            moduleCounter.skip++;
-            return true;
-        } else {
-            isUnitTestBlockExecuted = true;
-            return proceedToExecute(true);
         }
+        moduleCounter.skip++;
+        return true;
     } else {
         //return proceedToExecute(true);
         return true;
