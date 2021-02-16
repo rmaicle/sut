@@ -41,11 +41,12 @@ printUnitTestMode ()
     }
     printf("%s %s\n", Label.Mode.toStringz, mode.toStringz);
     version (sut) {
+        const string label = Label.ModeSelective;
         foreach (entry; moduleExecList) {
-            printf("%s   module: %s\n", Label.ModeSelective.toStringz, entry.toStringz);
+            printf("%s   module: %s\n", label.toStringz, entry.toStringz);
         }
         foreach (entry; unitTestExecList) {
-            printf("%s   block:  %s\n", Label.ModeSelective.toStringz, entry.toStringz);
+            printf("%s   block:  %s\n", label.toStringz, entry.toStringz);
         }
     }
 }
