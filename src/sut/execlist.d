@@ -292,15 +292,7 @@ bool
 isInternalModule (const string mod)
 {
     import std.algorithm: canFind, startsWith;
-    version (exclude_sut) {
-        if (mod.canFind(".")) {
-            const bool match = mod.startsWith("sut.") || mod.canFind(".sut");
-            return match;
-        } else {
-            const bool match = mod.startsWith("sut") || mod.canFind("sut");
-            return match;
-        }
-    } else {
+    version (include_sut) {
         version (sut) {
             return false;
         } else {
@@ -312,19 +304,27 @@ isInternalModule (const string mod)
                 return match;
             }
         }
+    } else {
+        if (mod.canFind(".")) {
+            const bool match = mod.startsWith("sut.") || mod.canFind(".sut");
+            return match;
+        } else {
+            const bool match = mod.startsWith("sut") || mod.canFind("sut");
+            return match;
+        }
     }
 }
 @("isInternalModule")
 unittest {
     mixin (unitTestBlockPrologue());
-    version (exclude_sut) {
-        assert (isInternalModule(__MODULE__));
-    } else {
+    version (include_sut) {
         version (sut) {
             assert (!isInternalModule(__MODULE__));
         } else {
             assert (isInternalModule(__MODULE__));
         }
+    } else {
+        assert (isInternalModule(__MODULE__));
     }
     assert (!isInternalModule("__main"));
     assert (!isInternalModule("core.submodule"));
