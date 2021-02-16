@@ -250,7 +250,7 @@ utm:...
 
 The configuration file directory must be specified to the compiler using the
 `-J` option.
-This commandline option tells the compiler where to look for `string imports`.
+This command-line option tells the compiler where to look for `string imports`.
 
 ~~~
 dmd -J=<directory> ...
