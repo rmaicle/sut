@@ -156,7 +156,9 @@ printAssertion (
     const string moduleName,
     const Throwable throwable
 ) {
-    import std.algorithm: startsWith;
+    import std.algorithm:
+        canFind,
+        startsWith;
 
     // Display assertion information
     printf("%s%s%s\n%s%s\n%sModule: %s (%zd)\n%sFile: %s (%zd)\n",
@@ -176,7 +178,14 @@ printAssertion (
         if (i <= 1) {
             continue;
         }
-        auto info = item.startsWith("/home") ? item[32..$] : item;
-        printf("%s %s\n", Label.Trace.toStringz, info.toStringz);
+        if (item.canFind(".__unittest_L")) {
+            printf("%s %s%s%s\n",
+                Label.Trace.toStringz,
+                Color.Yellow.toStringz,
+                item.toStringz,
+                Color.Reset.toStringz);
+        } else {
+            printf("%s %s\n", Label.Trace.toStringz, item.toStringz);
+        }
     }
 }
