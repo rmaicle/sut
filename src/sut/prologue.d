@@ -52,7 +52,7 @@ unitTestBlockPrologue (size_t LN = __LINE__)(const bool skipFlag = true)
     //           mixin (internal.sut.unitTestBlockPrologue());
     //       }
     //   `;
-    enum UTLineNumber = LN - 3;
+    enum UTLineNumber = LN - 1;
     // Create possible non-conflicting identifiers for module name and unit
     // test name which are used only within the calling unit test block.
     enum ModuleName = format!("module_name_L%d__")(UTLineNumber);
