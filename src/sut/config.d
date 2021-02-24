@@ -88,7 +88,7 @@ unittest {
 
 
 /**
- * Filter the array of string argument containing the prefix string 'utb:'.
+ * Filter the string array argument containing the prefix string 'utb:'.
  *
  * Returns: `string[]` without the prefix string 'utb:'.
  */
@@ -121,7 +121,7 @@ unittest {
 
 
 /**
- * Filter the array of string argument containing the prefix string 'utm:'.
+ * Filter the string array argument containing the prefix string 'utm:'.
  *
  * Returns: `string[]` without the prefix string 'utm:'.
  */
@@ -154,10 +154,10 @@ unittest {
 
 
 /**
- * Filter the array of string argument containing the specified prefix argument
+ * Filter the string array argument containing the specified prefix argument
  * irrespective of case variance.
  *
- * Returns: `string[]` without the specified prefix.
+ * Returns: a sorted `string[]` without the specified prefix.
  */
 string[]
 removePrefix (
