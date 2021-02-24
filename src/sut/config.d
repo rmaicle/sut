@@ -164,7 +164,7 @@ removePrefix (
     const string[] arg,
     const string prefix
 ) {
-    import std.algorithm: filter, map;
+    import std.algorithm: filter, map, sort, SwapStrategy;
     import std.array: array;
     import std.string: startsWith;
     import std.uni: toLower;
@@ -173,14 +173,17 @@ removePrefix (
         return (string[]).init;
     }
     return arg.filter!(a => a.toLower.startsWith(toLower(prefix)))
-        .map!(a => a[prefix.length..$]).array();
+        .map!(a => a[prefix.length..$])
+        .array()
+        .sort!("toUpper(a) < toUpper(b)", SwapStrategy.stable)
+        .array();
 }
 @("removePrefix: empty array")
 unittest {
     mixin (unitTestBlockPrologue());
     assert ((string[]).init.removePrefix("") == []);
 }
-@("removePrefix: empty prefix")
+@("removePrefix: with empty prefix")
 unittest {
     mixin (unitTestBlockPrologue());
     string[] arr = [
@@ -189,7 +192,7 @@ unittest {
         "three",
         "four"
     ];
-    assert (removePrefix(arr, "") == ["prefix:one", "PREFIX:two", "three", "four"]);
+    assert (removePrefix(arr, "") == ["four", "prefix:one", "PREFIX:two", "three"]);
 }
 @("removePrefix")
 unittest {
@@ -197,8 +200,8 @@ unittest {
     string[] arr = [
         "prefix:one",
         "PREFIX:two",
-        "three",
+        "preFIX:three: name",
         "four"
     ];
-    assert (removePrefix(arr, "prefix:") == ["one", "two"]);
+    assert (removePrefix(arr, "prefix:") == ["one", "three: name", "two"]);
 }
