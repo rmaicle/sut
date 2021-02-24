@@ -306,7 +306,7 @@ bool
 isInternalModule (const string mod)
 {
     import std.algorithm: canFind, startsWith;
-    version (include_sut) {
+    version (sut_include_unittests) {
         version (sut) {
             return false;
         } else {
@@ -331,7 +331,7 @@ isInternalModule (const string mod)
 @("isInternalModule")
 unittest {
     mixin (unitTestBlockPrologue());
-    version (include_sut) {
+    version (sut_include_unittests) {
         version (sut) {
             assert (!isInternalModule(__MODULE__));
         } else {
