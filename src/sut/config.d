@@ -110,10 +110,10 @@ unittest {
     mixin (unitTestBlockPrologue());
     string[] arr = [
         "utb:one",
-        "",
         "utb:two",
-        "three",
-        "four"
+        "utm:three",
+        "",
+        "utm:four"
     ];
     assert (arr.getUnitTestBlocks == ["one", "two"]);
 }
@@ -148,7 +148,7 @@ unittest {
         "",
         "utm:four"
     ];
-    assert (arr.getModules == ["three", "four"]);
+    assert (arr.getModules == ["four", "three"]);
 }
 
 
