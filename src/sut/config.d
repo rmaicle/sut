@@ -1,14 +1,46 @@
 module sut.config;
 
 import sut.prologue;
-import std.file: exists;
 
 debug import std.stdio;
 
 
+
+enum UNITTEST_CONFIG_FILE_PATH_FILE = "unittest.conf.path";
 enum UNITTEST_CONFIG_FILE = "unittest.conf";
 enum BLOCK_PREFIX = "utb:";
 enum MODULE_PREFIX = "utm:";
+
+
+
+/**
+ * Determine if the file `UNITTEST_CONFIG_FILE` exists in the path contained
+ * in `UNITTEST_CONFIG_FILE_PATH_FILE`
+ *
+ * Returns: `true` if the file exists.
+ */
+bool
+configFileExists ()
+{
+    import std.file: exists;
+    import std.string: join;
+
+    enum UnitTestConfigFilePath = import(UNITTEST_CONFIG_FILE_PATH_FILE);
+    return [UnitTestConfigFilePath, "/", UNITTEST_CONFIG_FILE].join.exists();
+}
+
+
+
+/**
+ * Read the contents of `UNITTEST_CONFIG_FILE`.
+ *
+ * Returns: `string`
+ */
+string
+readConfigFile ()
+{
+    return import(UNITTEST_CONFIG_FILE);
+}
 
 
 

@@ -1,7 +1,11 @@
 module sut.runner;
 
-import sut.config: UNITTEST_CONFIG_FILE;
-import sut.counter: moduleCounter, UnitTestCounter;
+import sut.config:
+    configFileExists,
+    readConfigFile;
+import sut.counter:
+    moduleCounter,
+    UnitTestCounter;
 import sut.execlist:
     getExecutionList,
     isInternalModule,
@@ -26,8 +30,7 @@ UnitTestResult
 customUnitTestRunner ()
 {
     import std.compiler: compilerName = name;
-    import std.file: exists;
-    import std.string: toStringz;
+    import std.string: join, toStringz;
 
     import core.runtime;
     import core.stdc.stdio: fflush, printf, stdout;
@@ -45,10 +48,10 @@ customUnitTestRunner ()
 
     debug (verbose) printf("Compiler: %s\n", compilerName.toStringz);
 
-    if (exists(UNITTEST_CONFIG_FILE)) {
-        getExecutionList!(import(UNITTEST_CONFIG_FILE))();
+    if (configFileExists()) {
+        getExecutionList(readConfigFile);
     } else {
-        getExecutionList!()();
+        getExecutionList();
     }
     printUnitTestMode();
 

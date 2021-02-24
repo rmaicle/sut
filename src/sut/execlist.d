@@ -174,17 +174,16 @@ isInUnitTestExecList (const string arg)
 
 /**
  * Get the module and unittest block execution list.
+ * Populate the unit test block and module execution lists.
  *
- * Returns: `string[]`
  */
-string[]
-getExecutionList (const string INPUT = string.init)()
+void
+getExecutionList (const string arg = string.init)
 {
-    enum arr = INPUT.toArray();
+    const arr = arg.toArray();
     unitTestExecList = arr.getUnitTestBlocks();
     moduleExecList = arr.getModules();
     isExecListEmpty = unitTestExecList.length == 0 && moduleExecList.length == 0;
-    return arr;
 }
 @("getExecutionList: setup and teardown helper")
 version (unittest) {
@@ -220,24 +219,39 @@ version (unittest) {
 unittest {
     mixin (unitTestBlockPrologue());
     auto e = ExecList.save();
-    enum input = "";
-    assert (getExecutionList!input == (string[]).init);
+    getExecutionList();
+    assert (moduleExecList == (string[]).init);
+    assert (unitTestExecList == (string[]).init);
     ExecList.restore(e);
 }
 @("getExecutionList: spaces and new lines only")
 unittest {
     mixin (unitTestBlockPrologue());
     auto e = ExecList.save();
-    enum input=" \n \n \n";
-    assert (getExecutionList!input == (string[]).init);
+    enum INPUT=" \n \n \n";
+    getExecutionList(INPUT);
+    assert (moduleExecList == (string[]).init);
+    assert (unitTestExecList == (string[]).init);
     ExecList.restore(e);
 }
-@("getExecutionList")
+@("getExecutionList: unit test blocks")
 unittest {
     mixin (unitTestBlockPrologue());
     auto e = ExecList.save();
-    enum input="aaa\nbbb\nccc";
-    assert (getExecutionList!input == ["aaa", "bbb", "ccc"]);
+    enum INPUT="utb:one\nutb:two\n\nutb:three";
+    getExecutionList(INPUT);
+    assert (moduleExecList == (string[]).init);
+    assert (unitTestExecList == ["one", "three", "two"]);
+    ExecList.restore(e);
+}
+@("getExecutionList: unit test modules")
+unittest {
+    mixin (unitTestBlockPrologue());
+    auto e = ExecList.save();
+    enum INPUT="utm:one\nutm:two\n\nutm:three";
+    getExecutionList(INPUT);
+    assert (moduleExecList == ["one", "three", "two"]);
+    assert (unitTestExecList == (string[]).init);
     ExecList.restore(e);
 }
 
