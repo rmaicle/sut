@@ -209,7 +209,7 @@ executeUnitTestBlock (
         // If an assertion occurs, subtract 1 in the exception handler code
         moduleCounter.pass++;
 
-        printf("%s %s %zd:%s%s%s\n",
+        printf("%s %s %4zd %s%s%s\n",
             Label.NoGroupLabel.toStringz,
             ModuleName.toStringz,
             LineNo,
