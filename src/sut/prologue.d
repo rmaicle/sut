@@ -46,12 +46,32 @@ unitTestBlockPrologue (size_t LN = __LINE__)(const bool skipFlag = true)
     // of the unit test block, we hard code the line number.
     //
     // NOTE:
+    //
     // The mixin is assumed to be defined as:
     //   enum prologue=`
     //       static if (__traits(compiles, { import sut; })) {
-    //           mixin (internal.sut.unitTestBlockPrologue());
+    //           mixin (???.sut.unitTestBlockPrologue());
     //       }
     //   `;
+    //
+    // and used as:
+    //
+    //   @("unittest label or identifier string")
+    //   unittest {
+    //     mixin (???.sut.prologue);
+    //   }
+    //
+    // which translates to:
+    //
+    //   @("unittest label or identifier string")
+    //   unittest {                                          <-- LN - 3
+    //     mixin (`
+    //       static if (__traits(compiles, { import sut; })) {
+    //           mixin (???.sut.unitTestBlockPrologue());    <-- LN
+    //       }
+    //     `);
+    //   }
+    //
     enum UTLineNumber = LN - 3;
     // Create possible non-conflicting identifiers for module name and unit
     // test name which are used only within the calling unit test block.
