@@ -240,7 +240,7 @@ executeUnitTestBlock (
             }
         }
         moduleCounter.skip++;
-        return true;
+        return false;
     } else {
         //return proceedToExecute(true);
         return true;
