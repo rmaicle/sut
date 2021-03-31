@@ -6,7 +6,12 @@ debug import std.stdio;
 
 
 
-enum UNITTEST_CONFIG_FILE_PATH_FILE = "unittest.conf.path";
+/**
+ * Contains the path where the file `unittest.conf` can be found.
+ */
+version (none) {
+    enum UNITTEST_CONFIG_FILE_PATH_FILE = "unittest.conf.path";
+}
 enum UNITTEST_CONFIG_FILE = "unittest.conf";
 enum BLOCK_PREFIX = "utb:";
 enum MODULE_PREFIX = "utm:";
@@ -19,14 +24,16 @@ enum MODULE_PREFIX = "utm:";
  *
  * Returns: `true` if the file exists.
  */
-bool
-configFileExists ()
-{
-    import std.file: exists;
-    import std.string: join;
+version (none) {
+    bool
+    configFileExists ()
+    {
+        import std.file: exists;
+        import std.string: join;
 
-    enum UnitTestConfigFilePath = import(UNITTEST_CONFIG_FILE_PATH_FILE);
-    return [UnitTestConfigFilePath, "/", UNITTEST_CONFIG_FILE].join.exists();
+        enum UnitTestConfigFilePath = import(UNITTEST_CONFIG_FILE_PATH_FILE);
+        return [UnitTestConfigFilePath, "/", UNITTEST_CONFIG_FILE].join.exists();
+    }
 }
 
 

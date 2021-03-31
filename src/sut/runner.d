@@ -1,7 +1,6 @@
 module sut.runner;
 
 import sut.config:
-    configFileExists,
     readConfigFile;
 import sut.counter:
     moduleCounter,
@@ -48,11 +47,14 @@ customUnitTestRunner ()
 
     debug (verbose) printf("Compiler: %s\n", compilerName.toStringz);
 
-    if (configFileExists()) {
-        getExecutionList(readConfigFile);
-    } else {
-        getExecutionList();
+    version (none) {
+        if (configFileExists()) {
+            getExecutionList(readConfigFile);
+        } else {
+            getExecutionList();
+        }
     }
+    getExecutionList(readConfigFile);
     printUnitTestMode();
 
     foreach (m; ModuleInfo) {
