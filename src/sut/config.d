@@ -97,8 +97,8 @@ unittest {
 @("toArray")
 unittest {
     mixin (unitTestBlockPrologue());
-    const arr = " one\ntwo \n three \nfour\none\n   two ";
-    assert (arr.toArray() == ["four", "one", "three", "two"]);
+    const arr = " utb:one\n utb:two \n utm:three \nutm:four\nutb:one\n   utb:two ";
+    assert (arr.toArray() == ["utb:one", "utb:two", "utm:four", "utm:three"]);
 }
 
 
