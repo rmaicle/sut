@@ -12,6 +12,15 @@ debug import std.stdio;
 version (none) {
     enum UNITTEST_CONFIG_FILE_PATH_FILE = "unittest.conf.path";
 }
+/**
+ * Unit test configuration file.
+ *
+ * This is where unit tests that will be executed are specified.
+ * If this file is empty, then all unit tests will be executed.
+ *
+ * Unit test blocks are specified using the `utb` keyword.
+ * Unit test modules are specified using the `utm` keyword.
+ */
 enum UNITTEST_CONFIG_FILE = "unittest.conf";
 enum BLOCK_PREFIX = "utb:";
 enum MODULE_PREFIX = "utm:";
