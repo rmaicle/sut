@@ -37,9 +37,8 @@ debug import std.stdio;
  * ~~~~~~~~~~
  */
 string
-unitTestBlockPrologue (size_t LN = __LINE__)(const bool skipFlag = true)
+unitTestBlockPrologue (size_t LN = __LINE__)()
 {
-    import std.conv: to;
     import std.format: format;
 
     // Because this function is intended to be called from the first line
@@ -83,11 +82,10 @@ import std.traits: moduleName;
 struct unit_test_dummy_anchor { }` ~
 format!("\nenum %s = sut.getUTNameFunc!unit_test_dummy_anchor;")(UnitTestName) ~
 format!("\nenum %s = moduleName!unit_test_dummy_anchor;")(ModuleName) ~
-format!("\nif (!sut.executeUnitTestBlock!(%s, %s, %d)(%s)) { return; }")(
+format!("\nif (sut.executeUnitTestBlock!(%s, %s, %d)() == false) { return; }")(
     ModuleName,
     UnitTestName,
-    UTLineNumber,
-    skipFlag.to!string);
+    UTLineNumber);
 }
 
 
@@ -197,9 +195,8 @@ executeUnitTestBlock (
     const string ModuleName = __MODULE__,
     const string FunctionName = __FUNCTION__,
     const size_t LineNo = __LINE__
-)(
-    const bool skipFlag = false
-) {
+)()
+{
     import std.string: toStringz;
     import core.stdc.stdio: printf, fflush, stdout;
 
@@ -232,14 +229,14 @@ executeUnitTestBlock (
                 isUnitTestBlockExecuted = true;
                 printModuleStart(ModuleName);
             }
-            return proceedToExecute(skipFlag);
+            return proceedToExecute(true);
         } else {
             if (isInUnitTestExecList(FunctionName)) {
                 if (!isUnitTestBlockExecuted) {
                     isUnitTestBlockExecuted = true;
                     printModuleStart(ModuleName);
                 }
-                return proceedToExecute(skipFlag);
+                return proceedToExecute(true);
             }
         }
         moduleCounter.skip++;
