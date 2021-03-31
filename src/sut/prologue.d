@@ -46,32 +46,14 @@ unitTestBlockPrologue (size_t LN = __LINE__)()
     //
     // NOTE:
     //
-    // The mixin is assumed to be defined as:
-    //   enum prologue=`
-    //       static if (__traits(compiles, { import sut; })) {
-    //           mixin (???.sut.unitTestBlockPrologue());
-    //       }
-    //   `;
-    //
-    // and used as:
+    // The result of this function is passed to a mixin statement.
     //
     //   @("unittest label or identifier string")
-    //   unittest {
-    //     mixin (???.sut.prologue);
+    //   unittest {                                         <-- LN - 1
+    //     mixin (???.sut.unitTestBlockPrologue());         <-- LN
     //   }
     //
-    // which translates to:
-    //
-    //   @("unittest label or identifier string")
-    //   unittest {                                          <-- LN - 3
-    //     mixin (`
-    //       static if (__traits(compiles, { import sut; })) {
-    //           mixin (???.sut.unitTestBlockPrologue());    <-- LN
-    //       }
-    //     `);
-    //   }
-    //
-    enum UTLineNumber = LN - 3;
+    enum UTLineNumber = LN - 1;
     // Create possible non-conflicting identifiers for module name and unit
     // test name which are used only within the calling unit test block.
     enum ModuleName = format!("module_name_L%d__")(UTLineNumber);
