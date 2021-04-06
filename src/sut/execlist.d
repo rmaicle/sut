@@ -38,16 +38,6 @@ string[] unitTestExecList;
 
 
 /**
- * Only used to cache the result whether both `moduleExecList` and
- * `unitTestExecList` are empty.
- */
-__gshared
-static
-bool isExecListEmpty;
-
-
-
-/**
  * Only used to determine whether a unit test block has been executed.
  */
 __gshared
@@ -95,7 +85,7 @@ getExecutionList (const string arg = string.init)
     const arr = arg.toArray();
     unitTestExecList = arr.getUnitTestBlocks();
     moduleExecList = arr.getModules();
-    isExecListEmpty = unitTestExecList.length == 0 && moduleExecList.length == 0;
+    //isExecListEmpty = unitTestExecList.length == 0 && moduleExecList.length == 0;
 }
 @("getExecutionList: setup and teardown helper")
 version (unittest) {
@@ -104,7 +94,7 @@ version (unittest) {
     {
         string[] modules;
         string[] unittests;
-        bool emptyFlag;
+        //bool emptyFlag;
 
         static
         ExecList
@@ -113,7 +103,7 @@ version (unittest) {
             ExecList e;
             e.modules = moduleExecList;
             e.unittests = unitTestExecList;
-            e.emptyFlag = isExecListEmpty;
+            //e.emptyFlag = isExecListEmpty;
             return e;
         }
 
@@ -123,7 +113,7 @@ version (unittest) {
         {
             moduleExecList = arg.modules.dup;
             unitTestExecList = arg.unittests.dup;
-            isExecListEmpty = arg.emptyFlag;
+            //isExecListEmpty = arg.emptyFlag;
         }
     }
 }
@@ -165,6 +155,19 @@ unittest {
     assert (moduleExecList == ["one", "three", "two"]);
     assert (unitTestExecList == (string[]).init);
     ExecList.restore(e);
+}
+
+
+
+/**
+ * Determine whether the execution lists are empty.
+ *
+ * Returns: `true` when unit test and module execution lists are empty.
+ */
+bool
+isExecutionListEmpty ()
+{
+    return unitTestExecList.length == 0 && moduleExecList.length == 0;
 }
 
 

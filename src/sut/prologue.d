@@ -4,7 +4,7 @@ import sut.color;
 import sut.counter;
 import sut.output;
 import sut.execlist:
-    isExecListEmpty,
+    isExecutionListEmpty,
     isInModuleExecList,
     isInUnitTestExecList,
     isUnitTestBlockExecuted;
@@ -205,7 +205,7 @@ executeUnitTestBlock (
     moduleCounter.found++;
     version (sut) {
         // Filter if a selection is present. Otherwise, execute all.
-        if (isExecListEmpty) {
+        if (isExecutionListEmpty()) {
             isUnitTestBlockExecuted = true;
             return proceedToExecute(true);
         }

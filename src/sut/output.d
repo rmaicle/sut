@@ -3,7 +3,7 @@ module sut.output;
 import sut.counter;
 import sut.color;
 import sut.execlist:
-    isExecListEmpty,
+    isExecutionListEmpty,
     moduleExecList,
     unitTestExecList;
 import sut.skiplist: filterSkipList = filter;
@@ -39,7 +39,7 @@ printUnitTestMode ()
         Selection = "Selection"
     }
     version (sut) {
-        Mode mode = isExecListEmpty ? Mode.All : Mode.Selection;
+        Mode mode = isExecutionListEmpty ? Mode.All : Mode.Selection;
     } else {
         Mode mode = Mode.All;
     }
@@ -143,7 +143,7 @@ printSummary (
         }
     }
 
-    if (!isExecListEmpty) {
+    if (!isExecutionListEmpty) {
         return;
     }
 
