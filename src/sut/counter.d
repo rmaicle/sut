@@ -58,7 +58,7 @@ struct UnitTestCounter
     }
     @("allSkipped")
     unittest {
-        mixin (unitTestBlockPrologue());
+        //mixin (unitTestBlockPrologue());
         UnitTestCounter utc;
 
         assert (!utc.allSkipped());
@@ -82,7 +82,7 @@ struct UnitTestCounter
     }
     @("someSkipped")
     unittest {
-        mixin (unitTestBlockPrologue());
+        //mixin (unitTestBlockPrologue());
         UnitTestCounter utc;
 
         assert (!utc.someSkipped());
@@ -124,7 +124,7 @@ struct UnitTestCounter
 }
 @("UnitTestCounter")
 unittest {
-    mixin (unitTestBlockPrologue());
+    //mixin (unitTestBlockPrologue());
     UnitTestCounter utc;
 
     assert (utc.isUnset());

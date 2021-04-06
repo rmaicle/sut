@@ -82,12 +82,12 @@ getUnitTestBlocks (const string[] arg)
 }
 @("getUnitTestBlocks: empty array")
 unittest {
-    mixin (unitTestBlockPrologue());
+    //mixin (unitTestBlockPrologue());
     assert ((string[]).init.getUnitTestBlocks == []);
 }
 @("getUnitTestBlocks")
 unittest {
-    mixin (unitTestBlockPrologue());
+    //mixin (unitTestBlockPrologue());
     string[] arr = [
         "utb:one",
         "utb:two",
@@ -115,12 +115,12 @@ getModules (const string[] arg)
 }
 @("getModules: empty array")
 unittest {
-    mixin (unitTestBlockPrologue());
+    //mixin (unitTestBlockPrologue());
     assert ((string[]).init.getModules == []);
 }
 @("getModules")
 unittest {
-    mixin (unitTestBlockPrologue());
+    //mixin (unitTestBlockPrologue());
     string[] arr = [
         "utb:one",
         "utb:two",

@@ -129,7 +129,7 @@ version (unittest) {
 }
 @("getExecutionList: empty string")
 unittest {
-    mixin (unitTestBlockPrologue());
+    //mixin (unitTestBlockPrologue());
     auto e = ExecList.save();
     getExecutionList();
     assert (moduleExecList == (string[]).init);
@@ -138,7 +138,7 @@ unittest {
 }
 @("getExecutionList: spaces and new lines only")
 unittest {
-    mixin (unitTestBlockPrologue());
+    //mixin (unitTestBlockPrologue());
     auto e = ExecList.save();
     enum INPUT=" \n \n \n";
     getExecutionList(INPUT);
@@ -148,7 +148,7 @@ unittest {
 }
 @("getExecutionList: unit test blocks")
 unittest {
-    mixin (unitTestBlockPrologue());
+    //mixin (unitTestBlockPrologue());
     auto e = ExecList.save();
     enum INPUT="utb:one\nutb:two\n\nutb:three";
     getExecutionList(INPUT);
@@ -158,7 +158,7 @@ unittest {
 }
 @("getExecutionList: unit test modules")
 unittest {
-    mixin (unitTestBlockPrologue());
+    //mixin (unitTestBlockPrologue());
     auto e = ExecList.save();
     enum INPUT="utm:one\nutm:two\n\nutm:three";
     getExecutionList(INPUT);
@@ -194,7 +194,7 @@ isLanguageModule (const string mod)
 }
 @("isLanguageModule")
 unittest {
-    mixin (unitTestBlockPrologue());
+    //mixin (unitTestBlockPrologue());
     assert (isLanguageModule("__main"));
     assert (isLanguageModule("core.submodule"));
     assert (isLanguageModule("etc.submodule"));
@@ -242,7 +242,7 @@ isInternalModule (const string mod)
 }
 @("isInternalModule")
 unittest {
-    mixin (unitTestBlockPrologue());
+    //mixin (unitTestBlockPrologue());
     version (sut_include_unittests) {
         version (sut) {
             assert (!isInternalModule(__MODULE__));

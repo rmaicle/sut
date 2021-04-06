@@ -87,7 +87,7 @@ isStringUDA (alias T)
 }
 @("isStringUDA: string")
 unittest {
-    mixin (unitTestBlockPrologue());
+    //mixin (unitTestBlockPrologue());
     @("string variable")
     string stringVar;
     static assert (isStringUDA!(__traits(getAttributes, stringVar)));
@@ -120,21 +120,21 @@ firstStringUDA (alias testFunction)
 }
 @("firstStringUDA: string")
 unittest {
-    mixin (unitTestBlockPrologue());
+    //mixin (unitTestBlockPrologue());
     @("123")
     int intVar;
     static assert (firstStringUDA!intVar == "123");
 }
 @("firstStringUDA: integer")
 unittest {
-    mixin (unitTestBlockPrologue());
+    //mixin (unitTestBlockPrologue());
     @(123)
     int intVar;
     static assert (firstStringUDA!intVar == string.init);
 }
 @("firstStringUDA: empty")
 unittest {
-    mixin (unitTestBlockPrologue());
+    //mixin (unitTestBlockPrologue());
     int intVar;
     static assert (firstStringUDA!intVar == string.init);
 }
