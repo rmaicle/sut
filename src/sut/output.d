@@ -28,6 +28,14 @@ enum Label: string {
     Trace               = "   [trace]"
 }
 
+enum Module: string {
+    WithUnitTest = "Modules With Unit Test:",
+    WithoutUnitTest = "Modules Without Unit Test:",
+    Skipped = "Modules With Skipped Unit Test:"
+}
+
+
+
 
 
 
@@ -94,12 +102,10 @@ void
 printSummary (
     const UnitTestCounter counter,
     const size_t moduleCount,
-    string[] withUnitTestModules,
-    string[] skippedModules,
-    string[] noUnitTestModules
+    const string[] withUnitTestModules,
+    const string[] skippedModules,
+    const string[] noUnitTestModules
 ) {
-    import std.algorithm: sort;
-
     const passColor = counter.pass == counter.found ? Color.IGreen : Color.Yellow ;
     const failColor = counter.fail > 0 ? Color.IRed : Color.IGreen ;
     const skipColor = counter.skip == 0 ? Color.IGreen : Color.Yellow ;
@@ -117,40 +123,13 @@ printSummary (
         skippedModules.length,
         noUnitTestModules.length);
 
-    void
-    perModule (
-        string[] list,
-        const string label,
-        const string goodColor,
-        const string badColor)
-    {
-        const color = list.length == 0 ? badColor : goodColor;
-        printf("%s %s%s %zd%s\n",
-            Label.NoGroupLabel.toStringz,
-            color.toStringz,
-            label.toStringz,
-            list.length,
-            Color.Reset.toStringz);
-        if (list.length > 0) {
-            list.sort;
-            foreach (e; list) {
-                printf("%s   %s%s%s\n",
-                    Label.NoGroupLabel.toStringz,
-                    color.toStringz,
-                    e.toStringz,
-                    Color.Reset.toStringz);
-            }
-        }
-    }
-
     if (!isExecutionListEmpty) {
         return;
     }
 
-    perModule(withUnitTestModules, "Modules With Unit Test:", Color.IGreen, Color.IRed);
-    perModule(skippedModules, "Modules With Skipped Unit Test:", Color.IRed, Color.IGreen);
-    // Note the reversed color arguments
-    perModule(noUnitTestModules, "Modules Without Unit Test:", Color.Yellow, Color.IGreen);
+    printModulesWithUnitTests(withUnitTestModules);
+    printModulesWithSkippedUnitTests(skippedModules);
+    printModulesWithoutUnitTests(noUnitTestModules);
 }
 
 
@@ -190,6 +169,63 @@ printAssertion (
                 Color.Reset.toStringz);
         } else {
             printf("%s %s\n", Label.Trace.toStringz, item.toStringz);
+        }
+    }
+}
+
+
+
+private:
+
+
+
+void
+printModulesWithUnitTests (const string[] arg)
+{
+    perModule(arg, Module.WithUnitTest, Color.IGreen, Color.IRed);
+}
+
+
+
+void
+printModulesWithSkippedUnitTests (const string[] arg)
+{
+    // Note the reversed color arguments
+    perModule(arg, Module.Skipped, Color.IRed, Color.IGreen);
+}
+
+
+
+void
+printModulesWithoutUnitTests (const string[] arg)
+{
+    perModule(arg, Module.WithoutUnitTest, Color.Yellow, Color.IGreen);
+}
+
+
+
+void
+perModule (
+    const string[] list,
+    const string label,
+    const string goodColor,
+    const string badColor)
+{
+    import std.algorithm: sort;
+    const color = list.length == 0 ? badColor : goodColor;
+    printf("%s %s%s %zd%s\n",
+        Label.NoGroupLabel.toStringz,
+        color.toStringz,
+        label.toStringz,
+        list.length,
+        Color.Reset.toStringz);
+    if (list.length > 0) {
+        foreach (e; (list.dup).sort.release()) {
+            printf("%s   %s%s%s\n",
+                Label.NoGroupLabel.toStringz,
+                color.toStringz,
+                e.toStringz,
+                Color.Reset.toStringz);
         }
     }
 }
