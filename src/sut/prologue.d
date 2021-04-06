@@ -35,6 +35,8 @@ debug import std.stdio;
  *     mixin (sut.unitTestBlockPrologue());
  * }
  * ~~~~~~~~~~
+ *
+ * TODO: Use moduleName!moduleName instead
  */
 string
 unitTestBlockPrologue (size_t LN = __LINE__)()
@@ -42,15 +44,15 @@ unitTestBlockPrologue (size_t LN = __LINE__)()
     import std.format: format;
 
     // Because this function is intended to be called from the first line
-    // of the unit test block, we hard code the line number.
+    // of unit test blocks, we hard code the line number.
     //
     // NOTE:
     //
     // The result of this function is passed to a mixin statement.
     //
     //   @("unittest label or identifier string")
-    //   unittest {                                         <-- LN - 1
-    //     mixin (???.sut.unitTestBlockPrologue());         <-- LN
+    //   unittest {                                 <-- LN - 1
+    //     mixin (???.unitTestBlockPrologue());     <-- LN
     //   }
     //
     enum UTLineNumber = LN - 1;
@@ -69,6 +71,7 @@ format!("\nif (sut.executeUnitTestBlock!(%s, %s, %d)() == false) { return; }")(
     UnitTestName,
     UTLineNumber);
 }
+
 
 
 
