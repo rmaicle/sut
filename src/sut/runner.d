@@ -101,9 +101,7 @@ customUnitTestRunner ()
             }
         }
 
-        if (moduleCounter.pass) {
-            withUnitTestModules ~= m.name;
-        }
+        withUnitTestModules ~= m.name;
         if (isUnitTestBlockExecuted) {
             printModuleSummary (m.name, moduleCounter, t0, MonoTime.currTime);
         }
