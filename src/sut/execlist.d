@@ -2,6 +2,11 @@ module sut.execlist;
 
 import sut.prologue;
 import sut.config;
+import sut.util:
+    beginsWith,
+    isFound,
+    isIn,
+    toArray;
 
 debug import std.stdio;
 
@@ -46,101 +51,6 @@ bool isExecListEmpty;
 __gshared
 static
 bool isUnitTestBlockExecuted;
-
-
-
-/**
- * Determine whether the `needle` is found in the `haystack` using the
- * specified predicate, `pred`, on how to find the `needle`.
- */
-bool
-isIn (alias pred)(
-    const string[] haystack,
-    const string needle
-) {
-    import std.algorithm: canFind;
-    import std.uni: toLower;
-    if (haystack.length == 0) {
-        return false;
-    }
-    if (needle.length == 0) {
-        return false;
-    }
-    return canFind!(pred)(haystack, needle);
-}
-
-
-
-bool
-beginsWith (
-    const string[] haystack,
-    const string needle
-) {
-    import std.algorithm: startsWith;
-    import std.uni: toLower;
-    return isIn!(
-        (string a, string b) => b.startsWith(a.toLower))
-        (haystack, needle.toLower);
-}
-@("beginsWith: empty")
-unittest {
-    mixin (unitTestBlockPrologue());
-    const string[] arr;
-    assert (!arr.beginsWith(__MODULE__));
-}
-@("beginsWith: exact")
-unittest {
-    mixin (unitTestBlockPrologue());
-    const string[] arr = ["aaa", "bbb", "ccc"];
-    assert (arr.beginsWith("aaa"));
-    assert (!arr.beginsWith(""));
-    assert (!arr.beginsWith("any"));
-}
-@("beginsWith: begins with")
-unittest {
-    mixin (unitTestBlockPrologue());
-    const string[] arr = ["aaa", "bbb", "ccc"];
-    assert (arr.beginsWith("aaa111"));
-    assert (arr.beginsWith("bbb222"));
-    assert (arr.beginsWith("ccc333"));
-    assert (!arr.beginsWith("111aaa"));
-}
-
-
-
-bool
-isFound (
-    const string[] haystack,
-    const string needle
-) {
-    import std.algorithm: canFind;
-    import std.uni: toLower;
-    return isIn!(
-        (string a, string b) => b.canFind(a.toLower))
-        (haystack, needle.toLower);
-}
-@("isFound: empty")
-unittest {
-    mixin (unitTestBlockPrologue());
-    const string[] arr;
-    assert (!arr.isFound("aaa"));
-}
-@("isFound: exact")
-unittest {
-    mixin (unitTestBlockPrologue());
-    const string[] arr = ["aaa", "bbb", "ccc"];
-    assert (arr.isFound("aaa"));
-    assert (!arr.isFound(""));
-    assert (!arr.isFound("ddd"));
-}
-@("isFound: substring")
-unittest {
-    mixin (unitTestBlockPrologue());
-    const string[] arr = ["aaa", "bbb", "ccc"];
-    assert (arr.isFound("aaa111"));
-    assert (!arr.isFound(""));
-    assert (!arr.isFound("ddd"));
-}
 
 
 
