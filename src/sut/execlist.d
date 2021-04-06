@@ -1,7 +1,9 @@
 module sut.execlist;
 
 import sut.prologue;
-import sut.config;
+import sut.config:
+    getModules,
+    getUnitTestBlocks;
 import sut.util:
     beginsWith,
     isFound,

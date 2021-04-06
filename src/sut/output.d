@@ -2,7 +2,11 @@ module sut.output;
 
 import sut.counter;
 import sut.color;
-import sut.execlist: isExecListEmpty, moduleExecList, unitTestExecList;
+import sut.execlist:
+    isExecListEmpty,
+    moduleExecList,
+    unitTestExecList;
+import sut.skiplist: filterSkipList = filter;
 
 import std.string: toStringz;
 
