@@ -97,7 +97,7 @@ unittest {
 }
 @("isStringUDA: not a string")
 unittest {
-    mixin (unitTestBlockPrologue());
+    //mixin (unitTestBlockPrologue());
     @(123)
     int intVar;
     static assert (isStringUDA!(__traits(getAttributes, intVar)) == false);
