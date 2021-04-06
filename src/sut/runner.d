@@ -1,7 +1,6 @@
 module sut.runner;
 
-import sut.config:
-    readConfigFile;
+import sut.config: readConfigFile;
 import sut.counter:
     moduleCounter,
     UnitTestCounter;
