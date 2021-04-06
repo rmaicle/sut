@@ -12,8 +12,6 @@ module sut;
 
 
 
-version (unittest):
-
 public import sut.prologue:
     executeBlock,
     getUnitTestName,
@@ -22,18 +20,12 @@ public import sut.skiplist:
     addToPackageList,
     skipPackage;
 
-import sut.runner;
 
-import core.runtime: Runtime;
 
-version (sut) {
-    version (D_ModuleInfo) {
-        version = sut_with_module_info;
-    }
-}
-
-version (sut_with_module_info):
+version (D_ModuleInfo):
 
 shared static this () {
+    import sut.runner;
+    import core.runtime: Runtime;
     Runtime.extendedModuleUnitTester = &customUnitTestRunner;
 }
