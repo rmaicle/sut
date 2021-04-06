@@ -15,8 +15,8 @@ module sut;
 version (unittest):
 
 public import sut.prologue:
-    executeUnitTestBlock,
-    getUTNameFunc,
+    executeBlock,
+    getUnitTestName,
     unitTestBlockPrologue;
 public import sut.skiplist:
     addToPackageList,
