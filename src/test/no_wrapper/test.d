@@ -1,7 +1,6 @@
-module test;
+module test.no_wrapper.test;
 
 import sut;                                 // SUT module
-import std.stdio: writeln;
 
 int add (const int arg, const int n) {
     return arg + n;
@@ -18,12 +17,5 @@ int sub (const int arg, const int n) {
 @("subtract")                               // unit test block name
 unittest {
     mixin (unitTestBlockPrologue!()());     // necessary code
-    assert (sub(10, 1) == 0);
-}
-
-int main () {
-    enum result = add(10, 5).sub(1);
-    assert (result == 14);
-    writeln(result);
-    return 0;
+    assert (sub(10, 1) == 9);
 }
