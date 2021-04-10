@@ -6,61 +6,96 @@ import sut.execlist:
     isExecutionListEmpty,
     moduleExecList,
     unitTestExecList;
-import sut.skiplist: filterSkipList = filter;
+import sut.skiplist:
+    filterSkipList = filter;
 
 import std.string: toStringz;
+import std.traits: ReturnType;
 
-import core.stdc.stdio: printf;
+import core.stdc.stdio:
+    fflush,
+    printf,
+    stdout;
 import core.time: MonoTime;
+
+
+alias Stringz = ReturnType!toStringz;
+
+/**
+ * Execution mode is the context in which the unit test is running.
+ */
+enum Mode: string {
+    All = "All",
+    Selection = "Selection"
+}
 
 
 
 /** Output labels */
 enum Label: string {
+    Start               = "[unittest] Start   ",
+    Blank               = "[unittest]         ",
     Mode                = "[unittest] Mode:   ",
-    ModeSelective       = "[unittest]         ",
     Module              = "[unittest] Module: ",
-    ModuleSummary       = "[unittest] Modules:",
     BlockSummary        = "[unittest] Blocks: ",
-    NoGroupLabel        = "[unittest]         ",
+    Summary             = "[unittest] Summary:",
+    End                 = "[unittest] End     ",
     AssertionFailed     = "[unittest] Assertion Failed:",
     AssertionDetail     = "           ",
     Trace               = "   [trace]"
 }
 
+
+
 enum Module: string {
-    WithUnitTest = "Modules With Unit Test:",
-    WithoutUnitTest = "Modules Without Unit Test:",
-    Skipped = "Modules With Skipped Unit Test:"
+    WithUnitTest = "Module(s) With Unit Test",
+    WithoutUnitTest = "Module(s) Without Unit Test",
+    Skipped = "Module(s) With Skipped Unit Test"
 }
 
 
 
+Mode
+getExecutionMode ()
+{
+    version (sut) {
+        return isExecutionListEmpty() ? Mode.All : Mode.Selection;
+    } else {
+        return Mode.All;
+    }
+}
 
 
 
 void
-printUnitTestMode ()
+printIntro ()
 {
-    enum Mode: string {
-        All = "All",
-        Selection = "Selection"
+    version (sut) {} else {
+        return;
     }
-    version (sut) {
-        Mode mode = isExecutionListEmpty ? Mode.All : Mode.Selection;
-    } else {
-        Mode mode = Mode.All;
+    printf("%s\n", Label.Start.toStringz);
+    printMode();
+    auto mode = getExecutionMode();
+    if (mode != Mode.Selection) {
+        return;
     }
-    printf("%s %s\n", Label.Mode.toStringz, mode.toStringz);
-    version (sut) {
-        const string label = Label.ModeSelective;
-        foreach (entry; moduleExecList) {
-            printf("%s   module: %s\n", label.toStringz, entry.toStringz);
-        }
-        foreach (entry; unitTestExecList) {
-            printf("%s   block:  %s\n", label.toStringz, entry.toStringz);
-        }
-    }
+    printSelections();
+}
+
+void
+printUnitTestInfo (
+    const string moduleName,
+    const string unitTestName,
+    const size_t line
+) {
+    printf("%s %s %4zd %s%s%s\n",
+        Label.Blank.toStringz,
+        moduleName.toStringz,
+        line,
+        Color.Green.toStringz,
+        unitTestName.toStringz,
+        Color.Reset.toStringz);
+    fflush(stdout);
 }
 
 
@@ -80,21 +115,47 @@ printModuleSummary (
     const MonoTime from,
     const MonoTime to
 ) {
-    const passedColor = counter.pass == counter.found ? Color.IGreen : Color.Yellow;
-    const skipColor = counter.skip == 0 ? Color.IGreen : Color.Yellow;
+    const passColor = counter.isAllPassing() ? Color.IGreen : Color.Yellow;
+    const skipColor = counter.isNoneSkipped() ? Color.IGreen : Color.Yellow;
 
+    //if (counter.found > 0 &&
     printf("%s %s - %s%zd passed%s, %s%zd skipped%s, %zd found - %.3fs\n",
-        Label.NoGroupLabel.toStringz,
+        Label.Blank.toStringz,
         moduleName.toStringz,
-        passedColor.toStringz,
-        counter.pass,
+        passColor.toStringz,
+        counter.passing,
         Color.Reset.toStringz,
         skipColor.toStringz,
-        counter.skip,
+        counter.skipped,
         Color.Reset.toStringz,
-        counter.found,
+        counter.total,
         (to - from).total!"msecs" / 1000.0);
 }
+
+
+
+//void
+//printSkippedModuleSummary (
+//    const string moduleName,
+//    const UnitTestCounter counter,
+//    const MonoTime from,
+//    const MonoTime to
+//) {
+//    const passedColor = counter.pass == counter.found ? Color.IGreen : Color.Yellow;
+//    const skipColor = counter.skip == 0 ? Color.IGreen : Color.Yellow;
+
+//    printf("%s %s - %s%zd passed%s, %s%zd skipped%s, %zd found - %.3fs\n",
+//        Label.Blank.toStringz,
+//        moduleName.toStringz,
+//        passedColor.toStringz,
+//        counter.pass,
+//        Color.Reset.toStringz,
+//        skipColor.toStringz,
+//        counter.skip,
+//        Color.Reset.toStringz,
+//        counter.found,
+//        (to - from).total!"msecs" / 1000.0);
+//}
 
 
 
@@ -106,30 +167,42 @@ printSummary (
     const string[] skippedModules,
     const string[] noUnitTestModules
 ) {
-    const passColor = counter.pass == counter.found ? Color.IGreen : Color.Yellow ;
-    const failColor = counter.fail > 0 ? Color.IRed : Color.IGreen ;
-    const skipColor = counter.skip == 0 ? Color.IGreen : Color.Yellow ;
+    import std.uni: toLower;
+
+    const passColor = counter.isAllPassing() ? Color.IGreen : Color.Yellow ;
+    const failColor = counter.isNoneFailing() ? Color.IGreen: Color.IRed ;
+    const skipColor = counter.isNoneSkipped() ? Color.IGreen : Color.Yellow ;
 
     printf("\n%s %s%zd passed%s, %s%zd failed%s, %s%zd skipped%s, %zd found\n",
         Label.BlockSummary.toStringz,
-        passColor.toStringz, counter.pass, Color.Reset.toStringz,
-        failColor.toStringz, counter.fail, Color.Reset.toStringz,
-        skipColor.toStringz, counter.skip, Color.Reset.toStringz,
-        counter.found);
+        passColor.toStringz, counter.passing, Color.Reset.toStringz,
+        failColor.toStringz, counter.failing, Color.Reset.toStringz,
+        skipColor.toStringz, counter.skipped, Color.Reset.toStringz,
+        counter.total);
 
-    printf("%s %zd With, %zd with skipped, %zd without\n",
-        Label.ModuleSummary.toStringz,
+    printf("%s %zd %s\n",
+        Label.Summary.toStringz,
         moduleCount,
+        Module.WithUnitTest.toLower.toStringz);
+    auto blank = Label.Blank.toStringz;
+    printf("%s %zd %s\n",
+        blank,
         skippedModules.length,
-        noUnitTestModules.length);
+        Module.WithoutUnitTest.toLower.toStringz);
+    printf("%s %zd %s\n",
+        blank,
+        skippedModules.length,
+        Module.Skipped.toLower.toStringz);
 
-    if (!isExecutionListEmpty) {
+    if (getExecutionMode() == Mode.Selection) {
         return;
     }
 
-    printModulesWithUnitTests(withUnitTestModules);
-    printModulesWithSkippedUnitTests(skippedModules);
-    printModulesWithoutUnitTests(noUnitTestModules);
+    printSummaryWithUnitTests(withUnitTestModules);
+    printSummaryWithSkippedUnitTests(skippedModules);
+    printSummaryWithoutUnitTests(noUnitTestModules);
+    printf("%s\n", Label.End.toStringz);
+    fflush(stdout);
 }
 
 
@@ -180,32 +253,32 @@ private:
 
 
 void
-printModulesWithUnitTests (const string[] arg)
+printSummaryWithUnitTests (const string[] arg)
 {
-    perModule(arg, Module.WithUnitTest, Color.IGreen, Color.IRed);
+    printSummaryCategory(arg, Module.WithUnitTest, Color.IGreen, Color.IRed);
 }
 
 
 
 void
-printModulesWithSkippedUnitTests (const string[] arg)
+printSummaryWithSkippedUnitTests (const string[] arg)
 {
     // Note the reversed color arguments
-    perModule(arg, Module.Skipped, Color.IRed, Color.IGreen);
+    printSummaryCategory(arg, Module.Skipped, Color.Yellow, Color.IGreen);
 }
 
 
 
 void
-printModulesWithoutUnitTests (const string[] arg)
+printSummaryWithoutUnitTests (const string[] arg)
 {
-    perModule(arg, Module.WithoutUnitTest, Color.Yellow, Color.IGreen);
+    printSummaryCategory(arg, Module.WithoutUnitTest, Color.Yellow, Color.IGreen);
 }
 
 
 
 void
-perModule (
+printSummaryCategory (
     const string[] list,
     const string label,
     const string goodColor,
@@ -213,19 +286,39 @@ perModule (
 {
     import std.algorithm: sort;
     const color = list.length == 0 ? badColor : goodColor;
-    printf("%s %s%s %zd%s\n",
-        Label.NoGroupLabel.toStringz,
+    printf("%s %s%s (%zd)%s\n",
+        Label.Blank.toStringz,
         color.toStringz,
         label.toStringz,
         list.length,
         Color.Reset.toStringz);
-    if (list.length > 0) {
-        foreach (e; (list.dup).sort.release()) {
-            printf("%s   %s%s%s\n",
-                Label.NoGroupLabel.toStringz,
-                color.toStringz,
-                e.toStringz,
-                Color.Reset.toStringz);
-        }
+    if (list.length == 0) {
+        return;
+    }
+    foreach (e; (list.dup).sort.release()) {
+        printf("%s     %s\n", Label.Blank.toStringz, e.toStringz);
+    }
+}
+
+
+
+void
+printMode ()
+{
+    auto mode = getExecutionMode();
+    printf("%s %s\n", Label.Mode.toStringz, mode.toStringz);
+}
+
+
+
+void
+printSelections ()
+{
+    const label = Label.Blank.toStringz;
+    foreach (entry; moduleExecList) {
+        printf("%s   module: %s\n", label, entry.toStringz);
+    }
+    foreach (entry; unitTestExecList) {
+        printf("%s   block:  %s\n", label, entry.toStringz);
     }
 }

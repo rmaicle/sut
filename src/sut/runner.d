@@ -9,7 +9,15 @@ import sut.execlist:
     isInternalModule,
     isLanguageModule,
     isUnitTestBlockExecuted;
-import sut.output;
+import sut.skiplist:
+    skipList = moduleList,
+    isInSkipList = isFound;
+import sut.output:
+    printAssertion,
+    printIntro,
+    printModuleStart,
+    printModuleSummary,
+    printSummary;
 
 import core.exception: AssertError;
 import core.runtime: UnitTestResult;
@@ -41,8 +49,21 @@ customUnitTestRunner ()
     UnitTestCounter totalCounter;
     size_t moduleCount = 0;
     string[] withUnitTestModules;
-    string[] skippedModules;
     string[] noUnitTestModules;
+
+    void
+    appendToNoUnitTestList (const string arg)
+    {
+        if (!isInSkipList(arg)) {
+            noUnitTestModules ~= arg;
+        }
+    }
+
+    void
+    appendToWithUnitTestList (const string arg)
+    {
+        withUnitTestModules ~= arg;
+    }
 
     debug (verbose) printf("Compiler: %s\n", compilerName.toStringz);
 
@@ -54,7 +75,7 @@ customUnitTestRunner ()
         }
     }
     getExecutionList(readConfigFile);
-    printUnitTestMode();
+    printIntro();
 
     foreach (m; ModuleInfo) {
         if (!m) {
@@ -69,13 +90,14 @@ customUnitTestRunner ()
         moduleCount++;
         auto fp = m.unitTest();
         if (!fp) {
-            noUnitTestModules ~= m.name;
+            appendToNoUnitTestList(m.name);
             continue;
         }
         moduleCounter.reset();
         bool assertionOccurred = false;
         isUnitTestBlockExecuted = false;
-        // printModuleStart(m.name);
+        appendToWithUnitTestList(m.name);
+        printModuleStart(m.name);
         immutable t0 = MonoTime.currTime;
         try {
             fp();
@@ -93,33 +115,30 @@ customUnitTestRunner ()
             //
             // See std.exception.assertThrown definition.
             if (e.message.length > 0) {
-                moduleCounter.pass--;
-                moduleCounter.fail++;
+                //moduleCounter.pass--;
+                //moduleCounter.fail++;
+                moduleCounter.revertPassing();
                 assertionOccurred = true;
                 printAssertion (m.name, e);
                 fflush(stdout);
             }
         }
 
-        withUnitTestModules ~= m.name;
         if (isUnitTestBlockExecuted) {
             printModuleSummary (m.name, moduleCounter, t0, MonoTime.currTime);
         }
 
-        totalCounter.pass += moduleCounter.pass;
-        totalCounter.fail += moduleCounter.fail;
-        totalCounter.skip += moduleCounter.skip;
-        totalCounter.found += moduleCounter.found;
-
-        if (moduleCounter.allSkipped || moduleCounter.someSkipped) {
-            skippedModules ~= m.name;
-        }
+        totalCounter.add(moduleCounter);
+        //totalCounter.pass += moduleCounter.pass;
+        //totalCounter.fail += moduleCounter.fail;
+        //totalCounter.skip += moduleCounter.skip;
+        //totalCounter.found += moduleCounter.found;
     } // foreach
 
     printSummary(totalCounter,
         moduleCount,
         withUnitTestModules,
-        skippedModules,
+        skipList,
         noUnitTestModules);
 
     // NOTE:

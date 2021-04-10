@@ -2,7 +2,9 @@ module sut.prologue;
 
 import sut.color;
 import sut.counter;
-import sut.output;
+import sut.output:
+    printModuleStart,
+    printUnitTestInfo;
 import sut.execlist:
     isExecutionListEmpty,
     isInModuleExecList,
@@ -14,29 +16,8 @@ debug import std.stdio;
 
 
 /**
- * Generate a compile-time string used in a mixed-in to:
- *   - get the unit test block name whether it is a user-supplied name using
- *     a user-defined string attribute (UDA) or the default unit test name.
- *   - call the actual function that displays the unit test block info and
- *     execution status.
- *
- * Params:
- *   skipFlag - pass `false` to skip execution of the rest of the unit test
- *              block.
- *
- * Returns: string
- *
- * Example:
- *
- * ~~~~~~~~~~
- * static import sut;
- * ...
- * unittest {
- *     mixin (sut.unitTestBlockPrologue());
- * }
- * ~~~~~~~~~~
- *
- * TODO: Use moduleName!moduleName instead
+ * Client-facing mixin code to determine whether to continue execution
+ * of the unit test block or to return early.
  */
 string
 unitTestBlockPrologue (size_t LN = __LINE__)()
@@ -55,11 +36,11 @@ unitTestBlockPrologue (size_t LN = __LINE__)()
     //     mixin (???.unitTestBlockPrologue());     <-- LN
     //   }
     //
-    enum UTLineNumber = LN - 1;
+    enum LineNumber = LN - 1;
     // Create possible non-conflicting identifiers for module name and unit
     // test name which are used only within the calling unit test block.
-    enum ModuleName = format!("module_name_L%d__")(UTLineNumber);
-    enum UnitTestName = format!("unit_test_name_L%d__")(UTLineNumber);
+    enum ModuleName = format!("module_name_L%d__")(LineNumber);
+    enum UnitTestName = format!("unit_test_name_L%d__")(LineNumber);
 
     return `static import sut;
 import std.traits: moduleName;
@@ -69,7 +50,7 @@ format!("\nenum %s = moduleName!dummyXYZ;")(ModuleName) ~
 format!("\nif (sut.executeBlock!(%s, %s, %d)() == false) { return; }")(
     ModuleName,
     UnitTestName,
-    UTLineNumber);
+    LineNumber);
 }
 
 
@@ -108,7 +89,7 @@ bool
 executeBlock (
     const string ModuleName,
     const string UnitTestName,
-    const size_t LineNo
+    const size_t Line
 )()
 {
     import std.string: toStringz;
@@ -118,20 +99,22 @@ executeBlock (
     proceedToExecute (const bool flag) {
         // Assume it passed first
         // If an assertion occurs, subtract 1 in the exception handler code
-        moduleCounter.pass++;
+        moduleCounter.addPassing();
 
-        printf("%s %s %4zd %s%s%s\n",
-            Label.NoGroupLabel.toStringz,
-            ModuleName.toStringz,
-            LineNo,
-            Color.Green.toStringz,
-            UnitTestName.toStringz,
-            Color.Reset.toStringz);
-        fflush(stdout);
+        //printf("%s %s %4zd %s%s%s\n",
+        //    Label.Blank.toStringz,
+        //    ModuleName.toStringz,
+        //    LineNo,
+        //    Color.Green.toStringz,
+        //    UnitTestName.toStringz,
+        //    Color.Reset.toStringz);
+        //fflush(stdout);
+        printUnitTestInfo(ModuleName, UnitTestName, Line);
+
         return flag;
     }
 
-    moduleCounter.found++;
+    moduleCounter.addTotal();
     version (sut) {
         // Filter if a selection is present. Otherwise, execute all.
         if (isExecutionListEmpty()) {
@@ -141,19 +124,19 @@ executeBlock (
         if (isInModuleExecList(ModuleName)) {
             if (!isUnitTestBlockExecuted) {
                 isUnitTestBlockExecuted = true;
-                printModuleStart(ModuleName);
+                //printModuleStart(ModuleName);
             }
             return proceedToExecute(true);
         } else {
             if (isInUnitTestExecList(UnitTestName)) {
                 if (!isUnitTestBlockExecuted) {
                     isUnitTestBlockExecuted = true;
-                    printModuleStart(ModuleName);
+                    //printModuleStart(ModuleName);
                 }
                 return proceedToExecute(true);
             }
         }
-        moduleCounter.skip++;
+        moduleCounter.addSkipped();
         return false;
     } else {
         //return proceedToExecute(true);

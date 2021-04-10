@@ -1,3 +1,7 @@
+// TODO: Rename to Exclude.
+//       User deliberately excluded a module
+
+
 module sut.skiplist;
 
 import sut.util:
@@ -11,41 +15,55 @@ debug import std.stdio;
 /**
  * List of packages.
  *
- * Packages are meant to 'package' modules and therefore are usually not meant
- * to contain unit tests.
- * Module names found in this list are not reported to having no unit tests.
+ * Module names found in this list are not reported as having no unit tests.
  */
 __gshared
 static
-string[] packageList;
+string[] moduleList;
 
 
 
+/**
+ * Client-facing mixin code for adding the module into the skip list.
+ */
 string
-skipPackage (size_t LN = __LINE__)()
+skipModule (size_t LN = __LINE__)()
 {
     import std.format: format;
     enum ModuleName = format!("module_name_L%d__")(LN);
-    return `
-static this () {
-static import sut;
-import std.traits: moduleName;` ~
-format!("\nenum %s = moduleName!moduleName;")(ModuleName) ~
-format!("\nsut.addToPackageList(%s);")(ModuleName) ~
-`}`;
+    return `static this () {
+    static import sut;
+    import std.traits: moduleName;
+    struct dummyXYZ { }` ~
+    format!("\nenum %s = moduleName!dummyXYZ;")(ModuleName) ~
+    format!("sut.add(moduleName!%s);")(ModuleName) ~
+    "}";
 }
 
 
 
+/**
+ * Append an item in the list.
+ */
 void
-addToPackageList (const string arg)
+add (const string arg)
 {
-    packageList ~= arg;
+    moduleList ~= arg;
 }
+
+
+
+bool
+isFound (const string arg)
+{
+    import std.algorithm: canFind;
+    return moduleList.canFind(arg);
+}
+
 
 
 string[]
 filter (const string[] arg)
 {
-    return packageList.dedup.remove(arg);
+    return moduleList.dedup.remove(arg);
 }

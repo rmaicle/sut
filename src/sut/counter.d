@@ -4,6 +4,7 @@ import sut.prologue;
 
 
 
+
 /**
  * Unit test counter for each module.
  *
@@ -15,22 +16,39 @@ UnitTestCounter moduleCounter;
 
 
 
+/** Alias */
+alias UnitTestCounter = Counter;
+
+
+
 /**
  * Module unit test block counters.
  */
-struct UnitTestCounter
+struct Counter
 {
     /** Number of Unit test blocks that were successfully executed. */
-    size_t pass = 0;
+    size_t passing = 0;
 
     /** Number of Unit test blocks that threw an assertion. */
-    size_t fail = 0;
+    size_t failing = 0;
 
     /** Number of Unit test blocks that were skipped. */
-    size_t skip = 0;
+    size_t skipped = 0;
 
     /** Number of Unit test blocks that were found. */
-    size_t found = 0;
+    size_t total = 0;
+
+
+
+    invariant
+    {
+        assert (passing <= total);
+        assert (failing <= total);
+        assert (skipped <= total);
+        // Because we manually set the total first before setting
+        // other fields.
+        assert (total >= passing + failing + skipped);
+    }
 
 
 
@@ -38,10 +56,96 @@ struct UnitTestCounter
     void
     reset ()
     {
-        pass = 0;
-        fail = 0;
-        skip = 0;
-        found = 0;
+        passing = 0;
+        failing = 0;
+        skipped = 0;
+        total = 0;
+    }
+
+
+    void
+    addPassing ()
+    {
+        passing++;
+    }
+
+    void
+    addFailing ()
+    {
+        failing++;
+    }
+
+    void
+    addSkipped ()
+    {
+        skipped++;
+    }
+
+    void
+    addTotal ()
+    {
+        total++;
+    }
+
+
+    /**
+     * Revert previous call to `addPassing` and do an `addFailing` call.
+     */
+    void
+    revertPassing ()
+    {
+        import std.exception: enforce;
+        enforce(passing > 0, "Cannot decrement zero (Count.passing).");
+        passing--;
+        addFailing();
+    }
+
+    void
+    add (const Counter arg)
+    {
+        passing = arg.passing;
+        failing = arg.failing;
+        skipped = arg.skipped;
+        total = arg.total;
+    }
+
+
+    bool
+    isAllPassing () const
+    {
+        return passing > 0 && failing == 0;
+    }
+
+    bool
+    isSomePassing () const
+    {
+        return passing > 0 && failing > 0;
+    }
+
+    bool
+    isNoneFailing () const
+    {
+        return failing == 0 && total > 0;
+    }
+
+    /**
+     * Determine whether `skip` is greater than zero.
+     *
+     * Returns: `true` when `skip` is less than `found` but not zero.
+     */
+    bool
+    isSomeExecuted () const
+    {
+        const executed = passing + failing;
+        return total > 0 && executed > 0 && executed < total;
+    }
+    @("isSomeExecuted")
+    unittest {
+        //mixin (unitTestBlockPrologue());
+        assert (!Counter().isSomeExecuted());
+        assert (Counter().setPass(5).setFail(2).setTotal(7).isSomeExecuted());
+        assert (Counter().setPass(5).setSkip(2).setTotal(7).isSomeExecuted());
+        assert (Counter().setFail(2).setSkip(5).setTotal(7).isSomeExecuted());
     }
 
 
@@ -52,46 +156,44 @@ struct UnitTestCounter
      * Returns: `true` when `skip` equals `found` but not zero.
      */
     bool
-    allSkipped ()
+    isAllSkipped () const
     {
-        return found > 0 && skip == found;
+        return total > 0 && skipped == total;
     }
-    @("allSkipped")
+    @("isAllSkipped")
     unittest {
         //mixin (unitTestBlockPrologue());
-        UnitTestCounter utc;
-
-        assert (!utc.allSkipped());
-        utc = UnitTestCounter(2, 3, 5);
-        assert (!utc.allSkipped());
-        utc = UnitTestCounter(0, 5, 5);
-        assert (utc.allSkipped());
+        assert (!Counter().isAllSkipped());
+        assert (!Counter().setTotal(7).isAllSkipped());
+        assert (!Counter().setSkip(1).setTotal(7).isAllSkipped());
+        assert (Counter().setSkip(7).setTotal(7).isAllSkipped());
     }
 
 
 
     /**
-     * Determine whether `skip` is less than `found` but not zero.
+     * Determine whether `skip` is greater than zero.
      *
-     * Returns: `true` when at `skip` is less than `found` but not zero.
+     * Returns: `true` when `skip` is less than `found` but not zero.
      */
     bool
-    someSkipped ()
+    isSomeSkipped () const
     {
-        return found > 0 && skip > 0 && skip < found;
+        return total > 0 && skipped > 0 && skipped < total;
     }
-    @("someSkipped")
+    @("isSomeSkipped")
     unittest {
         //mixin (unitTestBlockPrologue());
-        UnitTestCounter utc;
+        assert (!Counter().isSomeSkipped());
+        assert (!Counter().setTotal(7).isSomeSkipped());
+        assert (Counter().setSkip(1).setTotal(7).isSomeSkipped());
+        assert (Counter().setSkip(7).setTotal(7).isSomeSkipped());
+    }
 
-        assert (!utc.someSkipped());
-        utc = UnitTestCounter(0, 5, 5);
-        assert (!utc.someSkipped());
-        utc = UnitTestCounter(2, 0, 5);
-        assert (!utc.someSkipped());
-        utc = UnitTestCounter(2, 3, 5);
-        assert (utc.someSkipped());
+    bool
+    isNoneSkipped () const
+    {
+        return skipped == 0 && total > 0;
     }
 
 
@@ -99,15 +201,40 @@ struct UnitTestCounter
     /** Unit test helper functions */
     version (unittest) {
 
-        /** Constructor. */
-        this (
-            const size_t p,
-            const size_t s,
-            const size_t f,
-        ) {
-            pass = p;
-            skip = s;
-            found = f;
+
+
+
+
+        ref Counter
+        setPass (const size_t arg)
+        return @safe pure nothrow @nogc do
+        {
+            passing = arg;
+            return this;
+        }
+
+        ref Counter
+        setFail (const size_t arg)
+        return @safe pure nothrow @nogc do
+        {
+            failing = arg;
+            return this;
+        }
+
+        ref Counter
+        setSkip (const size_t arg)
+        return @safe pure nothrow @nogc do
+        {
+            skipped = arg;
+            return this;
+        }
+
+        ref Counter
+        setTotal (const size_t arg)
+        return @safe pure nothrow @nogc do
+        {
+            total = arg;
+            return this;
         }
 
         /**
@@ -118,18 +245,16 @@ struct UnitTestCounter
         bool
         isUnset () const
         {
-            return pass == 0 && fail == 0 && skip == 0 && found == 0;
+            return passing == 0
+                && failing == 0
+                && skipped == 0
+                && total == 0;
         }
     }
 }
 @("UnitTestCounter")
 unittest {
     //mixin (unitTestBlockPrologue());
-    UnitTestCounter utc;
-
-    assert (utc.isUnset());
-    utc = UnitTestCounter(10, 20, 30);
-    assert (!utc.isUnset());
-    utc.reset();
-    assert (utc.isUnset());
+    assert (Counter().isUnset());
+    assert (!Counter().setPass(1).isUnset());
 }

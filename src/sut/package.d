@@ -17,8 +17,9 @@ public import sut.prologue:
     getUnitTestName,
     unitTestBlockPrologue;
 public import sut.skiplist:
-    addToPackageList,
-    skipPackage;
+    moduleList,
+    add,
+    skipModule;
 
 
 
