@@ -100,17 +100,7 @@ executeBlock (
         // Assume it passed first
         // If an assertion occurs, subtract 1 in the exception handler code
         moduleCounter.addPassing();
-
-        //printf("%s %s %4zd %s%s%s\n",
-        //    Label.Blank.toStringz,
-        //    ModuleName.toStringz,
-        //    LineNo,
-        //    Color.Green.toStringz,
-        //    UnitTestName.toStringz,
-        //    Color.Reset.toStringz);
-        //fflush(stdout);
         printUnitTestInfo(ModuleName, UnitTestName, Line);
-
         return flag;
     }
 
@@ -124,14 +114,12 @@ executeBlock (
         if (isInModuleExecList(ModuleName)) {
             if (!isUnitTestBlockExecuted) {
                 isUnitTestBlockExecuted = true;
-                //printModuleStart(ModuleName);
             }
             return proceedToExecute(true);
         } else {
             if (isInUnitTestExecList(UnitTestName)) {
                 if (!isUnitTestBlockExecuted) {
                     isUnitTestBlockExecuted = true;
-                    //printModuleStart(ModuleName);
                 }
                 return proceedToExecute(true);
             }
@@ -139,7 +127,6 @@ executeBlock (
         moduleCounter.addSkipped();
         return false;
     } else {
-        //return proceedToExecute(true);
         return true;
     }
 }

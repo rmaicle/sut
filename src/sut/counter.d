@@ -201,10 +201,6 @@ struct Counter
     /** Unit test helper functions */
     version (unittest) {
 
-
-
-
-
         ref Counter
         setPass (const size_t arg)
         return @safe pure nothrow @nogc do

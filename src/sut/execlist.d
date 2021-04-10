@@ -85,7 +85,6 @@ getExecutionList (const string arg = string.init)
     const arr = arg.toArray();
     unitTestExecList = arr.getUnitTestBlocks();
     moduleExecList = arr.getModules();
-    //isExecListEmpty = unitTestExecList.length == 0 && moduleExecList.length == 0;
 }
 @("getExecutionList: setup and teardown helper")
 version (unittest) {
@@ -94,7 +93,6 @@ version (unittest) {
     {
         string[] modules;
         string[] unittests;
-        //bool emptyFlag;
 
         static
         ExecList
@@ -103,7 +101,6 @@ version (unittest) {
             ExecList e;
             e.modules = moduleExecList;
             e.unittests = unitTestExecList;
-            //e.emptyFlag = isExecListEmpty;
             return e;
         }
 
@@ -113,7 +110,6 @@ version (unittest) {
         {
             moduleExecList = arg.modules.dup;
             unitTestExecList = arg.unittests.dup;
-            //isExecListEmpty = arg.emptyFlag;
         }
     }
 }

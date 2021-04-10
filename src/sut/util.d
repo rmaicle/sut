@@ -185,23 +185,6 @@ unittest {
 
 
 
-//string[]
-//sortRemove (
-//    const string[] haystack,
-//    const string[] needles
-//) {
-//    return dedup(haystack).remove(needles);
-//}
-//unittest {
-//    auto arr = ["one", "four", "two", "three", "two", "four", "three"];
-//    assert (arr.sortRemove(["one"])   == ["four", "three", "two"]);
-//    assert (arr.sortRemove(["two"])   == ["four", "one", "three"]);
-//    assert (arr.sortRemove(["three"]) == ["four", "one", "two"]);
-//    assert (arr.sortRemove(["four"])  == ["one", "three", "two"]);
-//}
-
-
-
 /**
  * Filter the string array argument containing the specified prefix argument
  * irrespective of case variance.

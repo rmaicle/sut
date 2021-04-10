@@ -118,7 +118,6 @@ printModuleSummary (
     const passColor = counter.isAllPassing() ? Color.IGreen : Color.Yellow;
     const skipColor = counter.isNoneSkipped() ? Color.IGreen : Color.Yellow;
 
-    //if (counter.found > 0 &&
     printf("%s %s - %s%zd passed%s, %s%zd skipped%s, %zd found - %.3fs\n",
         Label.Blank.toStringz,
         moduleName.toStringz,
@@ -131,31 +130,6 @@ printModuleSummary (
         counter.total,
         (to - from).total!"msecs" / 1000.0);
 }
-
-
-
-//void
-//printSkippedModuleSummary (
-//    const string moduleName,
-//    const UnitTestCounter counter,
-//    const MonoTime from,
-//    const MonoTime to
-//) {
-//    const passedColor = counter.pass == counter.found ? Color.IGreen : Color.Yellow;
-//    const skipColor = counter.skip == 0 ? Color.IGreen : Color.Yellow;
-
-//    printf("%s %s - %s%zd passed%s, %s%zd skipped%s, %zd found - %.3fs\n",
-//        Label.Blank.toStringz,
-//        moduleName.toStringz,
-//        passedColor.toStringz,
-//        counter.pass,
-//        Color.Reset.toStringz,
-//        skipColor.toStringz,
-//        counter.skip,
-//        Color.Reset.toStringz,
-//        counter.found,
-//        (to - from).total!"msecs" / 1000.0);
-//}
 
 
 

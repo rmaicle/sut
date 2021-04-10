@@ -67,13 +67,6 @@ customUnitTestRunner ()
 
     debug (verbose) printf("Compiler: %s\n", compilerName.toStringz);
 
-    version (none) {
-        if (configFileExists()) {
-            getExecutionList(readConfigFile);
-        } else {
-            getExecutionList();
-        }
-    }
     getExecutionList(readConfigFile);
     printIntro();
 
@@ -115,8 +108,6 @@ customUnitTestRunner ()
             //
             // See std.exception.assertThrown definition.
             if (e.message.length > 0) {
-                //moduleCounter.pass--;
-                //moduleCounter.fail++;
                 moduleCounter.revertPassing();
                 assertionOccurred = true;
                 printAssertion (m.name, e);
@@ -129,11 +120,7 @@ customUnitTestRunner ()
         }
 
         totalCounter.add(moduleCounter);
-        //totalCounter.pass += moduleCounter.pass;
-        //totalCounter.fail += moduleCounter.fail;
-        //totalCounter.skip += moduleCounter.skip;
-        //totalCounter.found += moduleCounter.found;
-    } // foreach
+    }
 
     printSummary(totalCounter,
         moduleCount,
