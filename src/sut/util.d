@@ -24,6 +24,13 @@ isIn (alias pred)(
 
 
 
+/**
+ * Determine whether the needle is an exact match or begins with one of
+ * the items in the haystack.
+ *
+ * Returns: `true` if the needle is an exact match or begins with one of
+ *          the items in the haystack.
+ */
 bool
 beginsWith (
     const string[] haystack,
@@ -61,6 +68,13 @@ unittest {
 
 
 
+/**
+ * Determine whether one of the items in the haystack is an exact match
+ * or a substring of the needle.
+ *
+ * Returns: `true` if one of the items in the haystack is an exact match
+ *          or a substring of the needle.
+ */
 bool
 isFound (
     const string[] haystack,
@@ -91,8 +105,10 @@ unittest {
     //mixin (unitTestBlockPrologue());
     const string[] arr = ["aaa", "bbb", "ccc"];
     assert (arr.isFound("aaa111"));
+    assert (arr.isFound("111aaa"));
     assert (!arr.isFound(""));
     assert (!arr.isFound("ddd"));
+
 }
 
 

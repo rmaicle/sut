@@ -1,21 +1,12 @@
 module sut.runner;
 
 import sut.config: readConfigFile;
-import sut.counter:
-    moduleCounter,
-    UnitTestCounter;
-import sut.execlist:
-    getExecutionList,
-    isInternalModule,
-    isLanguageModule,
-    isUnitTestBlockExecuted;
-import sut.skiplist:
-    skipList = moduleList,
-    isInSkipList = isFound;
+import sut.counter: unitTestCounter;
+import sut.execution: executionList;
+import sut.exclude: exclusionList;
 import sut.output:
     printAssertion,
     printIntro,
-    printModuleStart,
     printModuleSummary,
     printSummary;
 
@@ -46,55 +37,31 @@ customUnitTestRunner ()
     result.passed = 0;
     result.executed = 0;
 
-    UnitTestCounter totalCounter;
-    size_t moduleCount = 0;
-    string[] withUnitTestModules;
-    string[] noUnitTestModules;
-
-    void
-    appendToNoUnitTestList (const string arg)
-    {
-        if (!isInSkipList(arg)) {
-            noUnitTestModules ~= arg;
-        }
-    }
-
-    void
-    appendToWithUnitTestList (const string arg)
-    {
-        withUnitTestModules ~= arg;
-    }
-
     debug (verbose) printf("Compiler: %s\n", compilerName.toStringz);
 
-    getExecutionList(readConfigFile);
+    executionList.set(readConfigFile);
     printIntro();
 
     foreach (m; ModuleInfo) {
         if (!m) {
             continue;
         }
-        if (isLanguageModule(m.name)) {
+        if (isExcludedModule(m.name)) {
             continue;
         }
-        if (isInternalModule(m.name)) {
-            continue;
-        }
-        moduleCount++;
         auto fp = m.unitTest();
         if (!fp) {
-            appendToNoUnitTestList(m.name);
+            if (!exclusionList.isFound(m.name)) {
+                unitTestCounter.modulesWithout ~= m.name;
+            }
             continue;
         }
-        moduleCounter.reset();
         bool assertionOccurred = false;
-        isUnitTestBlockExecuted = false;
-        appendToWithUnitTestList(m.name);
-        printModuleStart(m.name);
+        unitTestCounter.modulesWith ~= m.name;
         immutable t0 = MonoTime.currTime;
         try {
             fp();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             // If assertion is from this module, do not print the stack trace.
             if (typeid(e) == typeid(AssertError)) {
                 if (isInternalAssertion(m.name, e.file)) {
@@ -108,25 +75,19 @@ customUnitTestRunner ()
             //
             // See std.exception.assertThrown definition.
             if (e.message.length > 0) {
-                moduleCounter.revertPassing();
+                unitTestCounter.current.revertPassing();
                 assertionOccurred = true;
                 printAssertion (m.name, e);
-                fflush(stdout);
             }
         }
-
-        if (isUnitTestBlockExecuted) {
-            printModuleSummary (m.name, moduleCounter, t0, MonoTime.currTime);
+        if (unitTestCounter.current.isSomeExecuted()) {
+            printModuleSummary (m.name, unitTestCounter, t0, MonoTime.currTime);
         }
+        unitTestCounter.accumulate();
 
-        totalCounter.add(moduleCounter);
     }
 
-    printSummary(totalCounter,
-        moduleCount,
-        withUnitTestModules,
-        skipList,
-        noUnitTestModules);
+    printSummary(unitTestCounter, exclusionList.list);
 
     // NOTE:
     // DMD 2.090.0 changed -unittest behavior and now defaults to
@@ -161,7 +122,111 @@ isInternalAssertion (
         fName = filename.tr("/", ".")[$ - moduleName.length..$];
     } else if (filename.length < moduleName.length) {
         enum SEPARATOR = ".";
-        //auto arr = mName.split(SEPARATOR);
     }
     return mName == fName;
+}
+
+
+
+private:
+
+
+
+bool
+isExcludedModule (const string arg)
+{
+    return isLanguageModule(arg)
+        || isInternalModule(arg)
+        || exclusionList.isFound(arg);
+}
+
+
+
+/**
+ * Determine whether the string argument corresponds to any D language module
+ * name.
+ *
+ * Returns: `true` if the argument is a D language module.
+ */
+bool
+isLanguageModule (const string mod)
+{
+    import std.algorithm: startsWith;
+    // Module invariant has been added since it keeps on appearing when
+    // reporting the total number of modules processed even though
+    // there is no invariant module present. What is it really?
+    return mod.startsWith("__main")
+        || mod.startsWith("core")
+        || mod.startsWith("etc")
+        || mod.startsWith("invariant")
+        || mod.startsWith("gc")
+        || mod.startsWith("object")
+        || mod.startsWith("rt")
+        || mod.startsWith("std")
+        || mod.startsWith("ldc");
+}
+@("isLanguageModule")
+unittest {
+    //mixin (unitTestBlockPrologue());
+    assert (isLanguageModule("__main"));
+    assert (isLanguageModule("core.submodule"));
+    assert (isLanguageModule("etc.submodule"));
+    assert (isLanguageModule("gc.submodule"));
+    assert (isLanguageModule("gc.submodule"));
+    assert (isLanguageModule("object.submodule"));
+    assert (isLanguageModule("rt.submodule"));
+    assert (isLanguageModule("std.submodule"));
+}
+
+
+
+/**
+ * Determines whether the string argument is equivalent to the package module's
+ * name `sut` This check is only performed when unit testing is enabled and the
+ * version identifier `sut` is not defined.
+ *
+ * Returns: `true` if the string argument is equivalent to this module's name.
+ */
+bool
+isInternalModule (const string arg)
+{
+    import std.algorithm: canFind;
+    version (sut_include_unittests) {
+        version (sut) {
+            return false;
+        } else {
+            if (arg.canFind(".")) {
+                return arg.canFind("sut.") || arg.canFind(".sut");
+            } else {
+                return arg.canFind("sut");
+            }
+        }
+    } else {
+        if (arg.canFind(".")) {
+            return arg.canFind("sut.") || arg.canFind(".sut");
+        } else {
+            return arg.canFind("sut");
+        }
+    }
+}
+@("isInternalModule")
+unittest {
+    //mixin (unitTestBlockPrologue());
+    version (sut_include_unittests) {
+        version (sut) {
+            assert (!isInternalModule(__MODULE__));
+        } else {
+            assert (isInternalModule(__MODULE__));
+        }
+    } else {
+        assert (isInternalModule(__MODULE__));
+    }
+    assert (!isInternalModule("__main"));
+    assert (!isInternalModule("core.submodule"));
+    assert (!isInternalModule("etc.submodule"));
+    assert (!isInternalModule("gc.submodule"));
+    assert (!isInternalModule("gc.submodule"));
+    assert (!isInternalModule("object.submodule"));
+    assert (!isInternalModule("rt.submodule"));
+    assert (!isInternalModule("std.submodule"));
 }

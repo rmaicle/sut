@@ -16,17 +16,16 @@ public import sut.prologue:
     executeBlock,
     getUnitTestName,
     unitTestBlockPrologue;
-public import sut.skiplist:
-    moduleList,
-    add,
-    skipModule;
+public import sut.exclude:
+    exclusionList,
+    excludeModule;
 
+version (sut) {
+    version (D_ModuleInfo):
 
-
-version (D_ModuleInfo):
-
-shared static this () {
-    import sut.runner;
-    import core.runtime: Runtime;
-    Runtime.extendedModuleUnitTester = &customUnitTestRunner;
+    shared static this () {
+        import sut.runner;
+        import core.runtime: Runtime;
+        Runtime.extendedModuleUnitTester = &customUnitTestRunner;
+    }
 }

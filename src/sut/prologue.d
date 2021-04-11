@@ -1,15 +1,8 @@
 module sut.prologue;
 
-import sut.color;
-import sut.counter;
-import sut.output:
-    printModuleStart,
-    printUnitTestInfo;
-import sut.execlist:
-    isExecutionListEmpty,
-    isInModuleExecList,
-    isInUnitTestExecList,
-    isUnitTestBlockExecuted;
+import sut.counter: unitTestCounter;
+import sut.output: printUnitTestInfo;
+import sut.execution: executionList;
 
 debug import std.stdio;
 
@@ -99,32 +92,23 @@ executeBlock (
     proceedToExecute (const bool flag) {
         // Assume it passed first
         // If an assertion occurs, subtract 1 in the exception handler code
-        moduleCounter.addPassing();
-        printUnitTestInfo(ModuleName, UnitTestName, Line);
+        unitTestCounter.current.addPassing();
+        printUnitTestInfo(ModuleName, UnitTestName, Line, unitTestCounter);
         return flag;
     }
 
-    moduleCounter.addTotal();
     version (sut) {
+        unitTestCounter.current.addTotal();
         // Filter if a selection is present. Otherwise, execute all.
-        if (isExecutionListEmpty()) {
-            isUnitTestBlockExecuted = true;
+        if (executionList.isEmpty()) {
             return proceedToExecute(true);
         }
-        if (isInModuleExecList(ModuleName)) {
-            if (!isUnitTestBlockExecuted) {
-                isUnitTestBlockExecuted = true;
-            }
+        if (executionList.isModuleFound(ModuleName)) {
             return proceedToExecute(true);
-        } else {
-            if (isInUnitTestExecList(UnitTestName)) {
-                if (!isUnitTestBlockExecuted) {
-                    isUnitTestBlockExecuted = true;
-                }
-                return proceedToExecute(true);
-            }
         }
-        moduleCounter.addSkipped();
+        if (executionList.isUnitTestFound(UnitTestName)) {
+            return proceedToExecute(true);
+        }
         return false;
     } else {
         return true;
@@ -203,5 +187,3 @@ unittest {
     int intVar;
     static assert (firstStringUDA!intVar == string.init);
 }
-
-
