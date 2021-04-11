@@ -9,8 +9,6 @@
  */
 module sut;
 
-
-
 public import sut.prologue:
     executeBlock,
     getUnitTestName,
@@ -18,6 +16,8 @@ public import sut.prologue:
 public import sut.exclude:
     exclusionList,
     excludeModule;
+
+
 
 version (sut) {
     version (D_ModuleInfo):
