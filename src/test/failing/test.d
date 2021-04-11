@@ -1,6 +1,9 @@
 module test.failing.test;
 
-import test.failing.empty;
+import test.failing.excluded;
+import test.failing.no_unittest;
+import test.failing.mul;
+
 version (unittest) {
     static import test.failing.sut_wrapper;         // changed
 }

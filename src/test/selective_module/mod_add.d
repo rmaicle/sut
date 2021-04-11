@@ -1,6 +1,5 @@
 module test.selective_module.mod_add;
 
-import test.selective_module.empty;
 version (unittest) {
     static import test.selective_module.sut_wrapper;        // changed
 }

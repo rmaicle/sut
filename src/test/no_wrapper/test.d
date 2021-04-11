@@ -1,6 +1,9 @@
 module test.no_wrapper.test;
 
 import sut;                                 // SUT module
+import test.no_wrapper.mul;
+import test.no_wrapper.no_unittest;
+import test.no_wrapper.excluded;
 
 int add (const int arg, const int n) {
     return arg + n;

@@ -1,6 +1,8 @@
 module test.with_wrapper.test;
 
-import test.with_wrapper.empty;
+import test.with_wrapper.excluded;
+import test.with_wrapper.no_unittest;
+import test.with_wrapper.mul;
 version (unittest) {
     static import test.with_wrapper.sut_wrapper;        // changed
 }
@@ -17,7 +19,7 @@ unittest {
 int sub (const int arg, const int n) {
     return arg - n;
 }
-@("subtract")
+@("sub")
 unittest {
     mixin (test.with_wrapper.sut_wrapper.prologue);     // changed
     assert (sub(10, 1) == 9);
