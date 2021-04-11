@@ -1,8 +1,7 @@
 /**
  * Selective Unit Testing (SUT) Module
  *
- * A D programming language custom unit test runner that allows selective unit
- * test execution.
+ * Custom unit testing library for selective unit test execution of D programs.
  *
  * Copyright (c) 2020-2021 Ricardo I. Maicle
  * Distributed under MIT license.
