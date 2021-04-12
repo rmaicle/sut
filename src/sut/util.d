@@ -117,6 +117,9 @@ unittest {
  * Convert string argument into array of string, stripped of whitespaces, and
  * duplicates removed.
  *
+ * The function looks for '\r', '\n', '\v', '\f', "\r\n", std.uni.lineSep,
+ * std.uni.paraSep and '\u0085' (NEL) as delimiters.
+ *
  * Returns: `string[]`
  */
 string[]
