@@ -29,6 +29,9 @@ struct UnitTestCounter
     string[] modulesWith;
     string[] modulesWithout;
 
+    // Flag whether execution is inside a unit test block with prologue code
+    UnitTestBlock unitTestBlock;
+
 
 
     /**
@@ -253,5 +256,35 @@ struct UnitTestStats
             total = arg;
             return this;
         }
+    }
+}
+
+
+
+
+/**
+ * Encapsulates a flag to be used whether execution
+ * is inside a unit test with prologue code.
+ */
+struct UnitTestBlock
+{
+    bool flag = false;
+
+    void
+    enter ()
+    {
+        flag = true;
+    }
+
+    void
+    leave ()
+    {
+        flag = false;
+    }
+
+    bool
+    isIn () const
+    {
+        return flag;
     }
 }

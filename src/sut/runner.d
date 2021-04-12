@@ -75,7 +75,9 @@ customUnitTestRunner ()
             //
             // See std.exception.assertThrown definition.
             if (e.message.length > 0) {
-                unitTestCounter.current.revertPassing();
+                if (unitTestCounter.unitTestBlock.isIn()) {
+                    unitTestCounter.current.revertPassing();
+                }
                 assertionOccurred = true;
                 printAssertion (m.name, e);
             }

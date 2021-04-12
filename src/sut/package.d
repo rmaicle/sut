@@ -16,6 +16,7 @@ public import sut.prologue:
 public import sut.exclude:
     exclusionList,
     excludeModule;
+public import sut.counter: unitTestCounter;
 
 
 
