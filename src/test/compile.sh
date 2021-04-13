@@ -4,7 +4,6 @@ declare -r CURRENT_DIR=$(pwd)
 dmd                         \
     -I=${SCRIPT_DIR}/..     \
     -I=${CURRENT_DIR}       \
-    -J=${CURRENT_DIR}       \
     -i                      \
     -main                   \
     -debug                  \
