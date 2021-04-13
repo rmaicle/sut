@@ -35,21 +35,23 @@ printUnitTestInfo (
     const size_t line,
     const UnitTestCounter counter
 ) {
-    string label;
-    if (counter.current.total == 1) {
-        label = Label.Module;
-    } else {
-        label = Label.Blank;
-    }
+    version (sut) {
+        string label;
+        if (counter.current.total == 1) {
+            label = Label.Module;
+        } else {
+            label = Label.Blank;
+        }
 
-    printf("%s %s %4zd %s%s%s\n",
-        label.toStringz,
-        moduleName.toStringz,
-        line,
-        Color.Green.toStringz,
-        unitTestName.toStringz,
-        Color.Reset.toStringz);
-    fflush(stdout);
+        printf("%s %s %4zd %s%s%s\n",
+            label.toStringz,
+            moduleName.toStringz,
+            line,
+            Color.Green.toStringz,
+            unitTestName.toStringz,
+            Color.Reset.toStringz);
+        fflush(stdout);
+    }
 }
 
 
