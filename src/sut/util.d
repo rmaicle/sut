@@ -53,6 +53,8 @@ unittest {
     //mixin (unitTestBlockPrologue());
     const string[] arr = ["aaa", "bbb", "ccc"];
     assert (arr.beginsWith("aaa"));
+    assert (arr.beginsWith("bbb"));
+    assert (arr.beginsWith("ccc"));
     assert (!arr.beginsWith(""));
     assert (!arr.beginsWith("any"));
 }
@@ -205,54 +207,14 @@ unittest {
 
 
 /**
- * Filter the string array argument containing the specified prefix argument
- * irrespective of case variance.
- *
- * Returns: a sorted `string[]` without the specified prefix.
+ * Remove the prefix string and separator character from the string argument.
  */
-string[]
+string
 unprefix (
-    const string[] arg,
-    const string prefix
+    const string arg,
+    const string prefix,
+    const size_t separatorLength = 0
 ) {
-    import std.algorithm: filter, map, sort, SwapStrategy;
-    import std.array: array;
-    import std.string: startsWith;
-    import std.uni: toLower;
-
-    if (arg.length == 0) {
-        return (string[]).init;
-    }
-    return arg.filter!(a => a.toLower.startsWith(toLower(prefix)))
-        .map!(a => a[prefix.length..$])
-        .array()
-        .sort!("toUpper(a) < toUpper(b)", SwapStrategy.stable)
-        .array();
-}
-@("unprefix: empty array")
-unittest {
-    //mixin (unitTestBlockPrologue());
-    assert ((string[]).init.unprefix("") == []);
-}
-@("unprefix: with empty prefix")
-unittest {
-    //mixin (unitTestBlockPrologue());
-    string[] arr = [
-        "prefix:one",
-        "PREFIX:two",
-        "three",
-        "four"
-    ];
-    assert (unprefix(arr, "") == ["four", "prefix:one", "PREFIX:two", "three"]);
-}
-@("unprefix")
-unittest {
-    //mixin (unitTestBlockPrologue());
-    string[] arr = [
-        "prefix:one",
-        "PREFIX:two",
-        "preFIX:three: name",
-        "four"
-    ];
-    assert (unprefix(arr, "prefix:") == ["one", "three: name", "two"]);
+    import std.string: strip;
+    return (arg[prefix.length + separatorLength..$]).strip();
 }

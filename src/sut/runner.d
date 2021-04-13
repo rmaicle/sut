@@ -1,6 +1,6 @@
 module sut.runner;
 
-import sut.config: readConfigFile;
+import sut.config: config;
 import sut.counter: unitTestCounter;
 import sut.execution: executionList;
 import sut.exclude: exclusionList;
@@ -9,6 +9,7 @@ import sut.output:
     printIntro,
     printModuleSummary,
     printSummary;
+import sut.runtime: Runtime;
 
 import core.exception: AssertError;
 import core.runtime: UnitTestResult;
@@ -29,17 +30,22 @@ customUnitTestRunner ()
     import std.compiler: compilerName = name;
     import std.string: join, toStringz;
 
-    import core.runtime;
     import core.stdc.stdio: fflush, printf, stdout;
     import core.time: MonoTime;
 
     UnitTestResult result;
     result.passed = 0;
     result.executed = 0;
+    if (Runtime.exitFlag) {
+        return result;
+    }
 
     debug (verbose) printf("Compiler: %s\n", compilerName.toStringz);
 
-    executionList.set(readConfigFile);
+    executionList.unittests = config.unittests;
+    executionList.modules = config.modules;
+    config.reset();
+
     printIntro();
 
     foreach (m; ModuleInfo) {

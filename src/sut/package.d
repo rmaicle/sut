@@ -23,9 +23,49 @@ public import sut.counter: unitTestCounter;
 version (sut) {
     version (D_ModuleInfo):
 
+    static import sut.runtime;
+
     shared static this () {
-        import sut.runner;
+        import sut.runner: customUnitTestRunner;
         import core.runtime: Runtime;
+        sut.runtime.Runtime.exitFlag = handleArguments(Runtime.args());
+        // When Runtime.exitFlag is true, we exit from the unit test runner
+        // because we cannot exit here.
         Runtime.extendedModuleUnitTester = &customUnitTestRunner;
+    }
+
+
+
+    bool
+    handleArguments (const string[] arg)
+    {
+        import sut.config: config;
+        import sut.util: unprefix;
+
+        import std.exception: enforce;
+        import std.file: exists;
+        import std.format: format;
+        import std.getopt;
+        import std.string: startsWith;
+
+        enum FILE_NOT_FOUND = "File not found: %s";
+
+        string[] arguments = arg.dup;
+        string[] files;
+        auto helpInfo = getopt(
+            arguments,
+            "config|c", "configuration file", &files);
+        if (helpInfo.helpWanted) {
+            defaultGetoptPrinter("SUT command-line options:", helpInfo.options);
+            return true;
+        }
+        if (files.length == 0) {
+            return false;
+        }
+        foreach (file; files) {
+            enforce(file.exists(), format(FILE_NOT_FOUND, file));
+            config.read(file);
+        }
+        return false;
     }
 }

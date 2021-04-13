@@ -1,12 +1,9 @@
 module sut.execution;
 
-import sut.config:
-    getModules,
-    getUnitTestBlocks;
+import sut.config: config;
 import sut.util:
     beginsWith,
-    isFound,
-    toArray;
+    isFound;
 
 
 /**
@@ -29,13 +26,11 @@ struct ExecutionList
     /**
      * Names of unit tests to be executed.
      */
-    static
     string[] unittests;
 
     /**
      * Names of modules to be executed.
      */
-    static
     string[] modules;
 
 
@@ -76,62 +71,30 @@ struct ExecutionList
     {
         return unittests.length == 0 && modules.length == 0;
     }
-
-
-
-    /**
-     * Get the module and unittest block execution list.
-     * Populate the unit test block and module execution lists.
-     *
-     */
-    void
-    set (const string arg = string.init)
-    {
-        const arr = arg.toArray();
-        unittests = arr.getUnitTestBlocks();
-        modules = arr.getModules();
-    }
 }
-@("Execution: empty")
+@("ExecutionList: empty")
 unittest {
     //mixin (unitTestBlockPrologue());
     ExecutionList exec;
-    exec.set();
     assert (exec.isEmpty());
     assert (exec.unittests == (string[]).init);
     assert (exec.modules == (string[]).init);
 }
-@("Execution: spaces and new lines only")
+@("ExecutionList: unittests")
 unittest {
     //mixin (unitTestBlockPrologue());
-    enum INPUT=" \n \n \n";
     ExecutionList exec;
-    exec.set(INPUT);
-    assert (exec.isEmpty());
-    assert (exec.unittests == (string[]).init);
-    assert (exec.modules == (string[]).init);
-}
-@("Execution: unittests")
-unittest {
-    //mixin (unitTestBlockPrologue());
-    enum INPUT="utb:one\nutb:two\n\nutb:three";
-    ExecutionList exec;
-    exec.set(INPUT);
-    assert (!exec.isEmpty());
-    assert (exec.unittests == ["one", "three", "two"]);
-    assert (exec.modules == (string[]).init);
+    exec.unittests = ["one", "three", "two"];
+    exec.modules = (string[]).init;
     assert (exec.isUnitTestFound("unit test: two"));
     assert (!exec.isModuleFound("two"));
 }
-@("Execution: modules")
+@("ExecutionList: modules")
 unittest {
     //mixin (unitTestBlockPrologue());
-    enum INPUT="utm:one\nutm:two\n\nutm:three";
     ExecutionList exec;
-    exec.set(INPUT);
-    assert (!exec.isEmpty());
-    assert (exec.unittests == (string[]).init);
-    assert (exec.modules == ["one", "three", "two"]);
+    exec.unittests = (string[]).init;
+    exec.modules = ["one", "three", "two"];
     assert (!exec.isUnitTestFound("two"));
     assert (!exec.isModuleFound("module two"));
     assert (exec.isModuleFound("two"));

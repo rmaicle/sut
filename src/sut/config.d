@@ -10,93 +10,62 @@ debug import std.stdio;
 
 
 /**
- * Unit test configuration file.
- *
- * This is where unit tests that will be executed are specified.
- * If this file is empty, then all unit tests will be executed.
- *
- * Unit test blocks are specified using the `utb` keyword.
- * Unit test modules are specified using the `utm` keyword.
+ * Static `Config` instance.
  */
-enum UNITTEST_CONFIG_FILE = "unittest.conf";
-enum BLOCK_PREFIX = "utb:";
-enum MODULE_PREFIX = "utm:";
+static
+Config config;
 
 
 
-/**
- * Read the contents of `UNITTEST_CONFIG_FILE`.
- *
- * Returns: `string`
- */
-string
-readConfigFile ()
+private:
+
+
+
+enum BLOCK_PREFIX = "utb";
+enum MODULE_PREFIX = "utm";
+enum SEPARATOR = ":";
+
+
+
+struct Config
 {
-    return import(UNITTEST_CONFIG_FILE);
-}
+    string[] unittests;
+    string[] modules;
+    string[] unknown;
 
 
 
-/**
- * Filter the string array argument containing the prefix string 'utb:'.
- *
- * Returns: `string[]` without the prefix string 'utb:'.
- */
-string[]
-getUnitTestBlocks (const string[] arg)
-{
-    if (arg.length == 0) {
-        return (string[]).init;
+    /**
+     * Read the contents of the file specified by the string argument.
+     */
+    void
+    read (const string arg)
+    {
+        import std.file: readText;
+        import std.algorithm: startsWith;
+        auto content = arg.readText().toArray();
+        foreach (item; content) {
+            if (item.startsWith(BLOCK_PREFIX)) {
+                unittests ~= item.unprefix(BLOCK_PREFIX, SEPARATOR.length);
+            } else if (item.startsWith(MODULE_PREFIX)) {
+                modules ~= item.unprefix(MODULE_PREFIX, SEPARATOR.length);
+            } else {
+                unknown ~= item;
+                writeln ("Unknown configuration item: ", item);
+            }
+        }
     }
-    return unprefix(arg, BLOCK_PREFIX);
-}
-@("getUnitTestBlocks: empty array")
-unittest {
-    //mixin (unitTestBlockPrologue());
-    assert ((string[]).init.getUnitTestBlocks == []);
-}
-@("getUnitTestBlocks")
-unittest {
-    //mixin (unitTestBlockPrologue());
-    string[] arr = [
-        "utb:one",
-        "utb:two",
-        "utm:three",
-        "",
-        "utm:four"
-    ];
-    assert (arr.getUnitTestBlocks == ["one", "two"]);
-}
 
 
 
-/**
- * Filter the string array argument containing the prefix string 'utm:'.
- *
- * Returns: `string[]` without the prefix string 'utm:'.
- */
-string[]
-getModules (const string[] arg)
-{
-    if (arg.length == 0) {
-        return (string[]).init;
+    /**
+     * Initialize fields to defaults.
+     */
+    void
+    reset ()
+    {
+        unittests = (string[]).init;
+        modules = (string[]).init;
+        unknown = (string[]).init;
     }
-    return unprefix(arg, MODULE_PREFIX);
-}
-@("getModules: empty array")
-unittest {
-    //mixin (unitTestBlockPrologue());
-    assert ((string[]).init.getModules == []);
-}
-@("getModules")
-unittest {
-    //mixin (unitTestBlockPrologue());
-    string[] arr = [
-        "utb:one",
-        "utb:two",
-        "utm:three",
-        "",
-        "utm:four"
-    ];
-    assert (arr.getModules == ["four", "three"]);
 }
