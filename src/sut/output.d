@@ -368,7 +368,7 @@ void
 printSummaryExcludedUnitTests (const string[] arg)
 {
     // Note the reversed color arguments
-    printSummaryCategory(arg, Module.Excluded, Color.Yellow, Color.IGreen);
+    printSummaryCategory(arg, Module.Excluded, Color.Reset, Color.Reset);
 }
 
 
