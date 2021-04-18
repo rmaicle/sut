@@ -189,8 +189,8 @@ unittest {
 
 
 /**
- * Determines whether the string argument is equivalent to the package module's
- * name `sut` This check is only performed when unit testing is enabled and the
+ * Determine whether the string argument is equal to the package name `sut`.
+ * This check is only performed when unit testing is enabled and the
  * version identifier `sut` is not defined.
  *
  * Returns: `true` if the string argument is equivalent to this module's name.
@@ -201,6 +201,9 @@ isInternalModule (const string arg)
     import std.algorithm: canFind;
     version (sut_internal_unittest) {
         version (sut) {
+            // We are testing the `sut` package so we explicitly
+            // tell the calling routine that the string argument
+            // is not an internal module whatever its value may be.
             return false;
         } else {
             assert (false, `This should be unreachable.

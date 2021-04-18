@@ -23,10 +23,26 @@ UnitTestCounter unitTestCounter;
  */
 struct UnitTestCounter
 {
+    /**
+     * Unit test counter for the current module.
+     */
     UnitTestStats current;
+
+    /**
+     * Unit test counter for all modules.
+     */
     UnitTestStats all;
 
+    // These two arrays are filled from the custom unit test runner.
+
+    /**
+     * Modules with unit tests.
+     */
     string[] modulesWith;
+
+    /**
+     * Modules without unit tests.
+     */
     string[] modulesWithout;
 
     /**
@@ -34,7 +50,10 @@ struct UnitTestCounter
      * Compared with `modulesWith` (modules with unit tests)
      */
     string[] modulesWithPrologue;
-    // Flag whether execution is inside a unit test block with prologue code
+
+    /**
+     * Flag whether execution is inside a unit test block with prologue code.
+     */
     UnitTestBlock unitTestBlock;
 
 

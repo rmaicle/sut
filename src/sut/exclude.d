@@ -100,7 +100,10 @@ struct ExclusionList
 
 
     /**
-     * Filter the list.
+     * Filter the list by removing duplicates and removing items found
+     * in the array string argument.
+     *
+     * Returns: `string[]` as the filtered list.
      */
     string[]
     filter (const string[] arg)
