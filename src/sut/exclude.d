@@ -8,6 +8,15 @@ debug import std.stdio;
 
 
 
+static this () {
+    version (sut_internal_unittest) {
+        exclusionList.add("sut");
+        exclusionList.add("sut.output");
+        exclusionList.add("sut.runtime");
+        exclusionList.add("sut.wrapper");
+    }
+}
+
 /**
  * Holds the list of modules to be excluded from exection.
  *
