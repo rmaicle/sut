@@ -123,7 +123,9 @@ printSummary (
     const passColor = counter.all.isAllPassing() ? Color.IGreen : Color.Yellow ;
     const failColor = counter.all.isNoneFailing() ? Color.IGreen: Color.IRed ;
 
-    printf("\n%s %s%zd passed%s, %s%zd failed%s, %zd found\n",
+    printf("%s ========================================\n",
+        Label.Blank.toStringz);
+    printf("%s %s%zd passed%s, %s%zd failed%s, %zd found\n",
         Label.Summary.toStringz,
         passColor.toStringz, counter.all.passing, Color.Reset.toStringz,
         failColor.toStringz, counter.all.failing, Color.Reset.toStringz,
