@@ -168,10 +168,10 @@ isLanguageModule (const string mod)
         || mod.startsWith("etc")
         || mod.startsWith("invariant")
         || mod.startsWith("gc")
+        || mod.startsWith("ldc")
         || mod.startsWith("object")
         || mod.startsWith("rt")
-        || mod.startsWith("std")
-        || mod.startsWith("ldc");
+        || mod.startsWith("std");
 }
 @("isLanguageModule")
 unittest {
