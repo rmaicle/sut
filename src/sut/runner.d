@@ -203,11 +203,9 @@ isInternalModule (const string arg)
         version (sut) {
             return false;
         } else {
-            if (arg.canFind(".")) {
-                return arg.canFind("sut.") || arg.canFind(".sut");
-            } else {
-                return arg.canFind("sut");
-            }
+            assert (false, `This should be unreachable.
+Compiling with version identifier 'sut_internal_unittest'
+requires 'sut' version definition.`);
         }
     } else {
         if (arg.canFind(".")) {
