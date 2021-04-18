@@ -21,7 +21,17 @@ import core.time: MonoTime;
 void
 printIntro ()
 {
-    printf("%s %s\n", Label.Start.toStringz, getCurrentTimeString().toStringz);
+    static import std.compiler;
+
+    printDateTime(Label.Start);
+    printf("%s %s version %d.%d\n",
+        Label.Blank.toStringz,
+        std.compiler.name.toStringz,
+        std.compiler.version_major,
+        std.compiler.version_minor);
+    printf("%s D specification version %d\n",
+        Label.Blank.toStringz,
+        std.compiler.D_major);
     auto mode = getExecutionMode();
     printf("%s %s\n", Label.Mode.toStringz, mode.toStringz);
     if (mode != ExecutionMode.Selection) {
