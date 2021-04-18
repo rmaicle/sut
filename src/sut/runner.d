@@ -199,7 +199,7 @@ bool
 isInternalModule (const string arg)
 {
     import std.algorithm: canFind;
-    version (sut_include_unittests) {
+    version (sut_internal_unittest) {
         version (sut) {
             return false;
         } else {
@@ -220,7 +220,7 @@ isInternalModule (const string arg)
 @("isInternalModule")
 unittest {
     //mixin (unitTestBlockPrologue());
-    version (sut_include_unittests) {
+    version (sut_internal_unittest) {
         version (sut) {
             assert (!isInternalModule(__MODULE__));
         } else {
