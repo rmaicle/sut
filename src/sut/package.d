@@ -20,6 +20,16 @@ public import sut.counter: unitTestCounter;
 
 
 
+version (sut_internal_unittest) {
+    version (sut) { } else {
+        enum ERR_MSG = `Compiling with version identifier 'sut_internal_unittest'
+    requires 'sut' version definition.`;
+        static assert (false, ERR_MSG);
+    }
+}
+
+
+
 version (sut) {
     version (D_ModuleInfo):
 
