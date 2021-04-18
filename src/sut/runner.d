@@ -28,7 +28,6 @@ debug import std.stdio;
 UnitTestResult
 customUnitTestRunner ()
 {
-    import std.compiler: compilerName = name;
     import std.string: join, toStringz;
 
     import core.stdc.stdio: fflush, printf, stdout;
@@ -40,8 +39,6 @@ customUnitTestRunner ()
     if (Runtime.exitFlag) {
         return result;
     }
-
-    debug (verbose) printf("Compiler: %s\n", compilerName.toStringz);
 
     executionList.unittests = config.unittests;
     executionList.modules = config.modules;
