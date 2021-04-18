@@ -8,7 +8,8 @@ import sut.output:
     printAssertion,
     printIntro,
     printModuleSummary,
-    printSummary;
+    printSummary,
+    printUnknownSelections;
 import sut.runtime: Runtime;
 
 import core.exception: AssertError;
@@ -44,9 +45,11 @@ customUnitTestRunner ()
 
     executionList.unittests = config.unittests;
     executionList.modules = config.modules;
-    config.reset();
-
-    printIntro();
+    {
+        scope (exit) config.reset();
+        printIntro();
+        printUnknownSelections(config);
+    }
 
     foreach (m; ModuleInfo) {
         if (!m) {

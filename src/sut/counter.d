@@ -29,6 +29,11 @@ struct UnitTestCounter
     string[] modulesWith;
     string[] modulesWithout;
 
+    /**
+     * Modules with unit test prologue code.
+     * Compared with `modulesWith` (modules with unit tests)
+     */
+    string[] modulesWithPrologue;
     // Flag whether execution is inside a unit test block with prologue code
     UnitTestBlock unitTestBlock;
 
@@ -55,6 +60,14 @@ struct UnitTestCounter
         counter.current.setTotal(1).setFailing(1);
         counter.accumulate();
         assert (counter.all == UnitTestStats(2).setPassing(1).setFailing(1));
+    }
+
+
+
+    void
+    addModulesWithPrologue (const string arg)
+    {
+        modulesWithPrologue ~= arg;
     }
 
 }

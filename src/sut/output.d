@@ -1,7 +1,11 @@
 module sut.output;
 
+import sut.config:
+    Config,
+    Unknown;
 import sut.counter: UnitTestCounter;
 import sut.execution: executionList;
+import sut.util: beginsWith;
 
 import std.string: toStringz;
 import std.traits: ReturnType;
@@ -24,6 +28,24 @@ printIntro ()
         return;
     }
     printSelections();
+}
+
+
+
+void
+printUnknownSelections (const Config arg)
+{
+    enum UNKNOWN_FMTS = "%s   x:      %s (%s)\n";
+    const label = Label.Blank.toStringz;
+    if (!arg.hasUnknowns()) {
+        return;
+    }
+    foreach (file; arg.unknown) {
+        const filename = file.filename.toStringz;
+        foreach (item; file.content) {
+            printf(UNKNOWN_FMTS, label, item.toStringz, filename);
+        }
+    }
 }
 
 
@@ -111,7 +133,7 @@ printSummary (
         excludeList.length,
         Module.Excluded.toLower.toStringz);
 
-    printSummaryWithUnitTests(counter.modulesWith);
+    printSummaryWithUnitTests(counter.modulesWith, counter.modulesWithPrologue);
     printSummaryWithoutUnitTests(counter.modulesWithout);
     printSummaryExcludedUnitTests(excludeList);
 
@@ -282,9 +304,42 @@ getCurrentTimeString ()
 
 
 void
-printSummaryWithUnitTests (const string[] arg)
-{
-    printSummaryCategory(arg, Module.WithUnitTest, Color.IGreen, Color.IRed);
+printSummaryWithUnitTests (
+    const string[] modulesWithUnitTests,
+    const string[] modulesWithPrologue
+) {
+    import std.algorithm: sort;
+
+    alias GoodColor = Color.IGreen;
+    alias BadColor = Color.IRed;
+    const AttentionColor = Color.Yellow.toStringz;
+    const ResetColor = Color.Reset.toStringz;
+    const color = modulesWithUnitTests.length == 0 ? BadColor : GoodColor;
+
+    printf("%s %s%s (%zd)%s\n",
+        Label.List.toStringz,
+        color.toStringz,
+        Module.WithUnitTest.toStringz,
+        modulesWithUnitTests.length,
+        Color.Reset.toStringz);
+    printf("%s Module(s) without prologue code have asterisk (*)\n",
+        Label.Blank.toStringz);
+
+    if (modulesWithUnitTests.length == 0) {
+        return;
+    }
+
+    foreach (item; (modulesWithUnitTests.dup).sort.release()) {
+        if (modulesWithPrologue.beginsWith(item)) {
+            printf("%s     %s\n", Label.Blank.toStringz, item.toStringz);
+        } else {
+            printf("%s     %s%s *%s\n",
+                Label.Blank.toStringz,
+                AttentionColor,
+                item.toStringz,
+                ResetColor);
+        }
+    }
 }
 
 

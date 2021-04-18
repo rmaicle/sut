@@ -42,6 +42,7 @@ sut.unitTestCounter.unitTestBlock.enter();
 scope (exit) sut.unitTestCounter.unitTestBlock.leave();` ~
 format!("\nenum %s = sut.getUnitTestName!dummyXYZ;")(UnitTestName) ~
 format!("\nenum %s = moduleName!dummyXYZ;")(ModuleName) ~
+format!("\nsut.unitTestCounter.addModulesWithPrologue(%s);")(ModuleName) ~
 format!("\nif (sut.executeBlock!(%s, %s, %d)() == false) { return; }")(
     ModuleName,
     UnitTestName,

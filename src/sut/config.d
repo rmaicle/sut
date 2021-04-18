@@ -17,13 +17,32 @@ Config config;
 
 
 
-private:
+struct FileContent
+{
+    string filename;
+    string[] content;
 
+    this (
+        const string arg,
+        const string[] args
+    ) {
+        filename = arg;
+        content = args.dup;
+    }
 
+    /**
+     * Determine whether the container is empty.
+     *
+     * Returns: `true` if the container is empty.
+     */
+    bool
+    isEmpty () const
+    {
+        return content.length == 0;
+    }
+}
 
-enum BLOCK_PREFIX = "utb";
-enum MODULE_PREFIX = "utm";
-enum SEPARATOR = ":";
+alias Unknown = FileContent;
 
 
 
@@ -31,28 +50,48 @@ struct Config
 {
     string[] unittests;
     string[] modules;
-    string[] unknown;
+    Unknown[] unknown;
 
 
 
     /**
      * Read the contents of the file specified by the string argument.
      */
-    void
-    read (const string arg)
+    FileContent
+    readFile (const string arg)
     {
         import std.file: readText;
+        FileContent file;
+        file.filename = arg;
+        file.content = arg.readText().toArray();
+        return file;
+    }
+
+
+
+    /**
+     * Segregate items into corresponding containers.
+     */
+    void
+    filter (const FileContent arg)
+    {
         import std.algorithm: startsWith;
-        auto content = arg.readText().toArray();
-        foreach (item; content) {
+        enum BLOCK_PREFIX = "utb";
+        enum MODULE_PREFIX = "utm";
+        enum SEPARATOR = ":";
+        Unknown localUnknown;
+        localUnknown.filename = arg.filename;
+        foreach (item; arg.content) {
             if (item.startsWith(BLOCK_PREFIX)) {
                 unittests ~= item.unprefix(BLOCK_PREFIX, SEPARATOR.length);
             } else if (item.startsWith(MODULE_PREFIX)) {
                 modules ~= item.unprefix(MODULE_PREFIX, SEPARATOR.length);
             } else {
-                unknown ~= item;
-                writeln ("Unknown configuration item: ", item);
+                localUnknown.content ~= item;
             }
+        }
+        if (!localUnknown.isEmpty()) {
+            unknown ~= localUnknown;
         }
     }
 
@@ -66,6 +105,19 @@ struct Config
     {
         unittests = (string[]).init;
         modules = (string[]).init;
-        unknown = (string[]).init;
+        unknown = (Unknown[]).init;
+    }
+
+
+
+    /**
+     * Determine whether the unknown container has items.
+     */
+    bool
+    hasUnknowns () const
+    {
+        return unknown.length > 0;
+    }
+}
     }
 }
