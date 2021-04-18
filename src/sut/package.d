@@ -28,7 +28,9 @@ version (sut) {
     shared static this () {
         import sut.runner: customUnitTestRunner;
         import core.runtime: Runtime;
-        sut.runtime.Runtime.exitFlag = handleArguments(Runtime.args());
+        if (!handleArguments(Runtime.args())) {
+            sut.runtime.Runtime.exitFlag = true;
+        }
         // When Runtime.exitFlag is true, we exit from the unit test runner
         // because we cannot exit here.
         Runtime.extendedModuleUnitTester = &customUnitTestRunner;
