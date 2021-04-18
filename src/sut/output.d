@@ -250,8 +250,8 @@ enum ExecutionMode: string {
 
 /** Output labels */
 enum Label: string {
-    Start               = "[unittest] Start   ",
     Blank               = "[unittest]         ",
+    Start               = "[unittest] Start   ",
     Mode                = "[unittest] Mode:   ",
     Module              = "[unittest] Module: ",
     Summary             = "[unittest] Summary:",
