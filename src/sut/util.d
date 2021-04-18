@@ -155,7 +155,7 @@ unittest {
 @("toArray")
 unittest {
     //mixin (unitTestBlockPrologue());
-    const arr = " utb:one\n utb:two \n utm:three \nutm:four\nutb:one\n   utb:two ";
+    const arr = " utb:one\n utb:two \n utm:three \nutm:four\nutb:one\nutb:two ";
     assert (arr.toArray() == ["utb:one", "utb:two", "utm:four", "utm:three"]);
 }
 
