@@ -4,6 +4,7 @@ import sut.util:
     dedup,
     remove;
 
+static import sut.wrapper;
 debug import std.stdio;
 
 
@@ -74,8 +75,9 @@ struct ExclusionList
             list ~= arg;
         }
     }
-    @("add")
+    @("ExclusionList.add")
     unittest {
+        mixin (sut.wrapper.prologue);
         ExclusionList exclusion;
         exclusion.add("one");
         exclusion.add("one");
@@ -98,8 +100,9 @@ struct ExclusionList
         import std.algorithm: canFind;
         return list.canFind(arg);
     }
-    @("isFound")
+    @("ExclusionList.isFound")
     unittest {
+        mixin (sut.wrapper.prologue);
         ExclusionList exclusion;
         exclusion.list = ["one", "two"];
         assert (exclusion.isFound("one"));
@@ -118,5 +121,14 @@ struct ExclusionList
     filter (const string[] arg)
     {
         return list.dedup.remove(arg);
+    }
+    @("ExclusionList.filter")
+    unittest {
+        mixin (sut.wrapper.prologue);
+        ExclusionList exclusion;
+        exclusion.list = ["one", "two", "one", "two"];
+        assert (exclusion.filter(["one"]) == ["two"]);
+        exclusion.list = ["one", "two", "one", "two"];
+        assert (exclusion.filter(["two"]) == ["one"]);
     }
 }

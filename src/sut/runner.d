@@ -15,6 +15,7 @@ import sut.runtime: Runtime;
 import core.exception: AssertError;
 import core.runtime: UnitTestResult;
 
+static import sut.wrapper;
 debug import std.stdio;
 
 
@@ -175,7 +176,7 @@ isLanguageModule (const string mod)
 }
 @("isLanguageModule")
 unittest {
-    //mixin (unitTestBlockPrologue());
+    mixin (sut.wrapper.prologue);
     assert (isLanguageModule("__main"));
     assert (isLanguageModule("core.submodule"));
     assert (isLanguageModule("etc.submodule"));
@@ -220,7 +221,7 @@ requires 'sut' version definition.`);
 }
 @("isInternalModule")
 unittest {
-    //mixin (unitTestBlockPrologue());
+    mixin (sut.wrapper.prologue);
     version (sut_internal_unittest) {
         version (sut) {
             assert (!isInternalModule(__MODULE__));

@@ -5,6 +5,8 @@ import sut.util:
     beginsWith,
     isFound;
 
+static import sut.wrapper;
+
 
 /**
  * Holds a collection of modules and unit test blocks to be executed.
@@ -74,7 +76,7 @@ struct ExecutionList
 }
 @("ExecutionList: empty")
 unittest {
-    //mixin (unitTestBlockPrologue());
+    mixin (sut.wrapper.prologue);
     ExecutionList exec;
     assert (exec.isEmpty());
     assert (exec.unittests == (string[]).init);
@@ -82,19 +84,21 @@ unittest {
 }
 @("ExecutionList: unittests")
 unittest {
-    //mixin (unitTestBlockPrologue());
+    mixin (sut.wrapper.prologue);
     ExecutionList exec;
     exec.unittests = ["one", "three", "two"];
     exec.modules = (string[]).init;
+    assert (!exec.isEmpty());
     assert (exec.isUnitTestFound("unit test: two"));
     assert (!exec.isModuleFound("two"));
 }
 @("ExecutionList: modules")
 unittest {
-    //mixin (unitTestBlockPrologue());
+    mixin (sut.wrapper.prologue);
     ExecutionList exec;
     exec.unittests = (string[]).init;
     exec.modules = ["one", "three", "two"];
+    assert (!exec.isEmpty());
     assert (!exec.isUnitTestFound("two"));
     assert (!exec.isModuleFound("module two"));
     assert (exec.isModuleFound("two"));

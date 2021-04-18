@@ -4,6 +4,8 @@ import sut.counter: unitTestCounter;
 import sut.output: printUnitTestInfo;
 import sut.execution: executionList;
 
+static import sut.wrapper;
+
 debug import std.stdio;
 
 
@@ -139,14 +141,14 @@ isStringUDA (alias T)
 }
 @("isStringUDA: string")
 unittest {
-    //mixin (unitTestBlockPrologue());
+    mixin (sut.wrapper.prologue);
     @("string variable")
     string stringVar;
     static assert (isStringUDA!(__traits(getAttributes, stringVar)));
 }
 @("isStringUDA: not a string")
 unittest {
-    //mixin (unitTestBlockPrologue());
+    mixin (sut.wrapper.prologue);
     @(123)
     int intVar;
     static assert (isStringUDA!(__traits(getAttributes, intVar)) == false);
@@ -172,21 +174,21 @@ firstStringUDA (alias T)
 }
 @("firstStringUDA: string")
 unittest {
-    //mixin (unitTestBlockPrologue());
+    mixin (sut.wrapper.prologue);
     @("123")
     int intVar;
     static assert (firstStringUDA!intVar == "123");
 }
 @("firstStringUDA: integer")
 unittest {
-    //mixin (unitTestBlockPrologue());
+    mixin (sut.wrapper.prologue);
     @(123)
     int intVar;
     static assert (firstStringUDA!intVar == string.init);
 }
 @("firstStringUDA: empty")
 unittest {
-    //mixin (unitTestBlockPrologue());
+    mixin (sut.wrapper.prologue);
     int intVar;
     static assert (firstStringUDA!intVar == string.init);
 }

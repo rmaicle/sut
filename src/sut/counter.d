@@ -2,6 +2,7 @@ module sut.counter;
 
 import sut.prologue;
 
+static import sut.wrapper;
 debug import std.stdio;
 
 
@@ -71,6 +72,7 @@ struct UnitTestCounter
     }
     @("accumulate")
     unittest {
+        mixin (sut.wrapper.prologue);
         auto counter = UnitTestCounter();
         counter.current.setTotal(1).setPassing(1);
         counter.accumulate();
@@ -167,6 +169,7 @@ struct UnitTestStats
     }
     @("revertPassing")
     unittest {
+        mixin (sut.wrapper.prologue);
         auto stats = UnitTestStats(1).setPassing(1);
         stats.revertPassing();
         assert (stats == UnitTestStats(1).setFailing(1));
@@ -188,6 +191,7 @@ struct UnitTestStats
     }
     @("isUnset")
     unittest {
+        mixin (sut.wrapper.prologue);
         alias Stats = UnitTestStats;
         assert (Stats().isUnset());
         assert (!Stats(1).isUnset());
@@ -208,6 +212,7 @@ struct UnitTestStats
     }
     @("isAllPassing")
     unittest {
+        mixin (sut.wrapper.prologue);
         alias Stats = UnitTestStats;
         assert (Stats().isUnset());
         assert (Stats().isAllPassing());
@@ -230,6 +235,7 @@ struct UnitTestStats
     }
     @("isNoneFailing")
     unittest {
+        mixin (sut.wrapper.prologue);
         alias Stats = UnitTestStats;
         assert (Stats().isNoneFailing());
         assert (Stats(7).setPassing(7).isNoneFailing());
@@ -248,6 +254,15 @@ struct UnitTestStats
     isSomeExecuted () const
     {
         return total > 0 && (passing > 0 || failing > 0);
+    }
+    @("isSomeExecuted")
+    unittest {
+        mixin (sut.wrapper.prologue);
+        alias Stats = UnitTestStats;
+        assert (!Stats().isSomeExecuted());
+        assert (Stats(7).setPassing(7).isSomeExecuted());
+        assert (Stats(7).setPassing(5).isSomeExecuted());
+        assert (Stats(7).setFailing(2).isSomeExecuted());
     }
 
 

@@ -1,10 +1,10 @@
 module sut.config;
 
-import sut.prologue;
 import sut.util:
     toArray,
     unprefix;
 
+static import sut.wrapper;
 debug import std.stdio;
 
 
@@ -119,5 +119,46 @@ struct Config
         return unknown.length > 0;
     }
 }
+@("Config.readFile")
+unittest {
+    mixin (sut.wrapper.prologue);
+    enum content = `
+utb:one
+utb:two
+utm:first
+utm:second
+utb:three
+utm:third
+x
+`;
+    static import std.file;
+    import std.string: strip, splitLines;
+
+    const TestFile = std.file.tempDir() ~ "/config.test";
+    const unknown = Unknown(TestFile, ["x"]);
+
+    if (std.file.exists(TestFile)) {
+        std.file.remove(TestFile);
     }
+    assert (!std.file.exists(TestFile));
+    std.file.write(TestFile, content);
+    assert (std.file.exists(TestFile));
+
+    Config conf;
+    const fileContent = conf.readFile(TestFile);
+    assert (!fileContent.isEmpty);
+    conf.filter(fileContent);
+
+    assert (conf.unittests == ["one", "three", "two"]);
+    assert (conf.modules == ["first", "second", "third"]);
+    assert (conf.hasUnknowns());
+    assert (conf.unknown == [Unknown(TestFile, ["x"])]);
+
+    conf.reset();
+    assert (conf.unittests == (string[]).init);
+    assert (conf.modules == (string[]).init);
+    assert (!conf.hasUnknowns());
+
+    std.file.remove(TestFile);
+    assert (!std.file.exists(TestFile));
 }

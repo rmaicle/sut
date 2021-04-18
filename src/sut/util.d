@@ -1,5 +1,7 @@
 module sut.util;
 
+static import sut.wrapper;
+
 
 
 /**
@@ -44,13 +46,13 @@ beginsWith (
 }
 @("beginsWith: empty")
 unittest {
-    //mixin (unitTestBlockPrologue());
+    mixin (sut.wrapper.prologue);
     const string[] arr;
     assert (!arr.beginsWith(__MODULE__));
 }
 @("beginsWith: exact")
 unittest {
-    //mixin (unitTestBlockPrologue());
+    mixin (sut.wrapper.prologue);
     const string[] arr = ["aaa", "bbb", "ccc"];
     assert (arr.beginsWith("aaa"));
     assert (arr.beginsWith("bbb"));
@@ -60,7 +62,7 @@ unittest {
 }
 @("beginsWith: begins with")
 unittest {
-    //mixin (unitTestBlockPrologue());
+    mixin (sut.wrapper.prologue);
     const string[] arr = ["aaa", "bbb", "ccc"];
     assert (arr.beginsWith("aaa111"));
     assert (arr.beginsWith("bbb222"));
@@ -90,13 +92,13 @@ isFound (
 }
 @("isFound: empty")
 unittest {
-    //mixin (unitTestBlockPrologue());
+    mixin (sut.wrapper.prologue);
     const string[] arr;
     assert (!arr.isFound("aaa"));
 }
 @("isFound: exact")
 unittest {
-    //mixin (unitTestBlockPrologue());
+    mixin (sut.wrapper.prologue);
     const string[] arr = ["aaa", "bbb", "ccc"];
     assert (arr.isFound("aaa"));
     assert (!arr.isFound(""));
@@ -104,7 +106,7 @@ unittest {
 }
 @("isFound: substring")
 unittest {
-    //mixin (unitTestBlockPrologue());
+    mixin (sut.wrapper.prologue);
     const string[] arr = ["aaa", "bbb", "ccc"];
     assert (arr.isFound("aaa111"));
     assert (arr.isFound("111aaa"));
@@ -143,18 +145,18 @@ toArray (const string arg)
 }
 @("toArray: empty array")
 unittest {
-    //mixin (unitTestBlockPrologue());
+    mixin (sut.wrapper.prologue);
     assert ("".toArray() == []);
 }
 @("toArray: with empty array element")
 unittest {
-    //mixin (unitTestBlockPrologue());
+    mixin (sut.wrapper.prologue);
     const arr = " one\n \n two ";
     assert (arr.toArray() == ["one", "two"]);
 }
 @("toArray")
 unittest {
-    //mixin (unitTestBlockPrologue());
+    mixin (sut.wrapper.prologue);
     const arr = " utb:one\n utb:two \n utm:three \nutm:four\nutb:one\nutb:two ";
     assert (arr.toArray() == ["utb:one", "utb:two", "utm:four", "utm:three"]);
 }
@@ -176,7 +178,9 @@ dedup (const string[] arg) {
         .uniq()
         .array();
 }
+@("dedup")
 unittest {
+    mixin (sut.wrapper.prologue);
     auto arr = ["one", "four", "two", "three", "two", "four", "three"];
     assert (arr.dedup() == ["four", "one", "three", "two"]);
 }
@@ -196,7 +200,9 @@ remove (
         remove;
     return (haystack.dup).remove!(a => needles.canFind(a))();
 }
+@("remove")
 unittest {
+    mixin (sut.wrapper.prologue);
     auto arr = ["one", "two", "three", "four"];
     assert (arr.remove(["one"])   == ["two", "three", "four"]);
     assert (arr.remove(["two"])   == ["one", "three", "four"]);
@@ -217,4 +223,11 @@ unprefix (
 ) {
     import std.string: strip;
     return (arg[prefix.length + separatorLength..$]).strip();
+}
+@("unprefix")
+unittest {
+    mixin (sut.wrapper.prologue);
+    assert (unprefix("aaabbb", "aaa") == "bbb");
+    assert (unprefix("aaa:bbb", "aaa", 0) == ":bbb");
+    assert (unprefix("aaa:bbb", "aaa", 1) == "bbb");
 }
