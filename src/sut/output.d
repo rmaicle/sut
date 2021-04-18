@@ -149,7 +149,7 @@ printSummary (
     printSummaryWithoutUnitTests(counter.modulesWithout);
     printSummaryExcludedUnitTests(excludeList);
 
-    printf("%s %s\n", Label.End.toStringz, getCurrentTimeString().toStringz);
+    printDateTime(Label.End);
     fflush(stdout);
 }
 
@@ -286,6 +286,14 @@ enum Color: string {
     IGreen  = "\033[38;5;46m",
     Yellow  = "\033[0;93m",
     White   = "\033[0;97m"
+}
+
+
+
+void
+printDateTime (const string arg)
+{
+    printf("%s %s\n", arg.toStringz, getCurrentTimeString().toStringz);
 }
 
 
