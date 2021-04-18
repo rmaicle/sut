@@ -31,7 +31,7 @@ excludeModule (size_t LN = __LINE__)()
     import std.traits: moduleName;
     struct dummyXYZ { }` ~
     format!("\nenum %s = moduleName!dummyXYZ;")(ModuleName) ~
-    format!("sut.exclusionList.add(moduleName!%s);")(ModuleName) ~
+    format!("\nsut.exclusionList.add(moduleName!%s);")(ModuleName) ~
     "}";
 }
 
