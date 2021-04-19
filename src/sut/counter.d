@@ -194,7 +194,7 @@ struct UnitTestStats
             && failing == 0
             && total == 0;
     }
-    @("isUnset")
+    @("UnitTestStats.isUnset")
     unittest {
         mixin (sut.wrapper.prologue);
         alias Stats = UnitTestStats;
@@ -215,7 +215,7 @@ struct UnitTestStats
     {
         return passing == total;
     }
-    @("isAllPassing")
+    @("UnitTestStats.isAllPassing")
     unittest {
         mixin (sut.wrapper.prologue);
         alias Stats = UnitTestStats;
@@ -238,7 +238,7 @@ struct UnitTestStats
     {
         return failing == 0;
     }
-    @("isNoneFailing")
+    @("UnitTestStats.isNoneFailing")
     unittest {
         mixin (sut.wrapper.prologue);
         alias Stats = UnitTestStats;
@@ -260,7 +260,7 @@ struct UnitTestStats
     {
         return total > 0 && (passing > 0 || failing > 0);
     }
-    @("isSomeExecuted")
+    @("UnitTestStats.isSomeExecuted")
     unittest {
         mixin (sut.wrapper.prologue);
         alias Stats = UnitTestStats;
