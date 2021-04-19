@@ -155,15 +155,50 @@ printSummary (
 
 
 
+/**
+ * Display assertion information.
+ */
 void
 printAssertion (
     const string moduleName,
     const Throwable throwable
 ) {
+    enum ASSERT_MSG_FMTS = `
+%s%s Assertion Failed!%s
+%s Message: %s
+%s Module:  %s
+%s File:    %s (%zd)
+`;
+    printf(ASSERT_MSG_FMTS,
+        // Heading
+        Color.IRed.toStringz,
+        Label.AssertionFailed.toStringz,
+        Color.Reset.toStringz,
+        // Message
+        Label.AssertionDetail.toStringz,
+        throwable.message.toStringz,
+        // Module
+        Label.AssertionDetail.toStringz,
+        moduleName.toStringz,
+        // File
+        Label.AssertionDetail.toStringz,
+        throwable.file.toStringz,
+        throwable.line);
+    fflush(stdout);
+}
+
+
+
+/**
+ * Display trace information.
+ */
+void
+printTrace (const Throwable throwable)
+{
+    import std.conv: to;
     import std.algorithm:
         canFind,
         startsWith;
-    import std.conv: to;
 
     enum COLUMN_MAX = 70;
     enum SEPARATOR = 1;
@@ -173,29 +208,15 @@ printAssertion (
     enum PREFIX = "??:?";
     enum UNIT_TEST_FUNC = ".__unittest_L";
 
-    // Ignore custom unit test runner internals.
+   // Ignore custom unit test runner internals.
 
     enum IGNORE_START = "sut.runner.customUnitTestRunner().";
     enum IGNORE_END = "sut.runner.customUnitTestRunner()";
+
     // Performance consideration we do not want to call canFind everytime
     // so we use boolean flags for checking.
     bool isIgnoreStartFound = false;
     bool isIgnoreEndFound = false;
-
-    // Display assertion information
-    printf("%s%s%s\n%s%s\n%sModule: %s (%zd)\n%sFile: %s (%zd)\n",
-        Color.IRed.toStringz,
-        Label.AssertionFailed.toStringz,
-        Color.Reset.toStringz,
-        Label.AssertionDetail.toStringz,
-        throwable.message.toStringz,
-        Label.AssertionDetail.toStringz,
-        moduleName.toStringz,
-        throwable.line,
-        Label.AssertionDetail.toStringz,
-        throwable.file.toStringz,
-        throwable.line,);
-
 
     string line;
     // Display stack trace; indent for alignment only
@@ -231,6 +252,7 @@ printAssertion (
         }
         printf("%s %s\n", Label.Trace.toStringz, line.toStringz);
     }
+    printf("\n");
     fflush(stdout);
 }
 
@@ -259,8 +281,8 @@ enum Label: string {
     Summary             = "[unittest] Summary:",
     List                = "[unittest] List:   ",
     End                 = "[unittest] End     ",
-    AssertionFailed     = "[unittest] Assertion Failed:",
-    AssertionDetail     = "           ",
+    AssertionFailed     = "[unittest]",
+    AssertionDetail     = "          ",
     Trace               = "   [trace]"
 }
 

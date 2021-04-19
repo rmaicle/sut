@@ -9,6 +9,7 @@ import sut.output:
     printIntro,
     printModuleSummary,
     printSummary,
+    printTrace,
     printUnknownSelections;
 import sut.runtime: Runtime;
 
@@ -85,8 +86,8 @@ customUnitTestRunner ()
             //
             // See std.exception.assertThrown definition.
             if (e.message.length > 0) {
-                assertionOccurred = true;
-                printAssertion (m.name, e);
+                printAssertion(m.name, e);
+                printTrace(e);
             }
         }
         if (unitTestCounter.current.isSomeExecuted()) {
