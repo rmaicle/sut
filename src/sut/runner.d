@@ -67,7 +67,6 @@ customUnitTestRunner ()
             }
             continue;
         }
-        bool assertionOccurred = false;
         unitTestCounter.modulesWith ~= m.name;
         immutable t0 = MonoTime.currTime;
         try {
