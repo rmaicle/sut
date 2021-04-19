@@ -145,7 +145,9 @@ struct UnitTestStats
     /**
      * Incrememnt failing field.
      */
-    void addFailing () { failing++; }
+    nothrow
+    void
+    addFailing () { failing++; }
 
 
 
@@ -159,15 +161,17 @@ struct UnitTestStats
     /**
      * Revert previous call to `addPassing` and do an `addFailing` call.
      */
+    nothrow
     void
     revertPassing ()
     {
-        import std.exception: enforce;
-        enforce(passing > 0, "Cannot decrement zero.");
+        if (passing == 0) {
+            throw new Error("Cannot decrement zero.");
+        }
         passing--;
         addFailing();
     }
-    @("revertPassing")
+    @("UnitTestStats.revertPassing")
     unittest {
         mixin (sut.wrapper.prologue);
         auto stats = UnitTestStats(1).setPassing(1);
@@ -329,6 +333,7 @@ struct UnitTestBlock
         flag = false;
     }
 
+    nothrow
     bool
     isIn () const
     {

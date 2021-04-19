@@ -12,7 +12,9 @@ import sut.output:
     printUnknownSelections;
 import sut.runtime: Runtime;
 
-import core.exception: AssertError;
+import core.exception:
+    AssertError,
+    assertHandler;
 import core.runtime: UnitTestResult;
 
 static import sut.wrapper;
@@ -49,6 +51,7 @@ customUnitTestRunner ()
         printUnknownSelections(config);
     }
 
+    assertHandler(&customAssertHandler);
     foreach (m; ModuleInfo) {
         if (!m) {
             continue;
@@ -82,9 +85,6 @@ customUnitTestRunner ()
             //
             // See std.exception.assertThrown definition.
             if (e.message.length > 0) {
-                if (unitTestCounter.unitTestBlock.isIn()) {
-                    unitTestCounter.current.revertPassing();
-                }
                 assertionOccurred = true;
                 printAssertion (m.name, e);
             }
@@ -95,6 +95,7 @@ customUnitTestRunner ()
         unitTestCounter.accumulate();
 
     }
+    assertHandler(null);
 
     printSummary(unitTestCounter, exclusionList.list);
 
@@ -239,4 +240,25 @@ unittest {
     assert (!isInternalModule("object.submodule"));
     assert (!isInternalModule("rt.submodule"));
     assert (!isInternalModule("std.submodule"));
+}
+
+
+
+
+/**
+ * Custom assert handler for unit tests only.
+ * The default assert handler must be restored.
+ */
+nothrow
+void
+customAssertHandler (
+    string file = __FILE__,
+    ulong line = __LINE__,
+    string msg = string.init
+) {
+    import core.exception: AssertError;
+    if (unitTestCounter.unitTestBlock.isIn()) {
+        unitTestCounter.current.revertPassing();
+    }
+    throw new AssertError(msg, file, line);
 }
