@@ -51,19 +51,8 @@ version (sut) {
     bool
     handleArguments (const string[] arg)
     {
-        import sut.config:
-            config,
-            FileContent;
-        import sut.util: unprefix;
-
-        import std.exception: enforce;
-        import std.file: exists;
-        import std.format: format;
+        import sut.config: config;
         import std.getopt;
-        import std.stdio: writefln;
-        import std.string: startsWith;
-
-        enum FILE_NOT_FOUND = "File not found: %s";
 
         string[] arguments = arg.dup;
         string[] files;
@@ -74,14 +63,7 @@ version (sut) {
             defaultGetoptPrinter("SUT command-line options:", helpInfo.options);
             return false;
         }
-        if (files.length == 0) {
-            return true;
-        }
-        foreach (file; files) {
-            enforce(file.exists(), format(FILE_NOT_FOUND, file));
-            const fileContent = config.readFile(file);
-            config.filter(fileContent);
-        }
+        auto filesProcessed = config.collect(files);
         return true;
     }
 }
