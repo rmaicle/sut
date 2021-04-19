@@ -272,7 +272,9 @@ enum ExecutionMode: string {
 
 
 
-/** Output labels */
+/**
+ * Output label enumeration.
+ */
 enum Label: string {
     Blank               = "[unittest]         ",
     Start               = "[unittest] Start   ",
@@ -299,7 +301,9 @@ enum Module: string {
 
 
 
-/** Color definitions. */
+/**
+ * Color enumeration.
+ */
 enum Color: string {
     Reset   = "\033[0;;m",
     Red     = "\033[0;31m",

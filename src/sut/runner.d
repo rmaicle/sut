@@ -72,7 +72,7 @@ customUnitTestRunner ()
         try {
             fp();
         } catch (Throwable e) {
-            // If assertion is from this module, do not print the stack trace.
+            // If assertion is from this module, do nothing
             if (typeid(e) == typeid(AssertError)) {
                 if (isInternalAssertion(m.name, e.file)) {
                     continue;
@@ -93,7 +93,6 @@ customUnitTestRunner ()
             printModuleSummary (m.name, unitTestCounter, t0, MonoTime.currTime);
         }
         unitTestCounter.accumulate();
-
     }
     assertHandler(null);
 
@@ -142,6 +141,10 @@ private:
 
 
 
+/**
+ * Determine whether the module specified by the string argument is excluded
+ * from execution.
+ */
 bool
 isExcludedModule (const string arg)
 {
