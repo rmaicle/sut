@@ -138,7 +138,8 @@ struct UnitTestStats
     /**
      * Increment passing field.
      */
-    void addPassing () { passing++; }
+    void
+    addPassing () { passing++; }
 
 
 
