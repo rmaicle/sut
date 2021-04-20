@@ -18,38 +18,23 @@ Config config;
 
 
 /**
- * Container for the unit test configuration file.
- * The file content is stored as an array of lines.
+ * Container for the unit test configuration file and its content.
+ * The file content is stored in an array.
  */
 struct FileContent
 {
-    string filename;
-    string[] content;
-
-    /**
-     * Constructor.
-     */
-    this (
-        const string arg,
-        const string[] args
-    ) {
-        filename = arg;
-        content = args.dup;
-    }
-
-    /**
-     * Determine whether the container is empty.
-     *
-     * Returns: `true` if the container is empty.
-     */
-    bool
-    isEmpty () const
-    {
-        return content.length == 0;
-    }
+    mixin FileContentTemplate;
 }
 
-alias Unknown = FileContent;
+
+/**
+ * Container for unit test configuration file with unrecognized items.
+ * The unrecognized items are stored in an array.
+ */
+struct Unknown
+{
+    mixin FileContentTemplate;
+}
 
 
 
@@ -204,4 +189,41 @@ x
 
     std.file.remove(TestFile);
     assert (!std.file.exists(TestFile));
+}
+
+
+
+private:
+
+
+
+/**
+ * A mixin template containing a file and its content.
+ */
+mixin template FileContentTemplate ()
+{
+    string filename;
+    string[] content;
+
+    /**
+     * Constructor.
+     */
+    this (
+        const string arg,
+        const string[] args
+    ) {
+        filename = arg;
+        content = args.dup;
+    }
+
+    /**
+     * Determine whether the container is empty.
+     *
+     * Returns: `true` if the container is empty.
+     */
+    bool
+    isEmpty () const
+    {
+        return content.length == 0;
+    }
 }
