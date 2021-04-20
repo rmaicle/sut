@@ -1,8 +1,9 @@
 module test.with_wrapper.test;
 
 import test.with_wrapper.mul;
-import test.with_wrapper.excluded;
+import test.with_wrapper.no_prologue;
 import test.with_wrapper.no_unittest;
+import test.with_wrapper.excluded;
 version (unittest) {
     static import test.with_wrapper.sut_wrapper;        // changed
 }

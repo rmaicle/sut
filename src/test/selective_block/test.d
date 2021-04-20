@@ -1,8 +1,9 @@
 module test.selective_block.test;
 
-import test.selective_block.excluded;
-import test.selective_block.no_unittest;
 import test.selective_block.mul;
+import test.selective_block.no_prologue;
+import test.selective_block.no_unittest;
+import test.selective_block.excluded;
 version (unittest) {
     static import test.selective_block.sut_wrapper;        // changed
 }

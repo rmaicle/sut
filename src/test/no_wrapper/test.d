@@ -2,6 +2,7 @@ module test.no_wrapper.test;
 
 import sut;                                 // SUT module
 import test.no_wrapper.mul;
+import test.no_wrapper.no_prologue;
 import test.no_wrapper.no_unittest;
 import test.no_wrapper.excluded;
 
