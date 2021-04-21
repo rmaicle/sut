@@ -15,7 +15,7 @@ debug import std.stdio;
  * of the unit test block or to return early.
  */
 string
-unitTestBlockPrologue (size_t LN = __LINE__)()
+unitTestBlockPrologue (const size_t LineNumber = __LINE__)()
 {
     import std.format: format;
 
@@ -31,24 +31,25 @@ unitTestBlockPrologue (size_t LN = __LINE__)()
     //     mixin (???.unitTestBlockPrologue());     <-- LN
     //   }
     //
-    enum LineNumber = LN - 1;
-    // Create possible non-conflicting identifiers for module name and unit
-    // test name which are used only within the calling unit test block.
-    enum ModuleName = format!("module_name_L%d__")(LineNumber);
-    enum UnitTestName = format!("unit_test_name_L%d__")(LineNumber);
 
-    return `static import sut;
-import std.traits: moduleName;
-class dummyXYZ { }
-sut.unitTestCounter.unitTestBlock.enter();
-scope (exit) sut.unitTestCounter.unitTestBlock.leave();` ~
-format!("\nenum %s = sut.getUnitTestName!dummyXYZ;")(UnitTestName) ~
-format!("\nenum %s = moduleName!dummyXYZ;")(ModuleName) ~
-format!("\nsut.unitTestCounter.addModulesWithPrologue(%s);")(ModuleName) ~
-format!("\nif (sut.executeBlock!(%s, %s, %d)() == false) { return; }")(
-    ModuleName,
-    UnitTestName,
-    LineNumber);
+    import std.format: format;
+    return format!`
+    static import sut;
+    import std.traits: moduleName;
+
+    struct dummyXYZ { }
+
+    sut.unitTestCounter.unitTestBlock.enter();
+    scope (exit) sut.unitTestCounter.unitTestBlock.leave();
+
+    sut.unitTestCounter.addModulesWithPrologue(moduleName!dummyXYZ);
+    bool executeBlockFlag = sut.executeBlock!(
+        moduleName!dummyXYZ,
+        sut.getUnitTestName!dummyXYZ,
+        %d);
+    if (executeBlockFlag == false) {
+        return;
+    }`(LineNumber - 1);
 }
 
 
