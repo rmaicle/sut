@@ -34,17 +34,16 @@ ExclusionList exclusionList;
  * The generated code explicitly excludes the module from execution.
  */
 string
-excludeModule (size_t LN = __LINE__)()
+excludeModule ()
 {
     import std.format: format;
-    enum ModuleName = format!("module_name_L%d__")(LN);
-    return `static this () {
-    static import sut;
-    import std.traits: moduleName;
-    struct dummyXYZ { }` ~
-    format!("\nenum %s = moduleName!dummyXYZ;")(ModuleName) ~
-    format!("\nsut.exclusionList.add(moduleName!%s);")(ModuleName) ~
-    "}";
+    return format!`
+    static this () {
+        static import sut;
+        import std.traits: moduleName;
+        template xyz_123_abc (T) { }
+        sut.exclusionList.add(moduleName!xyz_123_abc);
+    }`();
 }
 
 
