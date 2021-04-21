@@ -197,10 +197,9 @@ struct UnitTestStats
     @("UnitTestStats.isUnset")
     unittest {
         mixin (sut.wrapper.prologue);
-        alias Stats = UnitTestStats;
-        assert (Stats().isUnset());
-        assert (!Stats(1).isUnset());
-        assert (!Stats(1).setPassing(1).isUnset());
+        assert (UnitTestStats().isUnset());
+        assert (!UnitTestStats(1).isUnset());
+        assert (!UnitTestStats(1).setPassing(1).isUnset());
     }
 
 
@@ -218,12 +217,11 @@ struct UnitTestStats
     @("UnitTestStats.isAllPassing")
     unittest {
         mixin (sut.wrapper.prologue);
-        alias Stats = UnitTestStats;
-        assert (Stats().isUnset());
-        assert (Stats().isAllPassing());
-        assert (Stats(7).setPassing(7).isAllPassing());
-        assert (!Stats(7).setPassing(5).isAllPassing());
-        assert (!Stats(7).setFailing(2).isAllPassing());
+        assert (UnitTestStats().isUnset());
+        assert (UnitTestStats().isAllPassing());
+        assert (UnitTestStats(7).setPassing(7).isAllPassing());
+        assert (!UnitTestStats(7).setPassing(5).isAllPassing());
+        assert (!UnitTestStats(7).setFailing(2).isAllPassing());
     }
 
 
@@ -241,11 +239,10 @@ struct UnitTestStats
     @("UnitTestStats.isNoneFailing")
     unittest {
         mixin (sut.wrapper.prologue);
-        alias Stats = UnitTestStats;
-        assert (Stats().isNoneFailing());
-        assert (Stats(7).setPassing(7).isNoneFailing());
-        assert (Stats(7).setPassing(5).isNoneFailing());
-        assert (!Stats(7).setFailing(2).isNoneFailing());
+        assert (UnitTestStats().isNoneFailing());
+        assert (UnitTestStats(7).setPassing(7).isNoneFailing());
+        assert (UnitTestStats(7).setPassing(5).isNoneFailing());
+        assert (!UnitTestStats(7).setFailing(2).isNoneFailing());
     }
 
 
@@ -263,11 +260,10 @@ struct UnitTestStats
     @("UnitTestStats.isSomeExecuted")
     unittest {
         mixin (sut.wrapper.prologue);
-        alias Stats = UnitTestStats;
-        assert (!Stats().isSomeExecuted());
-        assert (Stats(7).setPassing(7).isSomeExecuted());
-        assert (Stats(7).setPassing(5).isSomeExecuted());
-        assert (Stats(7).setFailing(2).isSomeExecuted());
+        assert (!UnitTestStats().isSomeExecuted());
+        assert (UnitTestStats(7).setPassing(7).isSomeExecuted());
+        assert (UnitTestStats(7).setPassing(5).isSomeExecuted());
+        assert (UnitTestStats(7).setFailing(2).isSomeExecuted());
     }
 
 
@@ -280,14 +276,14 @@ struct UnitTestStats
         /**
          * Set total on initialization.
          */
-        this (size_t arg)
+        this (const size_t arg)
         {
             total = arg;
         }
 
         ref UnitTestStats
         setPassing (const size_t arg)
-        return @safe pure nothrow @nogc do
+        return @safe pure nothrow @nogc
         {
             passing = arg;
             return this;
@@ -295,7 +291,7 @@ struct UnitTestStats
 
         ref UnitTestStats
         setFailing (const size_t arg)
-        return @safe pure nothrow @nogc do
+        return @safe pure nothrow @nogc
         {
             failing = arg;
             return this;
@@ -303,7 +299,7 @@ struct UnitTestStats
 
         ref UnitTestStats
         setTotal (const size_t arg)
-        return @safe pure nothrow @nogc do
+        return @safe pure nothrow @nogc
         {
             total = arg;
             return this;
