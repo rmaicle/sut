@@ -11,26 +11,26 @@ debug import std.stdio;
 
 
 /**
- * Client-facing mixin code to determine whether to continue execution
- * of the unit test block or to return early.
+ * Generate the code to be passed to a mixin expression in the calling unit
+ * test block.
+ *
+ * The generated code determines whether to continue execution of the rest of
+ * the unit test block or to return early.
  */
 string
 unitTestBlockPrologue (const size_t LineNumber = __LINE__)()
 {
-    import std.format: format;
-
-    // Because this function is intended to be called from the first line
-    // of unit test blocks, we hard code the line number.
+    // Because this string is intended and assumed to be passed to a mixin
+    // expression at the first line of the unit test block, the line number
+    // of the unit test entry block point is calculated to be less than.
     //
-    // NOTE:
-    //
-    // The result of this function is passed to a mixin statement.
+    // This is the solution for now until a more reliable way is found on how
+    // to get the actual line number of the unit test block entry point.
     //
     //   @("unittest label or identifier string")
-    //   unittest {                                 <-- LN - 1
-    //     mixin (???.unitTestBlockPrologue());     <-- LN
+    //   unittest {                                 <-- prologue - 1
+    //     mixin (???.unitTestBlockPrologue());     <-- prologue
     //   }
-    //
 
     import std.format: format;
     return format!`
@@ -55,10 +55,10 @@ unitTestBlockPrologue (const size_t LineNumber = __LINE__)()
 
 
 /**
- * Get unit test name.
+ * Get unit test name of template argument.
  *
  * Unit test name is the first user-defined string attribute or the
- * compiler-generated name.
+ * compiler-generated name of the parent symbol of the template argument.
  *
  * Returns: string
  */
