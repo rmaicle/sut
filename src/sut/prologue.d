@@ -64,9 +64,9 @@ format!("\nif (sut.executeBlock!(%s, %s, %d)() == false) { return; }")(
 string
 getUnitTestName (alias T)() pure nothrow
 {
-    enum udaName = firstStringUDA!(__traits(parent, T));
+    enum udaName = firstStringUDA!(__traits (parent, T));
     static if (udaName == string.init) {
-        return __traits(identifier, __traits(parent, T));
+        return __traits (identifier, __traits (parent, T));
     } else {
         return udaName;
     }
@@ -88,31 +88,31 @@ executeBlock (
     const string ModuleName,
     const string UnitTestName,
     const size_t Line
-)()
-{
+)() {
     import std.string: toStringz;
     import core.stdc.stdio: printf, fflush, stdout;
 
     bool
-    proceedToExecute (const bool flag) {
+    proceedToExecute ()
+    {
         // Assume it passed first
         // If an assertion occurs, subtract 1 in the exception handler code
         unitTestCounter.current.addPassing();
         printUnitTestInfo(ModuleName, UnitTestName, Line, unitTestCounter);
-        return flag;
+        return true;
     }
 
     version (sut) {
         unitTestCounter.current.addTotal();
         // Filter if a selection is present. Otherwise, execute all.
         if (executionList.isEmpty()) {
-            return proceedToExecute(true);
+            return proceedToExecute();
         }
         if (executionList.isModuleFound(ModuleName)) {
-            return proceedToExecute(true);
+            return proceedToExecute();
         }
         if (executionList.isUnitTestFound(UnitTestName)) {
-            return proceedToExecute(true);
+            return proceedToExecute();
         }
         return false;
     } else {
@@ -133,8 +133,8 @@ template
 isStringUDA (alias T)
 {
     import std.traits: isSomeString;
-    static if (__traits(compiles, isSomeString!(typeof(T)))) {
-        enum isStringUDA = isSomeString!(typeof(T));
+    static if (__traits (compiles, isSomeString!(typeof (T)))) {
+        enum isStringUDA = isSomeString!(typeof (T));
     } else {
         enum isStringUDA = false;
     }
@@ -144,14 +144,14 @@ unittest {
     mixin (sut.wrapper.prologue);
     @("string variable")
     string stringVar;
-    static assert (isStringUDA!(__traits(getAttributes, stringVar)));
+    static assert (isStringUDA!(__traits (getAttributes, stringVar)));
 }
 @("isStringUDA: not a string")
 unittest {
     mixin (sut.wrapper.prologue);
     @(123)
     int intVar;
-    static assert (isStringUDA!(__traits(getAttributes, intVar)) == false);
+    static assert (isStringUDA!(__traits (getAttributes, intVar)) == false);
 }
 
 
@@ -165,7 +165,7 @@ firstStringUDA (alias T)
 {
     import std.traits: hasUDA, getUDAs;
     import std.meta: Filter;
-    enum attributes = Filter!(isStringUDA, __traits(getAttributes, T));
+    enum attributes = Filter!(isStringUDA, __traits (getAttributes, T));
     static if (attributes.length > 0) {
         enum firstStringUDA = attributes[0];
     } else {
