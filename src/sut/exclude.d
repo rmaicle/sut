@@ -29,7 +29,9 @@ ExclusionList exclusionList;
 
 
 /**
- * Client-facing mixin code for adding the module to the exclusion list.
+ * Generate the code to be passed to a mixin expression in the calling module.
+ *
+ * The generated code explicitly excludes the module from execution.
  */
 string
 excludeModule (size_t LN = __LINE__)()
@@ -54,7 +56,8 @@ private:
 /**
  * Excluded modules.
  *
- * Module names found in this list are not reported as having no unit tests.
+ * Module names found in this list are reported as excluded modules and not
+ * as modules without unit tests.
  */
 struct ExclusionList
 {
