@@ -1,6 +1,5 @@
 module sut.execution;
 
-import sut.config: config;
 import sut.util:
     beginsWith,
     isFound;

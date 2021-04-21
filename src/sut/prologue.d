@@ -89,8 +89,6 @@ executeBlock (
     const string UnitTestName,
     const size_t Line
 )() {
-    import std.string: toStringz;
-    import core.stdc.stdio: printf, fflush, stdout;
 
     bool
     proceedToExecute ()
@@ -163,7 +161,6 @@ unittest {
 template
 firstStringUDA (alias T)
 {
-    import std.traits: hasUDA, getUDAs;
     import std.meta: Filter;
     enum attributes = Filter!(isStringUDA, __traits (getAttributes, T));
     static if (attributes.length > 0) {
