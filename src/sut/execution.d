@@ -43,7 +43,7 @@ struct ExecutionList
      * Returns: `true` if a match is found.
      */
     bool
-    isUnitTestFound (const string arg)
+    isUnitTestFound (const string arg) const
     {
         return isFound(unittests, arg);
     }
@@ -57,7 +57,7 @@ struct ExecutionList
      * Returns: `true` if a match is found.
      */
     bool
-    isModuleFound (const string arg)
+    isModuleFound (const string arg) const
     {
         return beginsWith(modules, arg);
     }
