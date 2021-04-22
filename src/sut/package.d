@@ -52,12 +52,16 @@ version (sut) {
     handleArguments (const string[] arg)
     {
         import sut.config: config;
-        import std.getopt;
+        import std.getopt:
+            getoptConfig = config,
+            defaultGetoptPrinter,
+            getopt;
 
         string[] arguments = arg.dup;
         string[] files;
         auto helpInfo = getopt(
             arguments,
+            getoptConfig.passThrough,
             "config|c", "configuration file", &files);
         if (helpInfo.helpWanted) {
             defaultGetoptPrinter("SUT command-line options:", helpInfo.options);
