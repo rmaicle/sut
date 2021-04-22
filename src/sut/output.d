@@ -109,6 +109,7 @@ printModuleSummary (
         Color.Reset.toStringz,
         counter.current.total,
         (to - from).total!"msecs" / 1000.0);
+    fflush(stdout);
 }
 
 
@@ -184,7 +185,6 @@ printAssertion (
         Label.AssertionDetail.toStringz,
         throwable.file.toStringz,
         throwable.line);
-    fflush(stdout);
 }
 
 
