@@ -84,18 +84,32 @@ execution if necessary.
   * Summary of successful and failed unit test blocks per module;
   * Summary of all successful and failed unit test blocks;
   * List of modules with unit tests;
-  * List of modules without unit tests.
-  * List of excluded modules from unit testing;
+  * List of modules with unit tests but without `sut` prologue code;
+  * List of modules without unit tests;
+  * List of excluded modules from unit testing.
 
 
 
 ## Compatibility
 
+The following compilers have been tested under GNU/Linux only.
+I do not currently have a Microsoft Windows machine to test it.
+
 The latest reference compiler DMD version to successfully compile and use
-the library is version 2.096.0 while the earliest tested compiler is version
-2.090.0.
+the library is version 2.096.0. The oldest compiler used to exeute the tests
+is version 2.090.0.
 It is not known what earlier versions can successfully compile and use the
 library.
+
+The latest LLVM D compiler (ldc) version to successfully compile and use the
+library is version 1.25.1.
+
+* Reference compiler (DMD)
+    - [2.096.0](http://downloads.dlang.org/releases/2.x/2.096.0)
+* LLVM D compiler (ldc)
+    - [1.25.1](https://github.com/ldc-developers/ldc/releases/tag/v1.25.1)
+    - [1.25.0](https://github.com/ldc-developers/ldc/releases/tag/v1.25.0)
+
 
 The library cannot be used if D source is not compiled with `ModuleInfo`.
 That includes source codes being compiled with the `-betterC` flag since the
@@ -109,11 +123,13 @@ In summary, this is how to use the library:
 
 __Basic Usage__
 
+* incorporate the module into your project;
 * use a _Wrapper Module_;
 * statically import the _Wrapper Module_;
 * add _user-defined attributes_ before unit test blocks;
-* add the unit test block prologue code at the top of unit test blocks;
-* pass the unit testing flag and the version identifier `sut` to the compiler.
+* add unit test block prologue code at the top of unit test blocks;
+* pass the unit testing flag (--unittest) and the version identifier `sut`
+  to the compiler.
 
 Unit tests without _user-defined attributes_ or unit test block prologue code
 will still execute but they will not be reported in the console output since
@@ -121,11 +137,54 @@ the library uses the prologue code to collect information for reporting.
 
 __Selective Unit Tests__
 
-* to select unit test blocks to execute, edit the _unit test configuration
+* to select unit test blocks to execute, create/edit a _unit test configuration
   file_ and add unit test block entries;
-* to select modules to execute, edit the _unit test configuration file_ and
-  add module entries;
+* to select modules to execute, create/edit a _unit test configuration file_
+  and add module entries;
 * pass the configuration file as command-line argumnt to the test program.
+
+
+
+### Incorporating 'sut' Module
+
+To use the module, the compiler must be able to _see_ its source code.
+This could be done using the `-I` compiler option for `dmd` or `ldc` and
+passing the path to the `sut` source code.
+
+The following shows an example of a project directory.
+It shows where the `sut` module may be placed.
+
+~~~
+...
+`-- project
+    |-- ...
+    |-- build
+    |   `-- sut.conf        // selective unit testing configuraiton file
+    |-- extern
+    |   |-- sut             // this module
+    |   `-- ...             // other external dependencies
+    `-- src                 // <<<<< we are here
+        |-- main.d
+        |-- module_a.d
+        |-- module_b.d
+        |-- sut_wrapper.d   // sut wrapper module
+        `-- ...
+~~~
+
+To compile the example project above, the following command may be used.
+
+~~~
+$ dmd                   \
+    -I=.                \   # Look for imports in project/src
+    -I=../extern/sut    \   # Look for imports in project/extern/sut
+    -i                  \   # include imported modules in code
+    -debug              \
+    -unittest           \   # unit test flag
+    -version=sut        \   # required version identifier when running unit tests
+    -of=project         \
+    -run                \
+    -c ../build/sut.conf
+~~~
 
 
 
@@ -168,9 +227,8 @@ version (sut) {
 }
 ~~~
 
-When using the code above, the _wrapper module_ name must be the same as the
-module name that qualifies the calls to `unitTestBlockPrologue` and
-`excludeModule`.
+When using a wrapper module, calls to `unitTestBlockPrologue` and
+`excludeModule` are qualified with the _wrapper module_ name.
 This is because the client code imports the _wrapper module_ statically.
 See the following _Functions_ section.
 
@@ -183,8 +241,7 @@ enum exclude=`mixin (sut_wrapper.excludeModule);`;
 
 It is possible not to statically import the _wrapper module_ but doing so may
 lead to possible name conflicts.
-It is therefore advised to follow the safer path and statically import the
-_wrapper module_.
+It is therefore advised to follow the safer path and use `static import`.
 
 
 
@@ -225,7 +282,7 @@ See the _Unit Test Configuration File_ section below on how to use this feature.
 ~~~d
 @("some name")
 unittest {
-    mixin (unitTestBlockPrologue!()());
+    mixin (sut_wrapper.prologue);
     ...
 }
 ~~~
@@ -243,7 +300,7 @@ It is intended to be used at the top of the module possibly before or after impo
 ~~~d
 version (unittest) {
     static import sut_wrapper;
-    mixin (excludeModule!()());
+    mixin (sut_wrapper.exclude);
 }
 ~~~
 
@@ -257,6 +314,7 @@ It is used by the `sut` module for conditional compilation and static checks.
 ~~~
 $ dmd -version=sut
 $ ldc --d-version=sut
+$ ldmd2 -version=sut
 ~~~
 
 
@@ -286,13 +344,11 @@ utm:<module_name>
 utm:...
 ~~~
 
-There can be more than one .
-
 One or more _unit test configuration files_ can be passed to the test program
 via command-line argument.
 
 ~~~
-$ ../compile test.d [-c<file>...]
+$ ../compile test.d -c<file1> -c <file2> --config=<file3> --config <file4>
 ~~~
 
 
@@ -332,13 +388,14 @@ Let us begin with the _with_wrapper_ test program to demonstrate the basic use
 of the library without unit test filtering and show the console output.
 This test program has four D source files:
 
-* `test.d` - main module with a couple of unit tests
+* `test.d` - main module with a couple of unit tests.
 * `mul.d` - a module with a unit test to show per module and summary reporting
-            output for such modules
+            output for such modules.
 * `excluded.d` - a module with a unit test to show how to exclude a module from
-                 unit test execution
+                 unit test execution.
 * `no_unittest.d` - a module without a unit test to show summary reporting
                     output for such modules.
+* `no_prologue.d` - a module with a unit test but does not use the prologue code.
 * `unittest.conf` - unit test configuration file for this test program is empty
                     which means there will be no filtering of unit tests.
 
@@ -350,28 +407,29 @@ The following are the contents of each file starting with the main module.
   module test.with_wrapper.test;
 
   import test.with_wrapper.mul;
-  import test.with_wrapper.excluded;
+  import test.with_wrapper.no_prologue;
   import test.with_wrapper.no_unittest;
+  import test.with_wrapper.excluded;
   version (unittest) {
-    static import test.with_wrapper.sut_wrapper;          // import
+      static import test.with_wrapper.sut_wrapper;        // import
   }
 
   int add (const int arg, const int n) {
-    return arg + n;
+      return arg + n;
   }
   @("add")
   unittest {
-    mixin (test.with_wrapper.sut_wrapper.prologue);       // prologue code
-    assert (add(10, 1) == 11);
+      mixin (test.with_wrapper.sut_wrapper.prologue);     // prologue code
+      assert (add(10, 1) == 11);
   }
 
   int sub (const int arg, const int n) {
-    return arg - n;
+      return arg - n;
   }
   @("sub")
   unittest {
-    mixin (test.with_wrapper.sut_wrapper.prologue);       // prologue code
-    assert (sub(10, 1) == 9);
+      mixin (test.with_wrapper.sut_wrapper.prologue);     // prologue code
+      assert (sub(10, 1) == 9);
   }
   ~~~
 
@@ -381,16 +439,16 @@ The following are the contents of each file starting with the main module.
   module test.with_wrapper.mul;
 
   version (unittest) {
-    static import test.with_wrapper.sut_wrapper;          // import
+      static import test.with_wrapper.sut_wrapper;        // import
   }
 
   size_t mul (const int arg, const int n) {
-    return arg * n;
+      return arg * n;
   }
   @("mul")
   unittest {
-    mixin (test.with_wrapper.sut_wrapper.prologue);       // prologue code
-    assert (mul(10, 2) == 20);
+      mixin (test.with_wrapper.sut_wrapper.prologue);     // prologue code
+      assert (mul(10, 2) == 20);
   }
   ~~~
 
@@ -423,31 +481,55 @@ The following are the contents of each file starting with the main module.
   module test.with_wrapper.no_unittest;
   ~~~
 
-Compile the program with `../compile.sh test.d`.
+* __no_prologue.d__
+
+  ~~~d
+  module test.with_wrapper.no_prologue;
+
+  size_t square (const uint arg) {
+      return arg * arg;
+  }
+  unittest {
+      assert (square(10) == 100);
+  }
+  ~~~
+
+Compile the source files using either of the commands below.
+
+~~~
+$ ../compile.sh test.d
+$ ../compile.sh --ldc test.d
+~~~
+
 It will automatically run the unit tests.
 
 ~~~
+$ ../compile.sh test.d
 Using selective unit testing module.
-[unittest] Start    2021-Apr-11 22:44:14.5680752
+[unittest] Start    2021-Apr-23 18:00:07.226723
+[unittest]          Digital Mars D version 2.96
+[unittest]          D specification version 2
 [unittest] Mode:    All
-[unittest] Module:  test.with_wrapper.test   14 add
-[unittest]          test.with_wrapper.test   23 sub
+[unittest] Module:  test.with_wrapper.test   15 add
+[unittest]          test.with_wrapper.test   24 sub
 [unittest]          test.with_wrapper.test - 2 passed, 0 failed, 2 found - 0.000s
 [unittest] Module:  test.with_wrapper.mul   11 mul
 [unittest]          test.with_wrapper.mul - 1 passed, 0 failed, 1 found - 0.000s
-
+[unittest]          ========================================
 [unittest] Summary: 3 passed, 0 failed, 3 found
-[unittest]          2 module(s) with unit test
+[unittest]          3 module(s) with unit test
 [unittest]          1 module(s) without unit test
 [unittest]          1 module(s) excluded
-[unittest] List:    Module(s) with unit test (2)
+[unittest] List:    Module(s) with unit test (3)
+[unittest]          Module(s) without prologue code have asterisk (*)
 [unittest]              test.with_wrapper.mul
+[unittest]              test.with_wrapper.no_prologue *
 [unittest]              test.with_wrapper.test
 [unittest] List:    Module(s) without unit test (1)
 [unittest]              test.with_wrapper.no_unittest
 [unittest] List:    Module(s) excluded (1)
 [unittest]              test.with_wrapper.excluded
-[unittest] End      2021-Apr-11 22:44:14.5682216
+[unittest] End      2021-Apr-23 18:00:07.2269942
 ~~~
 
 
@@ -469,31 +551,41 @@ The _unit test configuration file_ should look something like:
 utb:add
 ~~~
 
-Compile the program with `../compile.sh test.d -cunittest.conf` which
-automatically runs the unit tests.
+Compile the source files using one of the commands below.
+
+~~~
+$ ../compile.sh test.d -- -cunittest.conf
+$ ../compile.sh test.d -- -c unittest.conf
+$ ../compile.sh test.d -- --config=unittest.conf
+$ ../compile.sh test.d -- --config unittest.conf
+~~~
 
 Choosing `utb:add` shows the following output:
 
 ~~~
 Using selective unit testing module.
-[unittest] Start    2021-Apr-12 15:14:21.2420537
+[unittest] Start    2021-Apr-23 18:02:56.9533576
+[unittest]          Digital Mars D version 2.96
+[unittest]          D specification version 2
 [unittest] Mode:    Selection
 [unittest]            block:  add
-[unittest] Module:  test.with_wrapper.test   14 add
+[unittest] Module:  test.with_wrapper.test   15 add
 [unittest]          test.with_wrapper.test - 1 passed, 0 failed, 2 found - 0.000s
-
+[unittest]          ========================================
 [unittest] Summary: 1 passed, 0 failed, 3 found
-[unittest]          2 module(s) with unit test
+[unittest]          3 module(s) with unit test
 [unittest]          1 module(s) without unit test
 [unittest]          1 module(s) excluded
-[unittest] List:    Module(s) with unit test (2)
+[unittest] List:    Module(s) with unit test (3)
+[unittest]          Module(s) without prologue code have asterisk (*)
 [unittest]              test.with_wrapper.mul
+[unittest]              test.with_wrapper.no_prologue *
 [unittest]              test.with_wrapper.test
 [unittest] List:    Module(s) without unit test (1)
 [unittest]              test.with_wrapper.no_unittest
 [unittest] List:    Module(s) excluded (1)
 [unittest]              test.with_wrapper.excluded
-[unittest] End      2021-Apr-12 15:14:21.2422399
+[unittest] End      2021-Apr-23 18:02:56.9535918
 ~~~
 
 
@@ -514,31 +606,41 @@ The _unit test configuration file_ should look something like:
 utm:test.with_wrapper.mul
 ~~~
 
-Compile the program with `../compile.sh test.d -cunittest.conf` which
-automatically runs the unit tests.
+Compile the source files using one of the commands below.
+
+~~~
+$ ../compile.sh test.d -- -cunittest.conf
+$ ../compile.sh test.d -- -c unittest.conf
+$ ../compile.sh test.d -- --config=unittest.conf
+$ ../compile.sh test.d -- --config unittest.conf
+~~~
 
 Choosing `utm:test.with_wrapper.mul` shows the following output:
 
 ~~~
 Using selective unit testing module.
-[unittest] Start    2021-Apr-12 15:20:58.6579791
+[unittest] Start    2021-Apr-23 18:06:47.0770861
+[unittest]          Digital Mars D version 2.96
+[unittest]          D specification version 2
 [unittest] Mode:    Selection
 [unittest]            module: test.with_wrapper.mul
 [unittest] Module:  test.with_wrapper.mul   11 mul
 [unittest]          test.with_wrapper.mul - 1 passed, 0 failed, 1 found - 0.000s
-
+[unittest]          ========================================
 [unittest] Summary: 1 passed, 0 failed, 3 found
-[unittest]          2 module(s) with unit test
+[unittest]          3 module(s) with unit test
 [unittest]          1 module(s) without unit test
 [unittest]          1 module(s) excluded
-[unittest] List:    Module(s) with unit test (2)
+[unittest] List:    Module(s) with unit test (3)
+[unittest]          Module(s) without prologue code have asterisk (*)
 [unittest]              test.with_wrapper.mul
+[unittest]              test.with_wrapper.no_prologue *
 [unittest]              test.with_wrapper.test
 [unittest] List:    Module(s) without unit test (1)
 [unittest]              test.with_wrapper.no_unittest
 [unittest] List:    Module(s) excluded (1)
 [unittest]              test.with_wrapper.excluded
-[unittest] End      2021-Apr-12 15:20:58.6581772
+[unittest] End      2021-Apr-23 18:06:47.0774876
 ~~~
 
 
@@ -546,7 +648,7 @@ Using selective unit testing module.
 ## Test Programs
 
 The repository contains different test programs that are good enough to
-demonstrate how to use the `sut` module.
+demonstrate how to use this module.
 The directory structure below shows where they can be found.
 You can download or clone the repository and run the tests with the command
 `../compile.sh test.d [-c<file>...]`.
