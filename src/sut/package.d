@@ -63,7 +63,7 @@ version (sut) {
         auto helpInfo = getopt(
             arguments,
             getoptConfig.passThrough,
-            "config|c", "configuration file", &files);
+            "config|c", "configuration file (../build/unittest.conf)", &files);
         if (helpInfo.helpWanted) {
             defaultGetoptPrinter("SUT command-line options:", helpInfo.options);
             return false;
