@@ -396,8 +396,8 @@ This test program has four D source files:
 * `no_unittest.d` - a module without a unit test to show summary reporting
                     output for such modules.
 * `no_prologue.d` - a module with a unit test but does not use the prologue code.
-* `unittest.conf` - unit test configuration file for this test program is empty
-                    which means there will be no filtering of unit tests.
+* `sut.conf` - unit test configuration file for this test program is empty
+               which means there will be no filtering of unit tests.
 
 The following are the contents of each file starting with the main module.
 
@@ -554,10 +554,10 @@ utb:add
 Compile the source files using one of the commands below.
 
 ~~~
-$ ../compile.sh test.d -- -cunittest.conf
-$ ../compile.sh test.d -- -c unittest.conf
-$ ../compile.sh test.d -- --config=unittest.conf
-$ ../compile.sh test.d -- --config unittest.conf
+$ ../compile.sh test.d -- -csut.conf
+$ ../compile.sh test.d -- -c sut.conf
+$ ../compile.sh test.d -- --config=sut.conf
+$ ../compile.sh test.d -- --config sut.conf
 ~~~
 
 Choosing `utb:add` shows the following output:
@@ -609,10 +609,10 @@ utm:test.with_wrapper.mul
 Compile the source files using one of the commands below.
 
 ~~~
-$ ../compile.sh test.d -- -cunittest.conf
-$ ../compile.sh test.d -- -c unittest.conf
-$ ../compile.sh test.d -- --config=unittest.conf
-$ ../compile.sh test.d -- --config unittest.conf
+$ ../compile.sh test.d -- -csut.conf
+$ ../compile.sh test.d -- -c sut.conf
+$ ../compile.sh test.d -- --config=sut.conf
+$ ../compile.sh test.d -- --config sut.conf
 ~~~
 
 Choosing `utm:test.with_wrapper.mul` shows the following output:
