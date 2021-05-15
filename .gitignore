@@ -1,6 +1,7 @@
 bin/
 build/
 cov/
+dist/
 doc/
 extern/
 obj/
