@@ -231,3 +231,215 @@ unittest {
     assert (unprefix("aaa:bbb", "aaa", 0) == ":bbb");
     assert (unprefix("aaa:bbb", "aaa", 1) == "bbb");
 }
+
+
+
+/**
+ * Wrap the string argument breaking at whitespace characters and respecting
+ * newline characters.
+ */
+string
+wrapnl (
+    const string input,
+    const size_t columns = 80,
+    const string firstIndent = string.init,
+    const string indent = string.init,
+    const size_t tabsize = 8
+) {
+    import std.array: split;
+    import std.string:
+        chomp,
+        KeepTerminator,
+        splitLines;
+    import std.ascii: isWhite, newline;
+    import std.algorithm: endsWith;
+
+    enum NEWLINE = newline;
+    enum SPACE = ' ';
+
+    string appendLine (
+        const string res,
+        const string line
+    ) {
+        if (res.length == 0) {
+            return res ~ firstIndent ~ line;
+        } else {
+            return res ~ NEWLINE ~ indent ~ line;
+        }
+    }
+
+    if (input.length == 0) {
+        return input;
+    }
+    if (input.length + firstIndent.length < columns) {
+        return firstIndent ~ input;
+    }
+
+    string res;
+    string line;
+    foreach (chunk; input.split(" ")) {
+        auto words = chunk.splitLines(KeepTerminator.yes);
+        foreach (word; words) {
+            // Always check whether appending the current word exceeds
+            // the first or succeeding line limit.
+            bool exceedsLine = false;
+            if (res.length == 0) {
+                if (firstIndent.length + line.length + word.length >= columns) {
+                    exceedsLine = true;
+                }
+            } else {
+                if (indent.length + line.length + word.length >= columns) {
+                    exceedsLine = true;
+                }
+            }
+            // If the possible new line exceeds the line limit, append the
+            // current line now.
+            if (exceedsLine) {
+                res = appendLine(res, line);
+                line = word;
+                if (word.endsWith!isWhite) {
+                    res = appendLine(res, line.chomp);
+                    line = string.init;
+                }
+                continue;
+            }
+            if (line.length == 0) {
+                line = word;
+                if (word.endsWith!isWhite) {
+                    res = appendLine(res, line.chomp);
+                    line = string.init;
+                }
+            } else {
+                if (word.endsWith!isWhite) {
+                    line ~= SPACE ~ word;
+                    res = appendLine(res, line.chomp);
+                    line = string.init;
+                } else {
+                    line ~= SPACE ~ word;
+                }
+            }
+        }
+    }
+    //debug (verbose) writefln("'%s'", line);
+    if (line.length > 0) {
+        res ~= NEWLINE ~ indent ~ line;
+    }
+    return res;
+}
+@("wrapnl: exceeds line then append")
+unittest {
+    mixin (sut.wrapper.prologue);
+
+    import std.ascii: newline;
+    import std.array: join;
+    enum NEWLINE = newline;
+
+    immutable input = "create archive file (tar.bz2) suffixed with the "
+        ~ "specified version string; default version string is date and "
+        ~ "time as\n'yyyymmdd-hhmmss'";
+    enum Result = [
+        "  create archive file (tar.bz2) suffixed",
+        "  with the specified version string;",
+        "  default version string is date and time",
+        "  as",
+        "  'yyyymmdd-hhmmss'"
+    ];
+    debug (verbose) writeln("Wrapping at column: ", 43);
+    debug (verbose) writefln("%s\n%s", RulerOnes, RulerTens);
+    const result = wrapnl(input, 43, "  ", "  ");
+    debug (verbose) writeln(result);
+    assert (result == Result.join(NEWLINE));
+}
+@("wrapnl: append to line")
+unittest {
+    mixin (sut.wrapper.prologue);
+
+    import std.ascii: newline;
+    import std.array: join;
+    enum NEWLINE = newline;
+
+    immutable input = "create archive file (tar.bz2)\nsuffixed with the "
+        ~ "specified version string; default version string is date and "
+        ~ "time as 'yyyymmdd-hhmmss'";
+    enum Result = [
+        "  create archive file (tar.bz2)",
+        "  suffixed with the specified version",
+        "  string; default version string is date",
+        "  and time as 'yyyymmdd-hhmmss'"
+    ];
+    debug (verbose) writeln("Wrapping at column: ", 43);
+    debug (verbose) writefln("%s\n%s", RulerOnes, RulerTens);
+    const result = wrapnl(input, 43, "  ", "  ");
+    debug (verbose) writeln(result);
+    assert (result == Result.join(NEWLINE));
+}
+@("wrapnl: first word")
+unittest {
+    mixin (sut.wrapper.prologue);
+
+    import std.ascii: newline;
+    import std.array: join;
+    enum NEWLINE = newline;
+
+    immutable input = "create\narchive file (tar.bz2) suffixed with the "
+        ~ "specified version string; default version string is date and "
+        ~ "time as 'yyyymmdd-hhmmss'";
+    enum Result = [
+        "  create",
+        "  archive file (tar.bz2) suffixed with the",
+        "  specified version string; default version",
+        "  string is date and time as",
+        "  'yyyymmdd-hhmmss'"
+    ];
+    debug (verbose) writeln("Wrapping at column: ", 43);
+    debug (verbose) writefln("%s\n%s", RulerOnes, RulerTens);
+    const result = wrapnl(input, 43, "  ", "  ");
+    debug (verbose) writeln(result);
+    assert (result == Result.join(NEWLINE));
+}
+@("wrapnl: last word")
+unittest {
+    mixin (sut.wrapper.prologue);
+
+    import std.ascii: newline;
+    import std.array: join;
+    enum NEWLINE = newline;
+
+    immutable input = "create archive file (tar.bz2) suffixed with the "
+        ~ "specified version string; default version string is date and "
+        ~ "time as 'yyyymmdd-hhmmss'\n";
+    enum Result = [
+        "  create archive file (tar.bz2) suffixed",
+        "  with the specified version string;",
+        "  default version string is date and time",
+        "  as 'yyyymmdd-hhmmss'"
+    ];
+    debug (verbose) writeln("Wrapping at column: ", 43);
+    debug (verbose) writefln("%s\n%s", RulerOnes, RulerTens);
+    const result = wrapnl(input, 43, "  ", "  ");
+    debug (verbose) writeln(result);
+    assert (result == Result.join(NEWLINE));
+}
+@("wrapnl: multiple new lines")
+unittest {
+    mixin (sut.wrapper.prologue);
+
+    import std.ascii: newline;
+    import std.array: join;
+    enum NEWLINE = newline;
+
+    immutable input = "first line\n\nThis is the rest of the text. It "
+        ~ "must be long so it should wrap to the next line.";
+    enum Result = [
+        "first line",
+        "  ",
+        "  This is the rest of the text. It must be",
+        "  long so it should wrap to the next line."
+    ];
+    debug (verbose) writeln("Wrapping at column: ", 43);
+    debug (verbose) writefln("%s\n%s", RulerOnes, RulerTens);
+    const result = wrapnl(input, 43, string.init, "  ");
+    debug (verbose) writeln(result);
+    debug (verbose) writeln(Result.join(NEWLINE));
+    assert (result == Result.join(NEWLINE));
+}

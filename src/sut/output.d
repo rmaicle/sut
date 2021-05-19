@@ -5,7 +5,7 @@ import sut.config:
     Unknown;
 import sut.counter: UnitTestCounter;
 import sut.execution: executionList;
-import sut.util: beginsWith;
+import sut.util: beginsWith, wrapnl;
 
 import std.string: toStringz;
 import std.traits: ReturnType;
@@ -164,12 +164,21 @@ printAssertion (
     const string moduleName,
     const Throwable throwable
 ) {
+    import std.string: leftJustify;
+    import std.stdio;
     enum ASSERT_MSG_FMTS = `
 %s%s Assertion Failed!%s
 %s Message: %s
 %s Module:  %s
 %s File:    %s (%zd)
 `;
+
+    const indent = Label.AssertionDetail.length + " Message: ".length;
+    const message = wrapnl(
+        cast (string) throwable.message,
+        80,
+        leftJustify("", indent, ' '),
+        leftJustify("", indent, ' '))[indent..$];
     printf(ASSERT_MSG_FMTS,
         // Heading
         Color.IRed.toStringz,
@@ -177,7 +186,7 @@ printAssertion (
         Color.Reset.toStringz,
         // Message
         Label.AssertionDetail.toStringz,
-        throwable.message.toStringz,
+        message.toStringz,
         // Module
         Label.AssertionDetail.toStringz,
         moduleName.toStringz,
