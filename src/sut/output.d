@@ -140,11 +140,11 @@ printSummary (
 
     printf("%s\n", SummaryStart.toStringz);
 
-    printf("%s %s%zd passed%s, %s%zd failed%s, %zd found\n",
+    printf("%s %zd found: %s%zd passed%s, %s%zd failed%s\n",
         Label.Summary.toStringz,
+        counter.all.total,
         passColor.toStringz, counter.all.passing, Color.Reset.toStringz,
-        failColor.toStringz, counter.all.failing, Color.Reset.toStringz,
-        counter.all.total);
+        failColor.toStringz, counter.all.failing, Color.Reset.toStringz);
     auto blank = Label.Blank.toStringz;
     printf("%s %zd %s\n",
         blank,
