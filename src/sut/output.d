@@ -119,13 +119,24 @@ printSummary (
     const UnitTestCounter counter,
     const string[] excludeList,
 ) {
+    import std.string: leftJustify;
     import std.uni: toLower;
+    import std.format: format;
 
     const passColor = counter.all.isAllPassing() ? Color.IGreen : Color.Yellow ;
     const failColor = counter.all.isNoneFailing() ? Color.IGreen: Color.IRed ;
 
-    printf("%s ========================================\n",
-        Label.Blank.toStringz);
+    enum BarLine = leftJustify(string.init, 50, '=');
+    enum SummaryStart = format!"%s %s"(cast (string) Label.Blank, BarLine);
+
+    printf("%s\n", SummaryStart.toStringz);
+
+    printSummaryWithUnitTests(counter.modulesWith, counter.modulesWithPrologue);
+    printSummaryWithoutUnitTests(counter.modulesWithout);
+    printSummaryExcludedUnitTests(excludeList);
+
+    printf("%s\n", SummaryStart.toStringz);
+
     printf("%s %s%zd passed%s, %s%zd failed%s, %zd found\n",
         Label.Summary.toStringz,
         passColor.toStringz, counter.all.passing, Color.Reset.toStringz,
@@ -145,10 +156,6 @@ printSummary (
         blank,
         excludeList.length,
         Module.Excluded.toLower.toStringz);
-
-    printSummaryWithUnitTests(counter.modulesWith, counter.modulesWithPrologue);
-    printSummaryWithoutUnitTests(counter.modulesWithout);
-    printSummaryExcludedUnitTests(excludeList);
 
     printDateTime(Label.End);
     fflush(stdout);
