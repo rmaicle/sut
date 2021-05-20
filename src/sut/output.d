@@ -132,11 +132,12 @@ printSummary (
     enum BarLine = leftJustify(string.init, 50, '=');
     enum SummaryStart = format!"%s %s"(cast (string) Label.Blank, BarLine);
 
-    printf("%s\n", SummaryStart.toStringz);
-
-    printSummaryWithUnitTests(counter.modulesWith, counter.modulesWithPrologue);
-    printSummaryWithoutUnitTests(counter.modulesWithout);
-    printSummaryExcludedUnitTests(excludeList);
+    if (getExecutionMode() == ExecutionMode.All) {
+        printf("%s\n", SummaryStart.toStringz);
+        printSummaryWithUnitTests(counter.modulesWith, counter.modulesWithPrologue);
+        printSummaryWithoutUnitTests(counter.modulesWithout);
+        printSummaryExcludedUnitTests(excludeList);
+    }
 
     printf("%s\n", SummaryStart.toStringz);
 
