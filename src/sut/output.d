@@ -14,7 +14,8 @@ import core.stdc.stdio:
     fflush,
     printf,
     stdout;
-import core.time: MonoTime;
+import core.time:
+    MonoTime;
 
 
 
@@ -98,7 +99,7 @@ printModuleSummary (
     const passColor = counter.current.isAllPassing() ? Color.IGreen : Color.Yellow;
     const failingColor = counter.current.isNoneFailing() ? Color.IGreen : Color.IRed;
 
-    printf("%s %s - %s%zd passed%s, %s%zd failed%s, %zd found - %.3fs\n",
+    printf("%s %s - %s%zd passed%s, %s%zd failed%s, %zd found - %s\n",
         Label.Blank.toStringz,
         moduleName.toStringz,
         passColor.toStringz,
@@ -108,7 +109,7 @@ printModuleSummary (
         counter.current.failing,
         Color.Reset.toStringz,
         counter.current.total,
-        (to - from).total!"msecs" / 1000.0);
+        elapseTimeString(from, to).toStringz);
     fflush(stdout);
 }
 
@@ -118,6 +119,8 @@ void
 printSummary (
     const UnitTestCounter counter,
     const string[] excludeList,
+    const MonoTime from,
+    const MonoTime to
 ) {
     import std.string: leftJustify;
     import std.uni: toLower;
@@ -142,7 +145,6 @@ printSummary (
         passColor.toStringz, counter.all.passing, Color.Reset.toStringz,
         failColor.toStringz, counter.all.failing, Color.Reset.toStringz,
         counter.all.total);
-
     auto blank = Label.Blank.toStringz;
     printf("%s %zd %s\n",
         blank,
@@ -157,6 +159,7 @@ printSummary (
         excludeList.length,
         Module.Excluded.toLower.toStringz);
 
+    printf("%s %s\n", Label.Elapsed.toStringz, elapseTimeString(from, to).toStringz);
     printDateTime(Label.End);
     fflush(stdout);
 }
@@ -293,12 +296,13 @@ enum ExecutionMode: string {
  */
 enum Label: string {
     Blank               = "[unittest]         ",
-    Start               = "[unittest] Start   ",
+    Start               = "[unittest] Start:  ",
     Mode                = "[unittest] Mode:   ",
     Module              = "[unittest] Module: ",
     Summary             = "[unittest] Summary:",
     List                = "[unittest] List:   ",
-    End                 = "[unittest] End     ",
+    Elapsed             = "[unittest] Elapsed:",
+    End                 = "[unittest] End:    ",
     AssertionFailed     = "[unittest]",
     AssertionDetail     = "          ",
     Trace               = "   [trace]"
@@ -340,6 +344,27 @@ printDateTime (const string arg)
 
 
 
+string
+getCurrentTimeString ()
+{
+    import std.datetime: Clock;
+    return Clock.currTime().toSimpleString();
+}
+
+
+
+string
+elapseTimeString (
+    const MonoTime from,
+    const MonoTime to
+) {
+    import core.time: Duration;
+    Duration elapsedTime = to - from;
+    return elapsedTime.toString();
+}
+
+
+
 /**
  * Determine the `ExecutionMode` based on the execution list status.
  * The `ExecutionMode` is `Selective` if the execution list is not
@@ -355,14 +380,6 @@ getExecutionMode ()
     }
 }
 
-
-
-string
-getCurrentTimeString ()
-{
-    import std.datetime: Clock;
-    return Clock.currTime().toSimpleString();
-}
 
 
 void

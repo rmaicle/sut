@@ -34,8 +34,13 @@ customUnitTestRunner ()
 {
     import std.string: join, toStringz;
 
-    import core.stdc.stdio: fflush, printf, stdout;
+    import core.stdc.stdio:
+        fflush,
+        printf,
+        stdout;
     import core.time: MonoTime;
+
+    immutable unitTestTimeStart = MonoTime.currTime;
 
     UnitTestResult result;
     result.passed = 0;
@@ -68,7 +73,7 @@ customUnitTestRunner ()
             continue;
         }
         unitTestCounter.modulesWith ~= m.name;
-        immutable t0 = MonoTime.currTime;
+        immutable moduleTimeStart = MonoTime.currTime;
         try {
             fp();
         } catch (Throwable e) {
@@ -90,13 +95,21 @@ customUnitTestRunner ()
             }
         }
         if (unitTestCounter.current.isSomeExecuted()) {
-            printModuleSummary (m.name, unitTestCounter, t0, MonoTime.currTime);
+            printModuleSummary(
+                m.name,
+                unitTestCounter,
+                moduleTimeStart,
+                MonoTime.currTime);
         }
         unitTestCounter.accumulate();
     }
     assertHandler(null);
 
-    printSummary(unitTestCounter, exclusionList.list);
+    printSummary(
+        unitTestCounter,
+        exclusionList.list,
+        unitTestTimeStart,
+        MonoTime.currTime);
 
     // NOTE:
     // DMD 2.090.0 changed -unittest behavior and now defaults to
