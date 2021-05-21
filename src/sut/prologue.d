@@ -89,10 +89,11 @@ executeBlock (
     const string ModuleName,
     const string UnitTestName,
     const size_t Line
-)() {
+)() @safe
+{
 
     bool
-    proceedToExecute ()
+    proceedToExecute () @safe
     {
         // Assume it passed first
         // If an assertion occurs, subtract 1 in the exception handler code

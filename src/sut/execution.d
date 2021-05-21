@@ -43,7 +43,7 @@ struct ExecutionList
      * Returns: `true` if a match is found.
      */
     bool
-    isUnitTestFound (const string arg) const
+    isUnitTestFound (const string arg) const @safe
     {
         return isFound(unittests, arg);
     }
@@ -57,7 +57,7 @@ struct ExecutionList
      * Returns: `true` if a match is found.
      */
     bool
-    isModuleFound (const string arg) const
+    isModuleFound (const string arg) const @safe
     {
         return beginsWith(modules, arg);
     }
@@ -68,7 +68,7 @@ struct ExecutionList
      * Determine whether the unittest and module lists are empty.
      */
     bool
-    isEmpty () const
+    isEmpty () const @safe
     {
         return unittests.length == 0 && modules.length == 0;
     }

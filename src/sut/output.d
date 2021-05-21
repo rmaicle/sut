@@ -5,36 +5,43 @@ import sut.config:
     Unknown;
 import sut.counter: UnitTestCounter;
 import sut.execution: executionList;
-import sut.util: beginsWith, wrapnl;
+import sut.util:
+    beginsWith,
+    wrapnl;
 
-import std.string: toStringz;
 import std.traits: ReturnType;
+import std.stdio;
+import core.time: MonoTime;
 
-import core.stdc.stdio:
-    fflush,
-    printf,
-    stdout;
-import core.time:
-    MonoTime;
+
+/**
+ * Dummy for toStringz in case we need to revert later.
+ * This is temporary only.
+ */
+string
+tosz (const string arg) pure nothrow @nogc @safe
+{
+    return arg;
+}
 
 
 
 void
-printIntro ()
+printIntro () @safe
 {
     static import std.compiler;
 
     printDateTime(Label.Start);
-    printf("%s %s version %d.%d\n",
-        Label.Blank.toStringz,
-        std.compiler.name.toStringz,
+    writef("%s %s version %d.%d\n",
+        Label.Blank.tosz,
+        std.compiler.name.tosz,
         std.compiler.version_major,
         std.compiler.version_minor);
-    printf("%s D specification version %d\n",
-        Label.Blank.toStringz,
+    writef("%s D specification version %d\n",
+        Label.Blank.tosz,
         std.compiler.D_major);
     auto mode = getExecutionMode();
-    printf("%s %s\n", Label.Mode.toStringz, mode.toStringz);
+    writef("%s %s\n", Label.Mode.tosz, mode.tosz);
     if (mode != ExecutionMode.Selection) {
         return;
     }
@@ -44,17 +51,17 @@ printIntro ()
 
 
 void
-printUnknownSelections (const Config arg)
+printUnknownSelections (const Config arg) @safe
 {
     enum UNKNOWN_FMTS = "%s   x:      %s (%s)\n";
-    const label = Label.Blank.toStringz;
+    const label = Label.Blank.tosz;
     if (!arg.hasUnknowns()) {
         return;
     }
     foreach (file; arg.unknown) {
-        const filename = file.filename.toStringz;
+        const filename = file.filename.tosz;
         foreach (item; file.content) {
-            printf(UNKNOWN_FMTS, label, item.toStringz, filename);
+            writef(UNKNOWN_FMTS, label, item.tosz, filename);
         }
     }
 }
@@ -67,7 +74,8 @@ printUnitTestInfo (
     const string unitTestName,
     const size_t line,
     const UnitTestCounter counter
-) {
+) @safe
+{
     version (sut) {
         string label;
         if (counter.current.total == 1) {
@@ -76,14 +84,13 @@ printUnitTestInfo (
             label = Label.Blank;
         }
 
-        printf("%s %s %4zd %s%s%s\n",
-            label.toStringz,
-            moduleName.toStringz,
+        writef("%s %s %4zd %s%s%s\n",
+            label.tosz,
+            moduleName.tosz,
             line,
-            Color.Green.toStringz,
-            unitTestName.toStringz,
-            Color.Reset.toStringz);
-        fflush(stdout);
+            Color.Green.tosz,
+            unitTestName.tosz,
+            Color.Reset.tosz);
     }
 }
 
@@ -95,22 +102,22 @@ printModuleSummary (
     const UnitTestCounter counter,
     const MonoTime from,
     const MonoTime to
-) {
+) @safe
+{
     const passColor = counter.current.isAllPassing() ? Color.IGreen : Color.Yellow;
     const failingColor = counter.current.isNoneFailing() ? Color.IGreen : Color.IRed;
 
-    printf("%s %s - %s%zd passed%s, %s%zd failed%s, %zd found - %s\n",
-        Label.Blank.toStringz,
-        moduleName.toStringz,
-        passColor.toStringz,
+    writef("%s %s - %s%d passed%s, %s%d failed%s, %d found - %s\n",
+        Label.Blank.tosz,
+        moduleName.tosz,
+        passColor.tosz,
         counter.current.passing,
-        Color.Reset.toStringz,
-        failingColor.toStringz,
+        Color.Reset.tosz,
+        failingColor.tosz,
         counter.current.failing,
-        Color.Reset.toStringz,
+        Color.Reset.tosz,
         counter.current.total,
-        elapseTimeString(from, to).toStringz);
-    fflush(stdout);
+        elapseTimeString(from, to).tosz);
 }
 
 
@@ -121,7 +128,8 @@ printSummary (
     const string[] excludeList,
     const MonoTime from,
     const MonoTime to
-) {
+) @safe
+{
     import std.string: leftJustify;
     import std.uni: toLower;
     import std.format: format;
@@ -133,36 +141,35 @@ printSummary (
     enum SummaryStart = format!"%s %s"(cast (string) Label.Blank, BarLine);
 
     if (getExecutionMode() == ExecutionMode.All) {
-        printf("%s\n", SummaryStart.toStringz);
+        writef("%s\n", SummaryStart.tosz);
         printSummaryWithUnitTests(counter.modulesWith, counter.modulesWithPrologue);
         printSummaryWithoutUnitTests(counter.modulesWithout);
         printSummaryExcludedUnitTests(excludeList);
     }
 
-    printf("%s\n", SummaryStart.toStringz);
+    writef("%s\n", SummaryStart.tosz);
 
-    printf("%s %zd found: %s%zd passed%s, %s%zd failed%s\n",
-        Label.Summary.toStringz,
+    writef("%s %d found: %s%d passed%s, %s%d failed%s\n",
+        Label.Summary.tosz,
         counter.all.total,
-        passColor.toStringz, counter.all.passing, Color.Reset.toStringz,
-        failColor.toStringz, counter.all.failing, Color.Reset.toStringz);
-    auto blank = Label.Blank.toStringz;
-    printf("%s %zd %s\n",
+        passColor.tosz, counter.all.passing, Color.Reset.tosz,
+        failColor.tosz, counter.all.failing, Color.Reset.tosz);
+    auto blank = Label.Blank.tosz;
+    writef("%s %d %s\n",
         blank,
         counter.modulesWith.length,
-        Module.WithUnitTest.toLower.toStringz);
-    printf("%s %zd %s\n",
+        Module.WithUnitTest.toLower.tosz);
+    writef("%s %d %s\n",
         blank,
         counter.modulesWithout.length,
-        Module.WithoutUnitTest.toLower.toStringz);
-    printf("%s %zd %s\n",
+        Module.WithoutUnitTest.toLower.tosz);
+    writef("%s %d %s\n",
         blank,
         excludeList.length,
-        Module.Excluded.toLower.toStringz);
+        Module.Excluded.toLower.tosz);
 
-    printf("%s %s\n", Label.Elapsed.toStringz, elapseTimeString(from, to).toStringz);
+    writef("%s %s\n", Label.Elapsed.tosz, elapseTimeString(from, to).tosz);
     printDateTime(Label.End);
-    fflush(stdout);
 }
 
 
@@ -174,36 +181,38 @@ void
 printAssertion (
     const string moduleName,
     const Throwable throwable
-) {
+) @trusted
+{
+    import std.conv: to;
     import std.string: leftJustify;
     import std.stdio;
     enum ASSERT_MSG_FMTS = `
 %s%s Assertion Failed!%s
 %s Message: %s
 %s Module:  %s
-%s File:    %s (%zd)
+%s File:    %s (%d)
 `;
 
     const indent = Label.AssertionDetail.length + " Message: ".length;
     const message = wrapnl(
-        cast (string) throwable.message,
+        to!string(throwable.message),
         80,
         leftJustify("", indent, ' '),
         leftJustify("", indent, ' '))[indent..$];
-    printf(ASSERT_MSG_FMTS,
+    writef(ASSERT_MSG_FMTS,
         // Heading
-        Color.IRed.toStringz,
-        Label.AssertionFailed.toStringz,
-        Color.Reset.toStringz,
+        Color.IRed.tosz,
+        Label.AssertionFailed.tosz,
+        Color.Reset.tosz,
         // Message
-        Label.AssertionDetail.toStringz,
-        message.toStringz,
+        Label.AssertionDetail.tosz,
+        message.tosz,
         // Module
-        Label.AssertionDetail.toStringz,
-        moduleName.toStringz,
+        Label.AssertionDetail.tosz,
+        moduleName.tosz,
         // File
-        Label.AssertionDetail.toStringz,
-        throwable.file.toStringz,
+        Label.AssertionDetail.tosz,
+        throwable.file.tosz,
         throwable.line);
 }
 
@@ -213,7 +222,7 @@ printAssertion (
  * Display trace information.
  */
 void
-printTrace (const Throwable throwable)
+printTrace (const Throwable throwable) @trusted
 {
     import std.conv: to;
     import std.algorithm:
@@ -249,17 +258,17 @@ printTrace (const Throwable throwable)
             line = line[PREFIX.length + 1 .. $];
         }
         if (line.canFind(UNIT_TEST_FUNC)) {
-            printf("%s %s%s%s\n",
-                Label.Trace.toStringz,
-                Color.Yellow.toStringz,
-                line.toStringz,
-                Color.Reset.toStringz);
+            writef("%s %s%s%s\n",
+                Label.Trace.tosz,
+                Color.Yellow.tosz,
+                line.tosz,
+                Color.Reset.tosz);
             continue;
         }
         // Do not output stack trace items beyond the call to the
         // custom unit test runner.
         if (!isIgnoreStartFound && line.canFind(IGNORE_START)) {
-            printf("%s ...  (skipping)\n", Label.Trace.toStringz);
+            writef("%s ...  (skipping)\n", Label.Trace.tosz);
             isIgnoreStartFound = true;
             continue;
         }
@@ -270,10 +279,9 @@ printTrace (const Throwable throwable)
         if (isIgnoreStartFound ^ isIgnoreEndFound) {
             continue;
         }
-        printf("%s %s\n", Label.Trace.toStringz, line.toStringz);
+        writef("%s %s\n", Label.Trace.tosz, line.tosz);
     }
-    printf("\n");
-    fflush(stdout);
+    writef("\n");
 }
 
 
@@ -338,15 +346,15 @@ enum Color: string {
 
 
 void
-printDateTime (const string arg)
+printDateTime (const string arg) @safe
 {
-    printf("%s %s\n", arg.toStringz, getCurrentTimeString().toStringz);
+    writef("%s %s\n", arg.tosz, getCurrentTimeString().tosz);
 }
 
 
 
 string
-getCurrentTimeString ()
+getCurrentTimeString () @safe
 {
     import std.datetime: Clock;
     return Clock.currTime().toSimpleString();
@@ -358,7 +366,8 @@ string
 elapseTimeString (
     const MonoTime from,
     const MonoTime to
-) {
+) @safe
+{
     import core.time: Duration;
     Duration elapsedTime = to - from;
     return elapsedTime.toString();
@@ -372,7 +381,7 @@ elapseTimeString (
  * empty. Otherwise, `ExecutionMode` is `All`.
  */
 ExecutionMode
-getExecutionMode ()
+getExecutionMode () @safe
 {
     if (executionList.isEmpty()) {
         return ExecutionMode.All;
@@ -387,23 +396,24 @@ void
 printSummaryWithUnitTests (
     const string[] modulesWithUnitTests,
     const string[] modulesWithPrologue
-) {
+) @safe
+{
     import std.algorithm: sort;
 
     alias GoodColor = Color.IGreen;
     alias BadColor = Color.IRed;
-    const AttentionColor = Color.Yellow.toStringz;
-    const ResetColor = Color.Reset.toStringz;
+    const AttentionColor = Color.Yellow.tosz;
+    const ResetColor = Color.Reset.tosz;
     const color = modulesWithUnitTests.length == 0 ? BadColor : GoodColor;
 
-    printf("%s %s%s (%zd)%s\n",
-        Label.List.toStringz,
-        color.toStringz,
-        Module.WithUnitTest.toStringz,
+    writef("%s %s%s (%d)%s\n",
+        Label.List.tosz,
+        color.tosz,
+        Module.WithUnitTest.tosz,
         modulesWithUnitTests.length,
-        Color.Reset.toStringz);
-    printf("%s Module(s) without prologue code have asterisk (*)\n",
-        Label.Blank.toStringz);
+        Color.Reset.tosz);
+    writef("%s Module(s) without prologue code have asterisk (*)\n",
+        Label.Blank.tosz);
 
     if (modulesWithUnitTests.length == 0) {
         return;
@@ -411,12 +421,12 @@ printSummaryWithUnitTests (
 
     foreach (item; (modulesWithUnitTests.dup).sort.release()) {
         if (modulesWithPrologue.beginsWith(item)) {
-            printf("%s     %s\n", Label.Blank.toStringz, item.toStringz);
+            writef("%s     %s\n", Label.Blank.tosz, item.tosz);
         } else {
-            printf("%s     %s%s *%s\n",
-                Label.Blank.toStringz,
+            writef("%s     %s%s *%s\n",
+                Label.Blank.tosz,
                 AttentionColor,
-                item.toStringz,
+                item.tosz,
                 ResetColor);
         }
     }
@@ -425,7 +435,7 @@ printSummaryWithUnitTests (
 
 
 void
-printSummaryWithoutUnitTests (const string[] arg)
+printSummaryWithoutUnitTests (const string[] arg) @safe
 {
     printSummaryCategory(arg, Module.WithoutUnitTest, Color.Yellow, Color.IGreen);
 }
@@ -433,7 +443,7 @@ printSummaryWithoutUnitTests (const string[] arg)
 
 
 void
-printSummaryExcludedUnitTests (const string[] arg)
+printSummaryExcludedUnitTests (const string[] arg) @safe
 {
     // Note the reversed color arguments
     printSummaryCategory(arg, Module.Excluded, Color.Reset, Color.Reset);
@@ -446,34 +456,35 @@ printSummaryCategory (
     const string[] list,
     const string label,
     const string goodColor,
-    const string badColor)
+    const string badColor
+) @safe
 {
     import std.algorithm: sort;
     const color = list.length == 0 ? badColor : goodColor;
-    printf("%s %s%s (%zd)%s\n",
-        Label.List.toStringz,
-        color.toStringz,
-        label.toStringz,
+    writef("%s %s%s (%d)%s\n",
+        Label.List.tosz,
+        color.tosz,
+        label.tosz,
         list.length,
-        Color.Reset.toStringz);
+        Color.Reset.tosz);
     if (list.length == 0) {
         return;
     }
     foreach (e; (list.dup).sort.release()) {
-        printf("%s     %s\n", Label.Blank.toStringz, e.toStringz);
+        writef("%s     %s\n", Label.Blank.tosz, e.tosz);
     }
 }
 
 
 
 void
-printSelections ()
+printSelections () @safe
 {
-    const label = Label.Blank.toStringz;
+    const label = Label.Blank.tosz;
     foreach (entry; executionList.modules) {
-        printf("%s   module: %s\n", label, entry.toStringz);
+        writef("%s   module: %s\n", label, entry.tosz);
     }
     foreach (entry; executionList.unittests) {
-        printf("%s   block:  %s\n", label, entry.toStringz);
+        writef("%s   block:  %s\n", label, entry.tosz);
     }
 }

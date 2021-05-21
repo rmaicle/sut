@@ -12,7 +12,8 @@ bool
 isIn (alias pred)(
     const string[] haystack,
     const string needle
-) {
+) @safe
+{
     import std.algorithm: canFind;
     import std.uni: toLower;
     if (haystack.length == 0) {
@@ -37,7 +38,8 @@ bool
 beginsWith (
     const string[] haystack,
     const string needle
-) {
+) @safe
+{
     import std.algorithm: startsWith;
     import std.uni: toLower;
     return isIn!(
@@ -83,7 +85,8 @@ bool
 isFound (
     const string[] haystack,
     const string needle
-) {
+) @safe
+{
     import std.algorithm: canFind;
     import std.uni: toLower;
     return isIn!(
@@ -127,7 +130,7 @@ unittest {
  * Returns: `string[]`
  */
 string[]
-toArray (const string arg)
+toArray (const string arg) @safe
 {
     import std.algorithm: map, remove, sort, uniq;
     import std.array: array;
@@ -167,7 +170,8 @@ unittest {
  * Sort (case insensitive) and remove duplicates.
  */
 string[]
-dedup (const string[] arg) {
+dedup (const string[] arg) @safe
+{
     import std.algorithm:
         sort,
         uniq;
@@ -194,7 +198,8 @@ string[]
 remove (
     const string[] haystack,
     const string[] needles
-) {
+) @safe
+{
     import std.algorithm:
         canFind,
         remove;
@@ -220,7 +225,8 @@ unprefix (
     const string arg,
     const string prefix,
     const size_t separatorLength = 0
-) {
+) @safe
+{
     import std.string: strip;
     return (arg[prefix.length + separatorLength..$]).strip();
 }
@@ -245,7 +251,8 @@ wrapnl (
     const string firstIndent = string.init,
     const string indent = string.init,
     const size_t tabsize = 8
-) {
+) @safe
+{
     import std.array: split;
     import std.string:
         chomp,
