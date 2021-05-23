@@ -62,7 +62,7 @@ struct UnitTestCounter
      * Add values to total.
      */
     void
-    accumulate () @safe
+    accumulate ()
     {
         all.passing += current.passing;
         all.failing += current.failing;
@@ -126,7 +126,7 @@ struct UnitTestStats
 
     /** Set to initial values. */
     void
-    reset () @safe
+    reset () nothrow @safe
     {
         passing = 0;
         failing = 0;
@@ -138,32 +138,39 @@ struct UnitTestStats
      * Increment passing field.
      */
     void
-    addPassing () @safe { passing++; }
+    addPassing () nothrow @safe
+    {
+        passing++;
+    }
 
 
 
     /**
      * Incrememnt failing field.
      */
-    nothrow
     void
-    addFailing () @safe { failing++; }
+    addFailing () nothrow @safe
+    {
+        failing++;
+    }
 
 
 
     /**
      * Increment total field.
      */
-    void addTotal () @safe { total++; }
+    void addTotal () nothrow @safe
+    {
+        total++;
+    }
 
 
 
     /**
      * Revert previous call to `addPassing` and do an `addFailing` call.
      */
-    nothrow
     void
-    revertPassing () @safe
+    revertPassing () nothrow @safe
     {
         if (passing == 0) {
             throw new Error("Cannot decrement zero.");
@@ -187,7 +194,7 @@ struct UnitTestStats
      * Returns: `true` if all values are equal to initial values.
      */
     bool
-    isUnset () const @safe
+    isUnset () const nothrow @safe
     {
         return passing == 0
             && failing == 0
@@ -209,7 +216,7 @@ struct UnitTestStats
      * Returns: `true` if passing field is equal to total field.
      */
     bool
-    isAllPassing () const @safe
+    isAllPassing () const nothrow @safe
     {
         return passing == total;
     }
@@ -231,7 +238,7 @@ struct UnitTestStats
      * Returns: `true` if failing field is zero.
      */
     bool
-    isNoneFailing () const @safe
+    isNoneFailing () const nothrow @safe
     {
         return failing == 0;
     }
@@ -252,7 +259,7 @@ struct UnitTestStats
      * Returns: `true` if passing or failing field is greater than zero.
      */
     bool
-    isSomeExecuted () const @safe
+    isSomeExecuted () const nothrow @safe
     {
         return total > 0 && (passing > 0 || failing > 0);
     }
@@ -318,20 +325,19 @@ struct UnitTestBlock
     bool flag = false;
 
     void
-    enter () pure nothrow @nogc @safe
+    enter () nothrow @safe
     {
         flag = true;
     }
 
     void
-    leave () pure nothrow @nogc @safe
+    leave () nothrow @safe
     {
         flag = false;
     }
 
-    nothrow
     bool
-    isIn () const pure nothrow @nogc @safe
+    isIn () const nothrow @safe
     {
         return flag;
     }

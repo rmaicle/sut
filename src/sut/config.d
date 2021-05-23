@@ -99,7 +99,7 @@ struct Config
      * Determine whether the unknown container has items.
      */
     bool
-    hasUnknowns () const @safe
+    hasUnknowns () const
     {
         return unknown.length > 0;
     }

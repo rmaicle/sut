@@ -198,7 +198,7 @@ string[]
 remove (
     const string[] haystack,
     const string[] needles
-) @safe
+) nothrow @safe
 {
     import std.algorithm:
         canFind,
@@ -211,8 +211,8 @@ unittest {
     auto arr = ["one", "two", "three", "four"];
     assert (arr.remove(["one"])   == ["two", "three", "four"]);
     assert (arr.remove(["two"])   == ["one", "three", "four"]);
-    assert (arr.remove(["three"])   == ["one", "two", "four"]);
-    assert (arr.remove(["four"])   == ["one", "two", "three"]);
+    assert (arr.remove(["three"]) == ["one", "two", "four"]);
+    assert (arr.remove(["four"])  == ["one", "two", "three"]);
 }
 
 
@@ -225,7 +225,7 @@ unprefix (
     const string arg,
     const string prefix,
     const size_t separatorLength = 0
-) @safe
+) nothrow @safe
 {
     import std.string: strip;
     return (arg[prefix.length + separatorLength..$]).strip();

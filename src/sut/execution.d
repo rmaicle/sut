@@ -68,7 +68,7 @@ struct ExecutionList
      * Determine whether the unittest and module lists are empty.
      */
     bool
-    isEmpty () const @safe
+    isEmpty () const nothrow @safe
     {
         return unittests.length == 0 && modules.length == 0;
     }

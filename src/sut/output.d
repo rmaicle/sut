@@ -9,39 +9,29 @@ import sut.util:
     beginsWith,
     wrapnl;
 
+import std.string: tosz = toStringz;
 import std.traits: ReturnType;
-import std.stdio;
+import std.stdio: print = printf;
 import core.time: MonoTime;
-
-
-/**
- * Dummy for toStringz in case we need to revert later.
- * This is temporary only.
- */
-string
-tosz (const string arg) pure nothrow @nogc @safe
-{
-    return arg;
-}
 
 
 
 void
-printIntro () @safe
+printIntro ()
 {
     static import std.compiler;
 
     printDateTime(Label.Start);
-    writef("%s %s version %d.%d\n",
+    print("%s %s version %d.%d\n",
         Label.Blank.tosz,
         std.compiler.name.tosz,
         std.compiler.version_major,
         std.compiler.version_minor);
-    writef("%s D specification version %d\n",
+    print("%s D specification version %d\n",
         Label.Blank.tosz,
         std.compiler.D_major);
     auto mode = getExecutionMode();
-    writef("%s %s\n", Label.Mode.tosz, mode.tosz);
+    print("%s %s\n", Label.Mode.tosz, mode.tosz);
     if (mode != ExecutionMode.Selection) {
         return;
     }
@@ -51,7 +41,7 @@ printIntro () @safe
 
 
 void
-printUnknownSelections (const Config arg) @safe
+printUnknownSelections (const Config arg)
 {
     enum UNKNOWN_FMTS = "%s   x:      %s (%s)\n";
     const label = Label.Blank.tosz;
@@ -61,7 +51,7 @@ printUnknownSelections (const Config arg) @safe
     foreach (file; arg.unknown) {
         const filename = file.filename.tosz;
         foreach (item; file.content) {
-            writef(UNKNOWN_FMTS, label, item.tosz, filename);
+            print(UNKNOWN_FMTS, label, item.tosz, filename);
         }
     }
 }
@@ -74,8 +64,7 @@ printUnitTestInfo (
     const string unitTestName,
     const size_t line,
     const UnitTestCounter counter
-) @safe
-{
+) {
     version (sut) {
         string label;
         if (counter.current.total == 1) {
@@ -84,7 +73,7 @@ printUnitTestInfo (
             label = Label.Blank;
         }
 
-        writef("%s %s %4zd %s%s%s\n",
+        print("%s %s %4d %s%s%s\n",
             label.tosz,
             moduleName.tosz,
             line,
@@ -102,12 +91,11 @@ printModuleSummary (
     const UnitTestCounter counter,
     const MonoTime from,
     const MonoTime to
-) @safe
-{
+) {
     const passColor = counter.current.isAllPassing() ? Color.IGreen : Color.Yellow;
     const failingColor = counter.current.isNoneFailing() ? Color.IGreen : Color.IRed;
 
-    writef("%s %s - %s%d passed%s, %s%d failed%s, %d found - %s\n",
+    print("%s %s - %s%d passed%s, %s%d failed%s, %d found - %s\n",
         Label.Blank.tosz,
         moduleName.tosz,
         passColor.tosz,
@@ -128,8 +116,7 @@ printSummary (
     const string[] excludeList,
     const MonoTime from,
     const MonoTime to
-) @safe
-{
+) {
     import std.string: leftJustify;
     import std.uni: toLower;
     import std.format: format;
@@ -141,34 +128,34 @@ printSummary (
     enum SummaryStart = format!"%s %s"(cast (string) Label.Blank, BarLine);
 
     if (getExecutionMode() == ExecutionMode.All) {
-        writef("%s\n", SummaryStart.tosz);
+        print("%s\n", SummaryStart.tosz);
         printSummaryWithUnitTests(counter.modulesWith, counter.modulesWithPrologue);
         printSummaryWithoutUnitTests(counter.modulesWithout);
         printSummaryExcludedUnitTests(excludeList);
     }
 
-    writef("%s\n", SummaryStart.tosz);
+    print("%s\n", SummaryStart.tosz);
 
-    writef("%s %d found: %s%d passed%s, %s%d failed%s\n",
+    print("%s %d found: %s%d passed%s, %s%d failed%s\n",
         Label.Summary.tosz,
         counter.all.total,
         passColor.tosz, counter.all.passing, Color.Reset.tosz,
         failColor.tosz, counter.all.failing, Color.Reset.tosz);
     auto blank = Label.Blank.tosz;
-    writef("%s %d %s\n",
+    print("%s %d %s\n",
         blank,
         counter.modulesWith.length,
         Module.WithUnitTest.toLower.tosz);
-    writef("%s %d %s\n",
+    print("%s %d %s\n",
         blank,
         counter.modulesWithout.length,
         Module.WithoutUnitTest.toLower.tosz);
-    writef("%s %d %s\n",
+    print("%s %d %s\n",
         blank,
         excludeList.length,
         Module.Excluded.toLower.tosz);
 
-    writef("%s %s\n", Label.Elapsed.tosz, elapseTimeString(from, to).tosz);
+    print("%s %s\n", Label.Elapsed.tosz, elapseTimeString(from, to).tosz);
     printDateTime(Label.End);
 }
 
@@ -199,7 +186,7 @@ printAssertion (
         80,
         leftJustify("", indent, ' '),
         leftJustify("", indent, ' '))[indent..$];
-    writef(ASSERT_MSG_FMTS,
+    print(ASSERT_MSG_FMTS,
         // Heading
         Color.IRed.tosz,
         Label.AssertionFailed.tosz,
@@ -222,7 +209,7 @@ printAssertion (
  * Display trace information.
  */
 void
-printTrace (const Throwable throwable) @trusted
+printTrace (const Throwable throwable)
 {
     import std.conv: to;
     import std.algorithm:
@@ -258,7 +245,7 @@ printTrace (const Throwable throwable) @trusted
             line = line[PREFIX.length + 1 .. $];
         }
         if (line.canFind(UNIT_TEST_FUNC)) {
-            writef("%s %s%s%s\n",
+            print("%s %s%s%s\n",
                 Label.Trace.tosz,
                 Color.Yellow.tosz,
                 line.tosz,
@@ -268,7 +255,7 @@ printTrace (const Throwable throwable) @trusted
         // Do not output stack trace items beyond the call to the
         // custom unit test runner.
         if (!isIgnoreStartFound && line.canFind(IGNORE_START)) {
-            writef("%s ...  (skipping)\n", Label.Trace.tosz);
+            print("%s ...  (skipping)\n", Label.Trace.tosz);
             isIgnoreStartFound = true;
             continue;
         }
@@ -279,9 +266,9 @@ printTrace (const Throwable throwable) @trusted
         if (isIgnoreStartFound ^ isIgnoreEndFound) {
             continue;
         }
-        writef("%s %s\n", Label.Trace.tosz, line.tosz);
+        print("%s %s\n", Label.Trace.tosz, line.tosz);
     }
-    writef("\n");
+    print("\n");
 }
 
 
@@ -346,15 +333,15 @@ enum Color: string {
 
 
 void
-printDateTime (const string arg) @safe
+printDateTime (const string arg)
 {
-    writef("%s %s\n", arg.tosz, getCurrentTimeString().tosz);
+    print("%s %s\n", arg.tosz, getCurrentTimeString().tosz);
 }
 
 
 
 string
-getCurrentTimeString () @safe
+getCurrentTimeString ()
 {
     import std.datetime: Clock;
     return Clock.currTime().toSimpleString();
@@ -366,8 +353,7 @@ string
 elapseTimeString (
     const MonoTime from,
     const MonoTime to
-) @safe
-{
+) {
     import core.time: Duration;
     Duration elapsedTime = to - from;
     return elapsedTime.toString();
@@ -381,7 +367,7 @@ elapseTimeString (
  * empty. Otherwise, `ExecutionMode` is `All`.
  */
 ExecutionMode
-getExecutionMode () @safe
+getExecutionMode ()
 {
     if (executionList.isEmpty()) {
         return ExecutionMode.All;
@@ -396,8 +382,7 @@ void
 printSummaryWithUnitTests (
     const string[] modulesWithUnitTests,
     const string[] modulesWithPrologue
-) @safe
-{
+) {
     import std.algorithm: sort;
 
     alias GoodColor = Color.IGreen;
@@ -406,13 +391,13 @@ printSummaryWithUnitTests (
     const ResetColor = Color.Reset.tosz;
     const color = modulesWithUnitTests.length == 0 ? BadColor : GoodColor;
 
-    writef("%s %s%s (%d)%s\n",
+    print("%s %s%s (%d)%s\n",
         Label.List.tosz,
         color.tosz,
         Module.WithUnitTest.tosz,
         modulesWithUnitTests.length,
         Color.Reset.tosz);
-    writef("%s Module(s) without prologue code have asterisk (*)\n",
+    print("%s Module(s) without prologue code have asterisk (*)\n",
         Label.Blank.tosz);
 
     if (modulesWithUnitTests.length == 0) {
@@ -421,9 +406,9 @@ printSummaryWithUnitTests (
 
     foreach (item; (modulesWithUnitTests.dup).sort.release()) {
         if (modulesWithPrologue.beginsWith(item)) {
-            writef("%s     %s\n", Label.Blank.tosz, item.tosz);
+            print("%s     %s\n", Label.Blank.tosz, item.tosz);
         } else {
-            writef("%s     %s%s *%s\n",
+            print("%s     %s%s *%s\n",
                 Label.Blank.tosz,
                 AttentionColor,
                 item.tosz,
@@ -435,7 +420,7 @@ printSummaryWithUnitTests (
 
 
 void
-printSummaryWithoutUnitTests (const string[] arg) @safe
+printSummaryWithoutUnitTests (const string[] arg)
 {
     printSummaryCategory(arg, Module.WithoutUnitTest, Color.Yellow, Color.IGreen);
 }
@@ -443,7 +428,7 @@ printSummaryWithoutUnitTests (const string[] arg) @safe
 
 
 void
-printSummaryExcludedUnitTests (const string[] arg) @safe
+printSummaryExcludedUnitTests (const string[] arg)
 {
     // Note the reversed color arguments
     printSummaryCategory(arg, Module.Excluded, Color.Reset, Color.Reset);
@@ -457,11 +442,10 @@ printSummaryCategory (
     const string label,
     const string goodColor,
     const string badColor
-) @safe
-{
+) {
     import std.algorithm: sort;
     const color = list.length == 0 ? badColor : goodColor;
-    writef("%s %s%s (%d)%s\n",
+    print("%s %s%s (%d)%s\n",
         Label.List.tosz,
         color.tosz,
         label.tosz,
@@ -471,20 +455,20 @@ printSummaryCategory (
         return;
     }
     foreach (e; (list.dup).sort.release()) {
-        writef("%s     %s\n", Label.Blank.tosz, e.tosz);
+        print("%s     %s\n", Label.Blank.tosz, e.tosz);
     }
 }
 
 
 
 void
-printSelections () @safe
+printSelections ()
 {
     const label = Label.Blank.tosz;
     foreach (entry; executionList.modules) {
-        writef("%s   module: %s\n", label, entry.tosz);
+        print("%s   module: %s\n", label, entry.tosz);
     }
     foreach (entry; executionList.unittests) {
-        writef("%s   block:  %s\n", label, entry.tosz);
+        print("%s   block:  %s\n", label, entry.tosz);
     }
 }
