@@ -224,9 +224,9 @@ isInternalModule (const string arg)
             // is not an internal module whatever its value may be.
             return false;
         } else {
-            assert (false, `This should be unreachable.
-Compiling with version identifier 'sut_internal_unittest'
-requires 'sut' version definition.`);
+            assert (false, "This should be unreachable.\n"
+                ~ "Compiling with version identifier 'sut_internal_unittest' "
+                ~ "requires 'sut' version definition.");
         }
     } else {
         if (arg.canFind(".")) {
