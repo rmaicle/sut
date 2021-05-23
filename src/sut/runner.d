@@ -93,6 +93,13 @@ customUnitTestRunner ()
                 printAssertion(m.name, e);
                 printTrace(e);
             }
+            // This block was moved out of the custom assert handler because
+            // an assertion in a function that is called from a unit test
+            // satisfies the condition and reports a failure even though the
+            // unit test has caught the assertion via assertThrown.
+            if (unitTestCounter.unitTestBlock.isIn()) {
+                unitTestCounter.current.revertPassing();
+            }
         }
         if (unitTestCounter.current.isSomeExecuted()) {
             printModuleSummary(
@@ -274,8 +281,5 @@ customAssertHandler (
     string msg = string.init
 ) {
     import core.exception: AssertError;
-    if (unitTestCounter.unitTestBlock.isIn()) {
-        unitTestCounter.current.revertPassing();
-    }
     throw new AssertError(msg, file, line);
 }
