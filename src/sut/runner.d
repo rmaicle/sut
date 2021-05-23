@@ -265,6 +265,7 @@ unittest {
  * Custom assert handler for unit tests only.
  * The default assert handler must be restored.
  */
+@safe
 nothrow
 void
 customAssertHandler (
