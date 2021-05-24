@@ -22,12 +22,12 @@ printIntro ()
     static import std.compiler;
 
     printDateTime(Label.Start);
-    print("%s %s version %d.%d\n",
+    print("%s %s version %u.%u\n",
         Label.Blank.tosz,
         std.compiler.name.tosz,
         std.compiler.version_major,
         std.compiler.version_minor);
-    print("%s D specification version %d\n",
+    print("%s D specification version %u\n",
         Label.Blank.tosz,
         std.compiler.D_major);
     auto mode = getExecutionMode();
@@ -73,7 +73,7 @@ printUnitTestInfo (
             label = Label.Blank;
         }
 
-        print("%s %s %4d %s%s%s\n",
+        print("%s %s %4llu %s%s%s\n",
             label.tosz,
             moduleName.tosz,
             line,
@@ -95,7 +95,7 @@ printModuleSummary (
     const passColor = counter.current.isAllPassing() ? Color.IGreen : Color.Yellow;
     const failingColor = counter.current.isNoneFailing() ? Color.IGreen : Color.IRed;
 
-    print("%s %s - %s%d passed%s, %s%d failed%s, %d found - %s\n",
+    print("%s %s - %s%llu passed%s, %s%llu failed%s, %llu found - %s\n",
         Label.Blank.tosz,
         moduleName.tosz,
         passColor.tosz,
@@ -136,21 +136,21 @@ printSummary (
 
     print("%s\n", SummaryStart.tosz);
 
-    print("%s %d found: %s%d passed%s, %s%d failed%s\n",
+    print("%s %llu found: %s%llu passed%s, %s%llu failed%s\n",
         Label.Summary.tosz,
         counter.all.total,
         passColor.tosz, counter.all.passing, Color.Reset.tosz,
         failColor.tosz, counter.all.failing, Color.Reset.tosz);
     auto blank = Label.Blank.tosz;
-    print("%s %d %s\n",
+    print("%s %llu %s\n",
         blank,
         counter.modulesWith.length,
         Module.WithUnitTest.toLower.tosz);
-    print("%s %d %s\n",
+    print("%s %llu %s\n",
         blank,
         counter.modulesWithout.length,
         Module.WithoutUnitTest.toLower.tosz);
-    print("%s %d %s\n",
+    print("%s %llu %s\n",
         blank,
         excludeList.length,
         Module.Excluded.toLower.tosz);
@@ -177,7 +177,7 @@ printAssertion (
 %s%s Assertion Failed!%s
 %s Message: %s
 %s Module:  %s
-%s File:    %s (%d)
+%s File:    %s (%llu)
 `;
 
     const indent = Label.AssertionDetail.length + " Message: ".length;
@@ -391,7 +391,7 @@ printSummaryWithUnitTests (
     const ResetColor = Color.Reset.tosz;
     const color = modulesWithUnitTests.length == 0 ? BadColor : GoodColor;
 
-    print("%s %s%s (%d)%s\n",
+    print("%s %s%s (%llu)%s\n",
         Label.List.tosz,
         color.tosz,
         Module.WithUnitTest.tosz,
@@ -445,7 +445,7 @@ printSummaryCategory (
 ) {
     import std.algorithm: sort;
     const color = list.length == 0 ? badColor : goodColor;
-    print("%s %s%s (%d)%s\n",
+    print("%s %s%s (%llu)%s\n",
         Label.List.tosz,
         color.tosz,
         label.tosz,
