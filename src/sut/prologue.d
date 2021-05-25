@@ -41,6 +41,7 @@ unitTestBlockPrologue (const size_t LineNumber = __LINE__)()
 
     sut.unitTestCounter.unitTestBlock.enter();
     scope (exit) sut.unitTestCounter.unitTestBlock.leave();
+    scope (failure) sut.unitTestCounter.current.revertPassing();
 
     sut.unitTestCounter.addModulesWithPrologue(moduleName!dummyXYZ);
     bool executeBlockFlag = sut.executeBlock!(
