@@ -65,11 +65,16 @@ unitTestBlockPrologue (const size_t LineNumber = __LINE__)()
 string
 getUnitTestName (alias T)() pure nothrow
 {
-    enum udaName = firstStringUDA!(__traits (parent, T));
-    static if (udaName == string.init) {
-        return __traits (identifier, __traits (parent, T));
+    import std.traits: isSomeString;
+    enum attributes = __traits (getAttributes, __traits (parent, T));
+    static if (attributes.length > 0) {
+        if (isSomeString!(typeof (attributes[0]))) {
+            return attributes[0];
+        } else {
+            return "";
+        }
     } else {
-        return udaName;
+        return "";
     }
 }
 
@@ -118,76 +123,4 @@ executeBlock (
     } else {
         return true;
     }
-}
-
-
-
-private:
-
-
-
-/**
- * Determine whether the template argument is some string.
- */
-template
-isStringUDA (alias T)
-{
-    import std.traits: isSomeString;
-    static if (__traits (compiles, isSomeString!(typeof (T)))) {
-        enum isStringUDA = isSomeString!(typeof (T));
-    } else {
-        enum isStringUDA = false;
-    }
-}
-@("isStringUDA: string")
-unittest {
-    mixin (sut.wrapper.prologue);
-    @("string variable")
-    string stringVar;
-    static assert (isStringUDA!(__traits (getAttributes, stringVar)));
-}
-@("isStringUDA: not a string")
-unittest {
-    mixin (sut.wrapper.prologue);
-    @(123)
-    int intVar;
-    static assert (isStringUDA!(__traits (getAttributes, intVar)) == false);
-}
-
-
-
-/**
- * Get the first string user-defined attribute (UDA) of the alias argument
- * if one is present. Otherwise, an empty string.
- */
-template
-firstStringUDA (alias T)
-{
-    import std.meta: Filter;
-    enum attributes = Filter!(isStringUDA, __traits (getAttributes, T));
-    static if (attributes.length > 0) {
-        enum firstStringUDA = attributes[0];
-    } else {
-        enum firstStringUDA = "";
-    }
-}
-@("firstStringUDA: string")
-unittest {
-    mixin (sut.wrapper.prologue);
-    @("123")
-    int intVar;
-    static assert (firstStringUDA!intVar == "123");
-}
-@("firstStringUDA: integer")
-unittest {
-    mixin (sut.wrapper.prologue);
-    @(123)
-    int intVar;
-    static assert (firstStringUDA!intVar == string.init);
-}
-@("firstStringUDA: empty")
-unittest {
-    mixin (sut.wrapper.prologue);
-    int intVar;
-    static assert (firstStringUDA!intVar == string.init);
 }
