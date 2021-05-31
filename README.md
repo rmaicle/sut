@@ -156,15 +156,15 @@ It shows where the `sut` module may be placed.
     |-- ...
     |-- build
     |   `-- sut.conf        // selective unit testing configuraiton file
-    |-- extern
+    |-- extern
     |   |-- sut             // this module
     |   `-- ...             // other external dependencies
-    `-- src                 // <<<<< we are here
-        |-- main.d
-        |-- module_a.d
-        |-- module_b.d
-        |-- sut_wrapper.d   // sut wrapper module
-        `-- ...
+    `-- src                 // <<<<< we are here
+        |-- main.d
+        |-- module_a.d
+        |-- module_b.d
+        |-- sut_wrapper.d   // sut wrapper module
+        `-- ...
 ~~~
 
 To compile the example project above, the following command may be used.
@@ -652,15 +652,15 @@ You can download or clone the repository and run the tests with the command
 ~~~
 ...
 `-- src
-    |-- sut                     // this module
-    |   ...
-    `-- test                    // we are here
-        |-- failing             // test with failed assertion
-        |-- no_wrapper          // test of not using a 'wrapper' module
-        |-- selective_block     // test of selective unit test block execution
+    |-- sut                     // this module
+    |   ...
+    `-- test                    // we are here
+        |-- failing             // test with failed assertion
+        |-- no_wrapper          // test of not using a 'wrapper' module
+        |-- selective_block     // test of selective unit test block execution
         |-- selective_module    // test of selective module execution
         |-- with_wrapper        // test of using a 'wrapper' module
-        `-- compile.sh          // compile script
+        `-- compile.sh          // compile script
 ~~~
 
 
