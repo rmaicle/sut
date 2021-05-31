@@ -82,30 +82,34 @@ execution if necessary.
 
 
 
-## Compatibility
+## Compiler Compatibility
 
 The following compilers have been tested under GNU/Linux only.
 I do not currently have a Microsoft Windows machine to test it.
 
-The latest reference compiler DMD version to successfully compile and use
-the library is version 2.096.0. The oldest compiler used to exeute the tests
+The oldest compiler used to execute the tests
 is version 2.090.0.
 It is not known what earlier versions can successfully compile and use the
 library.
 
-The latest LLVM D compiler (ldc) version to successfully compile and use the
-library is version 1.25.1.
-
-* Reference compiler (DMD)
-    - [2.096.0](http://downloads.dlang.org/releases/2.x/2.096.0)
-* LLVM D compiler (ldc)
-    - [1.25.1](https://github.com/ldc-developers/ldc/releases/tag/v1.25.1)
-    - [1.25.0](https://github.com/ldc-developers/ldc/releases/tag/v1.25.0)
+Latest versions of compilers to successfully compile and use the library are:
+* [DMD 2.096.1](http://downloads.dlang.org/releases/2.x/2.096.1)
+* [LDC 1.25.1](https://github.com/ldc-developers/ldc/releases/tag/v1.25.1)
 
 
-The library cannot be used if D source is not compiled with `ModuleInfo`.
-That includes source codes being compiled with the `-betterC` flag since the
-flag disables the use of `ModuleInfo`.
+
+## Limitations
+
+* Cannot be used with ``-betterC`.
+  The library cannot be used if D source is compiled without `ModuleInfo`.
+  That includes source codes being compiled with the `-betterC` flag since the
+  flag disables the use of `ModuleInfo`.
+
+* Cannot be used with `@nogc`.
+
+* Cannot be used with `nothrow`.
+
+* Cannot be used with `pure`.
 
 
 
