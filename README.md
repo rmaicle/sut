@@ -47,8 +47,6 @@ maintenance, and enhancement efforts.
 It also allows the programmer to opt-out and revert to the default unit test
 execution if necessary.
 
-
-
 * __Unit Test Block Execution__
 
   The programmer can choose to execute only a specific unit test block or a
@@ -56,14 +54,10 @@ execution if necessary.
   This helps the programmer to focus on the 'unit' without being bothered by
   other unit tests that may, at this point, fail.
 
-
-
 * __Module Unit Test Execution__
 
   The programmer can also choose to execute all unit tests in a single module,
   also without being flooded with failed tests from other modules.
-
-
 
 * __Module Exclusion__
 
@@ -73,8 +67,6 @@ execution if necessary.
   This feature is a consequence of determining which modules do not have unit
   tests.
   Packages that simply declare public imports are candidates for this.
-
-
 
 * __Detailed Reporting__
 
