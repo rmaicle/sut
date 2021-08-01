@@ -2,6 +2,8 @@ module sut.util;
 
 static import sut.wrapper;
 
+debug import std.stdio;
+
 
 
 /**
@@ -332,6 +334,12 @@ wrapnl (
         res ~= NEWLINE ~ indent ~ line;
     }
     return res;
+}
+version (unittest) {
+    import std.array: join;
+
+    enum RulerOnes = "123456789012345678901234567890123456789012345";
+    enum RulerTens = "         1         2         3         4     ";
 }
 @("wrapnl: exceeds line then append")
 unittest {
