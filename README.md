@@ -93,8 +93,8 @@ It is not known what earlier versions can successfully compile and use the
 library.
 
 Latest versions of compilers to successfully compile and use the library are:
-* [DMD 2.096.1](http://downloads.dlang.org/releases/2.x/2.096.1)
-* [LDC 1.25.1](https://github.com/ldc-developers/ldc/releases/tag/v1.25.1)
+* [DMD 2.104.2](https://dlang.org/download.html#dmd)
+* [LDC 1.33.0](https://github.com/ldc-developers/ldc/releases/tag/v1.33.0)
 
 
 
