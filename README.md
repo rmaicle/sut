@@ -167,16 +167,15 @@ It shows where the `sut` module may be placed.
 To compile the example project above, the following command may be used.
 
 ~~~
-$ dmd                   \
-    -I=.                \   # Look for imports in project/src
-    -I=../extern/sut    \   # Look for imports in project/extern/sut
-    -i                  \   # include imported modules in code
-    -debug              \
-    -unittest           \   # unit test flag
-    -version=sut        \   # required version identifier when running unit tests
-    -of=project         \
-    -run                \
-    -c ../build/sut.conf
+dmd                                 \
+    -I=../../                       \  # Look for imports in project/
+    -i                              \
+    -main                           \
+    -debug                          \
+    -unittest                       \
+    -version=sut                    \  # Version identifier for using this module
+    -run                            \
+    test.d
 ~~~
 
 
