@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+#
+# Driver for compiling test examples using the SUT module.
+#
+# $ ../compile test.d [--config=<config-file>]
+#
+
 declare -r SCRIPT_NAME=${0##*/}
 declare -r SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 declare -r CURRENT_DIR=$(pwd)
