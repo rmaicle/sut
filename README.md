@@ -100,7 +100,7 @@ Latest versions of compilers to successfully compile and use the library are:
 
 ## Limitations
 
-* Cannot be used with ``-betterC`.
+* Cannot be used with `-betterC`.
   The library cannot be used if D source is compiled without `ModuleInfo`.
   That includes source codes being compiled with the `-betterC` flag since the
   flag disables the use of `ModuleInfo`.
@@ -137,11 +137,11 @@ __Selective Unit Tests__
   file_ and add unit test block entries;
 * to select modules to execute, create/edit a _unit test configuration file_
   and add module entries;
-* pass the configuration file as command-line argumnt to the test program.
+* pass the configuration file as command-line argument to the test program.
 
 
 
-### Incorporating 'sut' Module
+### Incorporating `sut` Module
 
 To use the module, the compiler must be able to _see_ its source code.
 This could be done using the `-I` compiler option for `dmd` or `ldc` and
