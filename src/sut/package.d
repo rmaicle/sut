@@ -65,6 +65,12 @@ version (sut) {
 
 
 
+    /**
+     * Handle run-time arguments. Arguments are passed to the program
+     * at compile-time.
+     *
+     * The function is called statically during module initialization.
+     */
     bool
     handleArguments (const string[] arg)
     {
@@ -74,7 +80,10 @@ version (sut) {
             defaultGetoptPrinter,
             getopt;
 
+        // Necessary to declare a local array variable because
+        // getopt function accepts only reference arrays.
         string[] arguments = arg.dup;
+        // Temporary variable for filenames of passed arguments
         string[] files;
         auto helpInfo = getopt(
             arguments,
@@ -84,6 +93,7 @@ version (sut) {
             defaultGetoptPrinter("SUT command-line options:", helpInfo.options);
             return false;
         }
+        // Send out the acquired filenames
         auto filesProcessed = config.collect(files);
         return true;
     }
