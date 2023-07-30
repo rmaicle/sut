@@ -43,7 +43,7 @@ printIntro ()
 void
 printUnknownSelections (const Config arg)
 {
-    enum UNKNOWN_FMTS = "%s   x:      %s (%s)\n";
+    enum UNKNOWN_FMTS = "%s   %sx:      %s%s (%s)\n";
     const label = Label.Blank.tosz;
     if (!arg.hasUnknowns()) {
         return;
@@ -51,7 +51,7 @@ printUnknownSelections (const Config arg)
     foreach (file; arg.unknown) {
         const filename = file.filename.tosz;
         foreach (item; file.content) {
-            print(UNKNOWN_FMTS, label, item.tosz, filename);
+            print(UNKNOWN_FMTS, label, Color.Yellow.tosz, item.tosz, Color.Reset.tosz, filename);
         }
     }
 }
@@ -77,7 +77,7 @@ printUnitTestInfo (
             label.tosz,
             moduleName.tosz,
             line,
-            Color.Green.tosz,
+            Color.IGreen.tosz,
             unitTestName.tosz,
             Color.Reset.tosz);
     }
