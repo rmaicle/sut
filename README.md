@@ -112,7 +112,7 @@ Latest versions of compilers to successfully compile and use the library are:
 
 ## Usage
 
-In summary, this is how to use the library:
+There are two ways to use the `sut` module: _basic_ and _selective unit testing_.
 
 __Basic Usage__
 
@@ -128,7 +128,7 @@ Unit tests without _user-defined attributes_ or unit test block prologue code
 will still execute but they will not be reported in the console output since
 the library uses the prologue code to collect information for reporting.
 
-__Selective Unit Tests__
+__Selective Unit Testing__
 
 * to select unit test blocks to execute, create/edit a _unit test configuration
   file_ and add unit test block entries;
@@ -169,7 +169,7 @@ To compile the example project above, the following command may be used.
 ~~~
 $ dmd                   \
     -I=.                \   # Look for imports in project/src
-    -I=../extern/sut    \   # Look for imports in project/extern/sut
+    -I=../../sut        \   # sut module path
     -i                  \   # include imported modules in code
     -debug              \
     -unittest           \   # unit test flag
@@ -177,6 +177,16 @@ $ dmd                   \
     -of=project         \
     -run                \
     -c ../build/sut.conf
+
+dmd                                 \
+    -I=../../                       \
+    -i                              \
+    -main                           \
+    -debug                          \
+    -unittest                       \
+    -version=sut                    \
+    -run                            \
+    test.d
 ~~~
 
 
@@ -338,10 +348,13 @@ utm:...
 ~~~
 
 One or more _unit test configuration files_ can be passed to the test program
-via command-line argument.
+via command-line argument using `-c` or `config` options:
 
 ~~~
-$ ../compile test.d -c<file1> -c <file2> --config=<file3> --config <file4>
+-c<file>
+-c <file>
+--config=<file>
+--config <file>
 ~~~
 
 
@@ -487,14 +500,24 @@ The following are the contents of each file starting with the main module.
   }
   ~~~
 
-Compile the source files using either of the commands below.
+Compile the source files using the following command:
 
 ~~~
-$ ../compile.sh test.d
-$ ../compile.sh --ldc test.d
+$ dmd                               \
+    -I=./../../                     \
+    -i                              \
+    -main                           \
+    -debug                          \
+    -unittest                       \
+    -version=sut                    \
+    -run                            \
+    test.d                          \
+    --config=unittest.conf
 ~~~
 
-It will automatically run the unit tests.
+Note that using the `ldc2` compiler, you may replace `dmd` with `ldmd2` which is
+a wrapper that accepts dmd-style argument formats.
+
 
 ~~~
 $ ../compile.sh test.d
@@ -544,13 +567,19 @@ The _unit test configuration file_ should look something like:
 utb:add
 ~~~
 
-Compile the source files using one of the commands below.
+Compile the source files using the following command:
 
 ~~~
-$ ../compile.sh test.d -- -csut.conf
-$ ../compile.sh test.d -- -c sut.conf
-$ ../compile.sh test.d -- --config=sut.conf
-$ ../compile.sh test.d -- --config sut.conf
+$ dmd                               \
+    -I=./../../                     \
+    -i                              \
+    -main                           \
+    -debug                          \
+    -unittest                       \
+    -version=sut                    \
+    -run                            \
+    test.d                          \
+    --config=unittest.conf
 ~~~
 
 Choosing `utb:add` shows the following output:
@@ -599,13 +628,19 @@ The _unit test configuration file_ should look something like:
 utm:test.with_wrapper.mul
 ~~~
 
-Compile the source files using one of the commands below.
+Compile the source files using the following command:
 
 ~~~
-$ ../compile.sh test.d -- -csut.conf
-$ ../compile.sh test.d -- -c sut.conf
-$ ../compile.sh test.d -- --config=sut.conf
-$ ../compile.sh test.d -- --config sut.conf
+$ dmd                               \
+    -I=./../../                     \
+    -i                              \
+    -main                           \
+    -debug                          \
+    -unittest                       \
+    -version=sut                    \
+    -run                            \
+    test.d                          \
+    --config=unittest.conf
 ~~~
 
 Choosing `utm:test.with_wrapper.mul` shows the following output:
