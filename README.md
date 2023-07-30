@@ -104,11 +104,8 @@ Latest versions of compilers to successfully compile and use the library are:
   The library cannot be used if D source is compiled without `ModuleInfo`.
   That includes source codes being compiled with the `-betterC` flag since the
   flag disables the use of `ModuleInfo`.
-
 * Cannot be used with `@nogc`.
-
 * Cannot be used with `nothrow`.
-
 * Cannot be used with `pure`.
 
 
