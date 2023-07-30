@@ -7,6 +7,22 @@
  * Copyright (c) 2020-2021 Ricardo I. Maicle
  * Distributed under MIT license.
  * See LICENSE file for detail.
+ *
+ *
+ *
+ * Package unit testing:
+ * Requires that the current directory is at <project>/src/sut.
+ *
+ *    dmd                               \
+ *      -I=../                          \
+ *      -i                              \
+ *      -main                           \
+ *      -debug                          \
+ *      -unittest                       \
+ *      -version=sut                    \
+ *      -version=sut_internal_unittest  \
+ *      -run                            \
+ *      package.d
  */
 module sut;
 
