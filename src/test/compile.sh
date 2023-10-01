@@ -3,7 +3,7 @@
 #
 # Driver for compiling test examples using the SUT module.
 #
-# $ ../compile test.d [--config=<config-file>]
+# $ ../compile test.d
 #
 
 declare -r SCRIPT_NAME=${0##*/}
